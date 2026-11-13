@@ -88,6 +88,21 @@ var DTC = (function () {
   function inRange(r) { return r.date && parseISO(r.date) && (!r.sendBy || parseISO(r.sendBy)) ? r : { error: "deadline is outside the dates this page can work with" }; }
   // optional advice: send N days before the receive-by date (for a deadline with no stated time zone)
   function withSendBy(rule, r) { if (isWhole(rule.sendByDaysBefore) && rule.sendByDaysBefore > 0) r.sendBy = addDays(r.date, -rule.sendByDaysBefore); return r; }
+  // The partner reading (Microsoft 365 bought through a provider): "within one month from the end of the billing month in which the incident occurred".
+  // Last day = the last day of the incident's month, plus one calendar month, clamped to the end of the next month; never later than the direct date.
+  // It is the site's reading, not a date Microsoft states. rule: {rule: "end-of-month-plus-one-month", askByDaysBefore}
+  function partnerDeadline(startISO) {
+    var s = parseISO(startISO); if (!s) return null;
+    var ny = s.m === 12 ? s.y + 1 : s.y, nm = s.m === 12 ? 1 : s.m + 1, day = Math.min(daysInMonth(s.y, s.m), daysInMonth(ny, nm));
+    return iso({ y: ny, m: nm, d: day });
+  }
+  function resellerDeadline(rule, incident, directISO) {
+    if (!rule || rule.rule !== "end-of-month-plus-one-month") return { error: "unknown partner rule" };
+    var d = partnerDeadline(incident && incident.start); if (!d) return { error: "start date needed" };
+    if (parseISO(directISO) && d > directISO) d = directISO;
+    var r = { date: d, reading: true }; if (isWhole(rule.askByDaysBefore) && rule.askByDaysBefore > 0) r.sendBy = addDays(d, -rule.askByDaysBefore);
+    return inRange(r);
+  }
   // Microsoft-style shortcut used by the reference tests: incident in year/month -> last day of the next month
   function deadlineFor(year, month) { return deadline({ rule: "end-of-next-month" }, { start: iso({ y: year, m: month, d: 1 }) }).date; }
 
@@ -310,12 +325,13 @@ var DTC = (function () {
     var ds = o.deadline.replace(/-/g, ""), de = addDays(o.deadline, 1).replace(/-/g, "");
     var uid = (str(o.uid) ? o.uid.replace(/[^A-Za-z0-9-]/g, "") : "claim-" + ds) + "@downtimecredit.com";
     var vendor = str(o.vendor) ? o.vendor : "the provider";
-    var summary = o.supportCase ? (str(o.product) ? o.product : vendor) + " service credit: 30 days end" + (str(o.service) ? " (" + o.service + ")" : "") : "Credit claim must be received by " + vendor + " today" + (str(o.title) ? ": " + o.title : "");
-    var desc = o.supportCase ? "The " + (str(o.product) ? o.product : vendor) + " SLA asks for a support case within thirty days from when you become eligible. It does not say when that is. Counting from the day the downtime started" + (str(o.service) ? " (" + o.service + ")" : "") + ", the 30 days end on " + fullDate(o.deadline) + ". " +
+    var partner = o.partner && typeof o.partner === "object" ? o.partner : null;
+    var summary = partner ? partner.title : o.supportCase ? (str(o.product) ? o.product : vendor) + " service credit: 30 days end" + (str(o.service) ? " (" + o.service + ")" : "") : "Credit claim must be received by " + vendor + " today" + (str(o.title) ? ": " + o.title : "");
+    var desc = partner ? partner.description : o.supportCase ? "The " + (str(o.product) ? o.product : vendor) + " SLA asks for a support case within thirty days from when you become eligible. It does not say when that is. Counting from the day the downtime started" + (str(o.service) ? " (" + o.service + ")" : "") + ", the 30 days end on " + fullDate(o.deadline) + ". " +
       (parseISO(o.sendBy) ? "Send it by " + fullDate(o.sendBy) + " or sooner. " : "") + (str(o.rule) ? o.rule + " " : "") + "Sooner is safer."
       : "The claim" + (str(o.title) ? " for " + o.title : "") + " must be received by " + vendor + " by " + fullDate(o.deadline) + ". " +
       (parseISO(o.sendBy) ? "Send it by " + fullDate(o.sendBy) + " or sooner. " : "") + (str(o.rule) ? o.rule + " " : "") + (o.noTimeZone ? "No time zone is stated. " : "") + "Sooner is safer.";
-    function alarm(n) { return ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-P" + n + "D", "DESCRIPTION:" + icsEscape(n + (o.supportCase ? " days left to open the support case" : " days left to send the credit claim")), "END:VALARM"]; }
+    function alarm(n) { return ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-P" + n + "D", "DESCRIPTION:" + icsEscape(n + (partner ? " days left to ask your provider" : o.supportCase ? " days left to open the support case" : " days left to send the credit claim")), "END:VALARM"]; }
     var lines = [].concat(
       ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Downtime Credit//downtimecredit.com//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
        "BEGIN:VEVENT", "UID:" + uid, "DTSTAMP:" + (/^\d{8}T\d{6}Z$/.test(o.stamp || "") ? o.stamp : "20261112T000000Z"),
@@ -401,14 +417,17 @@ var DTC = (function () {
       users: function () { return users + ", in " + val("locations"); },
       errors: function () { return val("errors"); }
     };
-    var ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"];
+    var ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"], resell = !v.own && inp.reseller === true;
     var name = v.own ? "our agreement with " + v.vendor + (v.service ? " for " + v.service : "")
       : "the " + v.document.title + " (" + fullDate(v.document.date).replace(/^\w+ /, "") + "), " + v.service;
     var L = ["Subject: Service credit claim, " + (v.service || v.vendor) + ", incident " + val("incidentId"), "",
-      "Hello " + v.vendor + " support,", "",
-      "We ask for a service credit under " + name + "." + (v.own ? " Our details:" : " Our details, in the order the agreement asks for them:"), ""];
+      resell ? "Hello [your provider's name]," : "Hello " + v.vendor + " support,", "",
+      resell ? "We bought " + (v.product || v.vendor) + " through you. We ask you to request a service credit from " + v.vendor + " for our tenant under " + name + ". Our details, in the order the agreement asks for them:"
+        : "We ask for a service credit under " + name + "." + (v.own ? " Our details:" : " Our details, in the order the agreement asks for them:"), ""];
     v.claimItems.forEach(function (c, k) { L.push("(" + ROMAN[k] + ") " + c.label + ": " + FILL[c.fill]() + "."); });
+    if (resell) L.push("Our tenant: [your Microsoft 365 tenant name or ID, if you know it]");
     L.push("");
+    var bi = L.length;
     if (r) {
       var counts = r.userMinutes !== undefined ? groupText(r.downtimeUserMinutes) + " downtime user minutes of " + groupText(r.userMinutes) + " user minutes"
         : groupText(r.downtimeMinutes) + " minutes down of " + groupText(r.periodMinutes) + " minutes";
@@ -423,13 +442,24 @@ var DTC = (function () {
         L.push("By our count: " + counts + ", an uptime of " + r.uptimePct + "%. This stays inside the agreement's target, so no credit level applies.");
       } else L.push("By our count: " + counts + ", an uptime of " + r.uptimePct + "%. Under the agreement's credit table this is a " + credit + ".");
     } else L.push("By our count: uptime of [uptime %] for the period, which is a [credit] service credit of " + blanks.fee + ".");
+    if (resell) {
+      for (var q = bi; q < L.length; q++) if (/^By our count/.test(L[q])) {       // the same hedges as the page: up to, about, if Microsoft accepts
+        L[q] = L[q].replace("this is a ", "this would be up to a ").replace(", which is ", ", about ");
+        if (r && !r.uncertain && r.tier > 0) L[q] = L[q].replace(/\.$/, ", if " + v.vendor + " accepts the request.");
+      }
+      if (r && r.uncertain) L[L.length - 1] += " All of this depends on " + v.vendor + " accepting the request.";
+      L.push("", "As we understand it, " + v.vendor + " takes credit requests from its partners, not from customers who bought through one, so we ask you to send this one. If you are not the one who files with " + v.vendor + ", please pass this to the partner you buy from." +
+        (inc.passed ? " By our count the month " + v.vendor + "'s partner rules allow has ended. Please tell us whether a request is still possible, and file it if so."
+          : parseISO(inc.deadline) ? " " + v.vendor + "'s partner rules ask for the request within one month from the end of the billing month in which the incident occurred; please file it by " + fullDate(inc.deadline) + ", the date we count. Sooner is safer." : " Please file it as soon as you can."));
+      L.push("", "Please confirm you have received this request, and tell us when you have filed it.", "", "[your name], [your company], [the email address you use for this account]");
+    } else
     L.push("", "Please confirm you have received this claim.", "", "[your name], [your company], [the email address you use for this account]");
     return L.join("\n");
   }
 
   return {
     isLeap: isLeap, daysInMonth: daysInMonth, parseISO: parseISO, addDays: addDays, localToday: localToday, daysLeft: daysLeft, fullDate: fullDate, countdown: countdown,
-    deadline: deadline, deadlineFor: deadlineFor, parseLimit: parseLimit, validateVendor: validateVendor, loadVendors: loadVendors, ownVendor: ownVendor,
+    deadline: deadline, resellerDeadline: resellerDeadline, partnerDeadline: partnerDeadline, deadlineFor: deadlineFor, parseLimit: parseLimit, validateVendor: validateVendor, loadVendors: loadVendors, ownVendor: ownVendor,
     compute: compute, CLOCK: CLOCK, parseDollars: parseDollars, parseDuration: parseDuration, centsText: centsText, icsFor: icsFor, claimText: claimText, BLANKS: BLANKS
   };
 })();

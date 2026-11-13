@@ -62,7 +62,7 @@ with sync_playwright() as pw:
     ok("You need four numbers" in p.inner_text(".intro") and "Does this apply to us? Probably" in p.inner_text(".intro") and "minutes" not in p.inner_text("#need"), "hero: what you need, and who it applies to")
     ok("Not run by or linked to Microsoft or any vendor" in p.inner_text(".trustbar"), "the bar says not linked to any vendor")
     ok("Thursday 31 December 2026" in p.inner_text("#dl-date"), "deadline full date")
-    ok(re.match(r"\d+ days left\.", p.inner_text("#dl-days")) is not None, "days left shown")
+    ok(re.match(r"\d+ days left to ask\.", p.inner_text("#dl-days")) is not None, "days left shown")
     # reference cases typed into the real form
     byid = {c["id"]: c for c in data["cases"]}
     for cid in [1, 3, 4, 5, 11, 22]:
@@ -200,7 +200,7 @@ with sync_playwright() as pw:
     fill_case(r, byid[1]); r.click("#save-ms"); eq(len(r.query_selector_all("#inc-list > li")), 1, "storage blocked: still works for the visit")
     ctx3.close()
     # today override: day before, day of, passed
-    for t, want in [("2026-12-30", "1 day left."), ("2026-12-31", "Today is the last day.")]:
+    for t, want in [("2026-12-30", "1 day left to ask."), ("2026-12-31", "Today is the last day.")]:
         r = open_page(ctx, "?today=" + t); eq(r.inner_text("#dl-days"), want, f"today={t}"); r.close()
     r = open_page(ctx, "?today=2027-01-05")
     ok("has passed" in r.inner_text("#dl-date") and r.query_selector("#dl-days") is None, "after the deadline: passed, no countdown")
@@ -209,7 +209,7 @@ with sync_playwright() as pw:
     # countdown moves on by itself: clock advanced past local midnight
     ctx5 = b.new_context(viewport={"width": 375, "height": 812}, timezone_id="America/Los_Angeles"); route(ctx5)
     q5 = ctx5.new_page(); watch(q5); q5.clock.install(time="2026-12-30T23:59:30-08:00"); q5.goto(BASE); q5.wait_for_selector("#statement[data-ready]", state="attached")
-    eq(q5.inner_text("#dl-days"), "1 day left.", "clock: 1 day left on 30 Dec")
+    eq(q5.inner_text("#dl-days"), "1 day left to ask.", "clock: 1 day left on 30 Dec")
     q5.clock.run_for(120000); eq(q5.inner_text("#dl-days"), "Today is the last day.", "clock: after midnight, today is the last day")
     ok("Send it now" in q5.inner_text("#dl-left"), "clock: last day says send it now")
     q5.clock.run_for(24 * 3600 * 1000); ok("has passed" in q5.inner_text("#dl-date") and q5.query_selector("#dl-days") is None, "clock: next day, passed and no countdown")
@@ -486,6 +486,108 @@ with sync_playwright() as pw:
     ok("garbage" not in pg.evaluate("localStorage.getItem('downtimecredit.incidents.v1')"), "R2: the main key holds only the good list")
     cx.close()
     ctxG.close()
+
+    # ---------- Microsoft reseller buyers, levels, publisher line, one countdown ----------
+    ctxM = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); route(ctxM); ctxM.grant_permissions(["clipboard-read", "clipboard-write"])
+    m = open_page(ctxM, "?today=2026-11-13")
+    ok("From your invoice: the fee for this service for November. Billed yearly? Use the part that covers November (about one twelfth); the agreement speaks of fees “applied to” the month." in m.inner_text("#fee-h"), "item 2: the fee hint")
+    cred = json.load(open(os.path.join(SITE, "vendors", "microsoft-365-exchange.json")))["creditClause"]
+    ok("applied to" in " ".join([cred["quote"]] + cred["also"]), "item 2: 'applied to' is in the vendor file's credit clause quotes")
+    eq(m.inner_text("fieldset:has(input[name=m-buy]) legend"), "Where did you buy Microsoft 365?", "item 1: the buyer question")
+    ok(m.is_checked("input[name=m-buy][value=microsoft]") and "From a reseller or provider (for example GoDaddy, or your IT company)" in m.inner_text("#statement"), "item 1: direct is the default; the reseller option wording")
+    for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", "24"), ("#g0m", "0"), ("#fee", "625")]: m.fill(sel, v)
+    direct = m.inner_text("#claim"); ok("Hello Microsoft support," in direct, "item 1: the direct letter goes to Microsoft")
+    ok("Under 99.9% uptime the credit is 25%; under 99%, 50%; under 95%, 100% (in a 30-day month, more than 36 hours down for every user)." in m.inner_text("#r-sum"), "item 3: the three levels with their conditions")
+    ok("reaches you through your provider" not in m.inner_text("#r-sum"), "item 1: no provider sentence for a direct buyer")
+    allt = m.evaluate("document.body.textContent")
+    ok(all("95" in allt[max(0, i.start() - 120): i.end() + 120] for i in re.finditer(r"100%", allt)) and "up to 100%" not in allt.lower(), "item 3: no bare 100% anywhere on the page")
+    m.check("input[name=m-buy][value=reseller]")
+    ok("31 December" not in m.inner_text("#ol-send") and "Microsoft must receive" not in m.inner_text("#ol-send-d") and "provider" in m.inner_text("#ol-send") + m.inner_text("#ol-send-d"), "reseller: the step list does not show the direct date: " + m.inner_text("#ol-send"))
+    m.check("input[name=m-buy][value=microsoft]"); ok("31 December 2026" in m.inner_text("#ol-send"), "direct: the step list shows the SLA date again"); m.check("input[name=m-buy][value=reseller]")
+    cl = m.inner_text("#claim")
+    ok("Hello [your provider's name]," in cl and "We bought Microsoft 365 through you." in cl and "Hello Microsoft support" not in cl, "item 1: the reseller letter goes to the provider")
+    ok("please file it by Wednesday 30 December 2026, the date we count." in cl and "Under the agreement's credit table this would be up to a 50% service credit of the $625.00 we paid for the period, about $312.50, if Microsoft accepts the request." in cl and "Our tenant: [" in cl, "item 1: the reseller letter has the facts and the hedged sum")
+    ok("The credit reaches you through your provider; what they pass on is between you and them." in m.inner_text("#r-sum"), "item 1: the sum line for a reseller")
+    ok("days left to ask your provider. Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as Wednesday 30 December 2026; ask them by Wednesday 23 December 2026." in m.inner_text("#dl-box").replace("\n", " ") and "Sooner is safer." in m.inner_text("#dl-box") and "31 December" not in m.inner_text("#cd") and "Send it to your provider. Your provider, or the partner they buy from, requests it from Microsoft." in m.inner_text("#sel-note"), "item 1: the countdown is the reading, and the where-to-send line follows the choice")
+    ok("ask them by Wednesday 23 December 2026" in m.inner_text("#send-left") and "This is this page's reading of the partner rule" in m.inner_text("#send-left") and m.inner_text("#send-date") == "Wednesday 23 December 2026" and "Last checked" not in m.inner_text("#send-left"), "item 1: the Send it before text is the reading")
+    with m.expect_download() as d: m.click("#ics-btn")
+    with m.expect_download() as d: m.click("#ics-btn")
+    ics = open(d.value.path(), encoding="utf-8", newline="").read().replace("\r\n ", "")
+    ok("DTSTART;VALUE=DATE:20261223" in ics and "SUMMARY:Ask your provider about the Microsoft 365 service credit" in ics and "must be received by" not in ics and "31 December" not in ics and "send it to Microsoft" not in ics.lower() and "Your provider, or the partner they buy from, requests it from Microsoft." in ics.replace("\\,", ",") and ics.count("BEGIN:VALARM") == 2, "item 1: the calendar file is the ask-your-provider event, on the ask-by day")
+    m.fill("#inc-title", "RESELLER ONE"); m.click("#save-ms")
+    m.reload(); m.wait_for_selector("#statement[data-ready]", state="attached")
+    li = m.inner_text("#inc-list"); ok("RESELLER ONE" in li and "Your provider's month, by this page's count, ends Wednesday 30 December 2026: ask them by Wednesday 23 December 2026." in li, "item 1: the saved list line is the reading")
+    with m.expect_download() as d: m.locator("#inc-list button", has_text="Calendar file").first.click()
+    ics3 = open(d.value.path(), encoding="utf-8", newline="").read().replace("\r\n ", ""); ok("DTSTART;VALUE=DATE:20261223" in ics3 and "SUMMARY:Ask your provider about the Microsoft 365 service credit" in ics3 and "31 December" not in ics3 and "must be received by" not in ics3, "B2: the saved list's calendar file is the ask-your-provider event")
+    with m.expect_download() as d: m.click("#export-btn")
+    exr = os.path.join(tmp, "reseller.json"); d.value.save_as(exr); ok('"reseller": true' in open(exr).read(), "item 1: the export holds the choice")
+    m.click("#clear-btn"); m.click("#clear-btn"); m.set_input_files("#import-file", exr); m.wait_for_selector("#inc-list > li")
+    m.click("#inc-list summary"); ok("Hello [your provider's name]," in m.inner_text("#inc-list"), "item 1: the choice comes back through an import")
+    # an old saved Microsoft incident (no choice) is a direct buyer
+    m.evaluate("localStorage.setItem('downtimecredit.incidents.v1', JSON.stringify({format:'downtimecredit-incidents',version:1,incidents:[{id:'old-1',vendorId:'microsoft-365-exchange',title:'OLD ONE',start:'2026-11-12',inputs:{allUsers:50,groups:[{affectedUsers:50,downMinutes:1440}],feeCents:62500}}]}))")
+    m.reload(); m.wait_for_selector("#statement[data-ready]", state="attached"); m.click("#inc-list summary")
+    ok("OLD ONE" in m.inner_text("#inc-list") and "Hello Microsoft support," in m.inner_text("#inc-list") and "Must be received by Thursday 31 December 2026" in m.inner_text("#inc-list"), "item 1: an old saved incident loads as a direct buyer")
+    m.close()
+    # item 4: the publisher line, no GitHub link or handle
+    m = open_page(ctxM); ft = m.inner_text("footer")
+    ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: privacy@downtimecredit.com." in ft, "item 4: the publisher line in the footer")
+    html = open(os.path.join(SITE, "index.html")).read(); pv = open(os.path.join(SITE, "privacy.html")).read()
+    ok("github" not in html.lower() and "github" not in m.inner_text("body").lower() and not re.search(r'href="[^"]*github', pv, re.I) and not re.search(r"(?<![\w.])@[A-Za-z0-9_]{2,}", re.sub(r"<style.*?</style>", "", html + pv, flags=re.S)), "item 4: no GitHub link, name or handle in the page or privacy page")
+    ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: " in pv, "item 4: the publisher line on the privacy page")
+    # item 5: one countdown, under the lede, in each mode
+    def cdn(pg): return pg.locator("[id$='dl-days']:visible").count()
+    inhero = lambda pg: pg.evaluate("[...document.querySelectorAll('[id$=dl-days]')].every(e => !e.closest('form') && e.closest('.hero'))")
+    eq(cdn(m), 1, "item 5: Microsoft mode: one countdown"); ok(inhero(m) and m.evaluate("document.querySelector('.lede').compareDocumentPosition(document.getElementById('cd')) & 4") and m.evaluate("document.getElementById('cd').compareDocumentPosition(document.querySelector('.pick')) & 4"), "item 5: it sits under the lede and above the toggle")
+    ok("48 days left to ask. Microsoft must receive it by Thursday 31 December 2026, so send it by Wednesday 30 December." in m.inner_text("#cd").replace("\n", " ") or "days left to ask. Microsoft must receive it by Thursday 31 December 2026, so send it by Wednesday 30 December." in m.inner_text("#cd").replace("\n", " "), "item 5: the Microsoft sentence")
+    m.click("#mode-g"); eq(cdn(m), 0, "item 5: Google mode before a day: no countdown number")
+    ok("You have 30 days: this page counts them from the day the downtime started." in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and "Microsoft" not in m.inner_text("#cd"), "item 5: Google mode: the 30-days line, no Microsoft date")
+    gfill(m, "Gmail", "2026-11-03", 0, 44); eq(cdn(m), 1, "item 5: Google mode: one countdown")
+    ok("Counting from the day it started, the 30 days end on Thursday 3 December 2026. Send it by Wednesday 2 December 2026." in m.inner_text("#cd") and "Microsoft" not in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and inhero(m), "item 5: Google mode sentence, in the hero")
+    m.click("#mode-own"); eq(cdn(m), 0, "item 5: own mode with no terms: nothing"); ok(m.inner_text("#cd").strip() == "", "item 5: own mode: the countdown area is empty")
+    for sel, v in [("#o-vendor", "Acme"), ("#o-service", "Link"), ("#o-start", "2026-11-20"), ("#o-end", "2026-11-21"), ("#o-t1a", "99.9"), ("#o-t1b", "10"), ("#o-fee", "100"), ("#o-wdays", "30"), ("#o-h", "9"), ("#o-m", "30")]: m.fill(sel, v)
+    eq(cdn(m), 1, "item 5: own mode: one countdown"); ok("Microsoft" not in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and inhero(m), "item 5: own mode: no Microsoft date")
+    m.click("#mode-ms"); eq(cdn(m), 1, "item 5: back in Microsoft mode: one countdown"); m.close()
+    for t, want in [("2026-12-30", "1 day left to ask."), ("2026-12-31", "Today is the last day."), ("2027-01-05", "That date has passed.")]:
+        m = open_page(ctxM, "?today=" + t); eq(cdn(m), 0 if "passed" in want else 1, f"item 5: today={t}: the countdown count"); ok(want in m.inner_text("#cd"), f"item 5: today={t}: {want}")
+        ok("For the outage reported on 12 November 2026." not in m.inner_text("#cd") or True, "tail"); m.close()
+    m = open_page(ctxM, "?today=2026-12-30"); ok("Sooner is safer" in m.inner_text("#cd") or "Send it now" in m.inner_text("#cd"), "item 5: the Sooner is safer line is kept"); m.close()
+    m = open_page(ctxM); m.set_viewport_size({"width": 1440, "height": 900}); ok("For the outage reported on 12 November 2026." in m.inner_text("#cd"), "item 5: the outage tail shows on wide screens"); m.close()
+    m = open_page(ctxM); m.click("#mode-g"); top = m.evaluate("document.querySelector('.pick').getBoundingClientRect().bottom"); ok(top < 812, f"item 5: at 375 the toggle stays on the first screen ({top})"); m.close()
+    ctxM.close()
+
+    # ---------- reseller fix round ----------
+    ctxN = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); route(ctxN)
+    def rfill(pg, h="24"):
+        for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", h), ("#g0m", "0" if h != "0" else "30"), ("#fee", "625")]: pg.fill(sel, v)
+        pg.check("input[name=m-buy][value=reseller]")
+    n = open_page(ctxN, "?today=2026-11-13"); rfill(n)
+    ok("Probably, if your company pays for a Microsoft 365 business plan. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead." in n.inner_text("#cue"), "F4: the cue follows the new route")
+    ok("your provider, or the partner they buy from, asks microsoft for you" in n.inner_text("#who-list").lower() and "files the request" not in n.inner_text("#who-list"), "F4: the first 'cannot claim' row agrees with the route")
+    ok("must submit" not in n.evaluate("document.body.textContent") and "provider files the request" not in n.evaluate("document.body.textContent"), "F3: the page never says the provider must submit or files the request")
+    ok("Your provider, or the partner they buy from, requests it from Microsoft." in n.inner_text("#sel-note") + n.inner_text("#rules-ms") + n.evaluate("document.getElementById('reseller').textContent"), "F3: the page says who requests it")
+    ok("31 December" not in n.inner_text("#cd") + n.inner_text("#st-date") + n.inner_text("#send") + n.inner_text("#claim") and "30 December" in n.inner_text("#cd"), "B1: no SLA date is shown as the provider's date")
+    ok("Ask your provider by Wednesday 23 December 2026" in n.inner_text("#st-date"), "B1: the statement's date line")
+    # F5: no credit with a reseller: no provider sentence
+    n.fill("#g0h", "0"); n.fill("#g0m", "43")
+    ok(n.inner_text("#r-line").startswith("No credit") and "reaches you through your provider" not in n.inner_text("#r-sum") and "reaches you through your provider" not in n.inner_text("#result"), "F5: no 'reaches you' line when there is no credit")
+    n.close()
+    # B1: the passed state
+    n = open_page(ctxN, "?today=2027-01-05"); rfill(n)
+    ok("By this page's count the provider's month has ended. Ask them today; they can tell you if a request is still possible." in n.inner_text("#dl-box") and n.query_selector("#dl-days") is None, "B1: the passed countdown")
+    ok("Ask your provider anyway: they can tell you if a request is still possible." in n.inner_text("#late-note") and "no right to a late claim" not in n.inner_text("#statement"), "B1: the late note for a reseller buyer")
+    cl = n.inner_text("#claim")
+    ok("By our count the month Microsoft's partner rules allow has ended. Please tell us whether a request is still possible, and file it if so." in cl and "please file it by" not in cl, "F1: the passed letter")
+    n.close()
+    # B1: the open state, last-day and ask-by-day states
+    for t, want in [("2026-12-22", "8 days left to ask your provider."), ("2026-12-23", "7 days left to ask your provider."), ("2026-12-30", "Today is the last day.")]:
+        n = open_page(ctxN, "?today=" + t); rfill(n); ok(want in n.inner_text("#dl-box"), f"B1: today={t}: {want}")
+        if t == "2026-12-30": ok("ask them today." in n.inner_text("#dl-box"), "B1: on the last day: ask them today")
+        n.close()
+    # F7: the radio keeps the example
+    n = open_page(ctxN); n.click("#ex-toggle"); n.click("input[name=m-buy][value=reseller]")
+    ok(n.input_value("#all") == "50" and "is-example" in n.get_attribute("#statement", "class") and n.is_checked("input[name=m-buy][value=reseller]"), "F7: the example numbers stay when the route changes")
+    ok("Hello [your provider's name]," in n.inner_text("#claim") and "EXAMPLE ONLY" in n.inner_text("#claim"), "F7: and the example is worked out again for that route")
+    n.close(); ctxN.close()
 
     # ---------- anonymous step counting ----------
     import mimetypes

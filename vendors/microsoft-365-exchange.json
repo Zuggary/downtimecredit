@@ -85,13 +85,16 @@
   },
   "resellerDeadline": {
     "quote": "For claims related to all other services, credit requests must be submitted within one month from the end of the billing month in which the incident occurred.",
-    "advice": "Ask your provider now: the provider must submit the request by the same date.",
+    "advice": "Ask your provider now. Your provider, or the partner they buy from, requests it from Microsoft.",
     "documentDate": "2026-06-16",
-    "source": "https://learn.microsoft.com/en-us/partner-center/billing/request-credit"
+    "source": "https://learn.microsoft.com/en-us/partner-center/billing/request-credit",
+    "rule": "end-of-month-plus-one-month",
+    "askByDaysBefore": 7,
+    "ownWords": "This is this page's reading of the partner rule: the last day of the month of the outage, plus one calendar month, and never later than the date for a direct customer. Microsoft does not state a date for this outage."
   },
   "cannotClaim": [
     {
-      "who": "Bought through a reseller such as GoDaddy: your provider files the request. Ask them now.",
+      "who": "Bought through a reseller such as GoDaddy: your provider, or the partner they buy from, asks Microsoft for you. Pick that in the statement.",
       "quote": "Credit requests are accepted only from CSP direct and indirect providers. Requests aren't accepted from indirect resellers.",
       "documentDate": "2026-06-16",
       "source": "https://learn.microsoft.com/en-us/partner-center/billing/request-credit"
@@ -170,5 +173,6 @@
     "Month minutes are the days in the month times 1,440. The SLA names no time zone.",
     "Each group holds different people. The SLA sums each incident's minutes times its users; the site asks for groups of different people so the total cannot pass all users.",
     "A customer's governing SLA is the version current at their renewal date."
-  ]
+  ],
+  "product": "Microsoft 365"
 }

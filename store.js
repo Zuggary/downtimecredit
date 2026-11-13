@@ -62,7 +62,7 @@ var DTCStore = (function () {
     }
     // per-vendor input keys: a support-case vendor needs a listed service and carries no fee, users, groups or period; every other incident carries no service or buyer
     var rule = ctx.rules && ctx.rules[x.vendorId], ci = c.inputs;
-    if (x.vendorId === "own-contract" || !rule) { if (ci.service !== undefined || ci.reseller !== undefined) return null; }
+    if (x.vendorId === "own-contract" || !rule) { if (ci.service !== undefined || (ci.reseller !== undefined && x.vendorId === "own-contract")) return null; }   // the buyer choice (reseller, true or false) belongs to Microsoft and Google incidents
     else {
       if (typeof ci.service !== "string" || (!ctx.lenient && rule.services.indexOf(ci.service) < 0)) return null;   // a stored incident keeps a service the list no later holds
       if (["feeCents", "allUsers", "groups", "periodDays"].some(function (k) { return ci[k] !== undefined; })) return null;

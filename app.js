@@ -117,21 +117,39 @@
     }).join(" ") }));
   }
   // one sentence, the same everywhere
-  function deadlineSentence(name, d, cd) {
+  function msReseller() { return radio("m-buy") === "reseller"; }
+  function deadlineSentence(name, d, cd, reseller) {
+    if (reseller) {      // bought through a provider: this page's reading of the partner rule, never Microsoft's stated date
+      if (cd.state === "passed") return "By this page's count the provider's month has ended. Ask them today; they can tell you if a request is still possible.";
+      var lateR = cd.state === "today" || (d.sendBy && TODAY >= d.sendBy);
+      return "Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as " + E.fullDate(d.date) + (lateR ? "; ask them today." : "; ask them by " + E.fullDate(d.sendBy) + ".");
+    }
     if (cd.state === "passed") return name + " had to receive it by " + E.fullDate(d.date) + ". That date has passed.";
     var late = cd.state === "today" || (d.sendBy && TODAY >= d.sendBy);
     return name + " must receive it by " + E.fullDate(d.date) + (d.sendBy && !late ? ", so send it by " + E.fullDate(d.sendBy).replace(/ \d{4}$/, "") + "." : ".");
   }
-  function deadlineTile(prefix, d, vendorName) {      // the statement's deadline: text only (the tile belongs to "Send it before")
+  function deadlineTile(prefix, d, vendorName, reseller) {      // the one countdown, under the lede: text only (the tile belongs to "Send it before")
     var cd = E.countdown(TODAY, d.date), dt = $(prefix + "-date"), left = $(prefix + "-left"), pd = E.parseISO(d.date);
     if ($(prefix + "-cal-m")) { $(prefix + "-cal-m").textContent = MON[pd.m - 1] + " " + pd.y; $(prefix + "-cal-d").textContent = String(pd.d); }
     $(prefix + "-box").classList.toggle("passed", cd.state === "passed");
     clear(dt); clear(left);
-    if (cd.state !== "passed") { dt.appendChild(el("b", { id: prefix + "-days", text: /\.$/.test(cd.text) ? cd.text : cd.text + "." })); dt.appendChild(document.createTextNode(" ")); }
-    dt.appendChild(document.createTextNode(deadlineSentence(vendorName, d, cd)));
+    if (cd.state !== "passed") { var dtxt = /\.$/.test(cd.text) ? cd.text : cd.text + "."; if (prefix === "dl" && cd.state === "open") dtxt = cd.text + (reseller ? " to ask your provider." : " to ask."); dt.appendChild(el("b", { id: prefix + "-days", text: dtxt })); dt.appendChild(document.createTextNode(" ")); }
+    dt.appendChild(document.createTextNode(deadlineSentence(vendorName, d, cd, reseller)));
     if (cd.state === "passed") left.textContent = prefix === "dl" ? "" : LATE;   // the statement shows it once, above its button
-    else if (cd.state === "today" || (d.sendBy && TODAY >= d.sendBy)) left.textContent = LASTDAY;
+    else if (!reseller && (cd.state === "today" || (d.sendBy && TODAY >= d.sendBy))) left.textContent = LASTDAY;
     else left.textContent = "Sooner is safer.";
+    if (prefix === "dl") { if (left.textContent) left.appendChild(document.createTextNode(" ")); left.appendChild(el("span", { class: "long", text: "For the outage reported on " + dayMonthYear(MS.featured.start) + "." })); }
+    return cd;
+  }
+  // the Microsoft deadline for this buyer: the SLA date for a direct customer; this page's reading of the partner rule for a reseller buyer
+  function msDeadlineFor(inc, reseller, vendor) {
+    var v = vendor || MS, d = E.deadline(v.deadline, inc);
+    if (reseller && v.resellerDeadline && !d.error) { var rd = E.resellerDeadline(v.resellerDeadline, inc, d.date); if (!rd.error) return rd; }
+    return d;
+  }
+  function msTile() {
+    var rs = msReseller(), d = msDeadlineFor({ start: MS.featured.start }, rs), cd = deadlineTile("dl", d, "Microsoft", rs), sd = $("st-date");
+    sd.textContent = rs ? (cd.state === "passed" ? "By this page's count the provider's month has ended. See the countdown above." : "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown above.") : "Last day: " + E.fullDate(d.date) + ". See the countdown above."; sd.hidden = noCredit;
     return cd;
   }
   function writeButton(btn, cd, none) {
@@ -143,7 +161,7 @@
     var cd = E.countdown(TODAY, E.deadline(MS.deadline, { start: MS.featured.start }).date);
     stripText(cd);
     writeButton($("write-btn"), cd, noCredit); $("write-btn").hidden = noCredit;
-    $("late-note").hidden = cd.state !== "passed" || noCredit; $("late-note").textContent = "The agreement gives no right to a late claim. You can still ask your vendor.";
+    $("late-note").hidden = cd.state !== "passed" || noCredit; $("late-note").textContent = msReseller() ? "Ask your provider anyway: they can tell you if a request is still possible." : "The agreement gives no right to a late claim. You can still ask your vendor.";
   }
 
   // ---------- the Microsoft statement ----------
@@ -201,6 +219,7 @@
     else {
       var inputs = { periodDays: E.daysInMonth(2026, 11), month: 11, allUsers: r.all, groups: r.groups };
       if (r.fee != null) inputs.feeCents = r.fee;
+      inputs.reseller = msReseller();
       var o = run(MS, inputs), res = o.res;
       if (res.error) {
         line.classList.add("r-err");
@@ -215,14 +234,14 @@
         $("w-tier").textContent = res.tier + "%";
         $("w-tier-f").textContent = (res.tier === 0 ? "99.9% or more gives no credit" : res.tier === 25 ? "under 99.9% gives 25%" : res.tier === 50 ? "under 99% gives 50%" : "under 95% gives 100%") + " (the agreement's credit tier)";
         resultInto(line, res, "Microsoft", o.noFee, false);
-        $("r-sum").hidden = false; $("r-sum").textContent = sumLine(res) + " The agreement gives no credit, 25%, 50% or 100%, depending on how much of the month email worked.";
+        $("r-sum").hidden = false; $("r-sum").textContent = sumLine(res) + " Under 99.9% uptime the credit is 25%; under 99%, 50%; under 95%, 100% (in a 30-day month, more than 36 hours down for every user)." + (msReseller() && (res.uncertain || res.tier > 0) ? " The credit reaches you through your provider; what they pass on is between you and them." : "");
         if (res.uncertain) { $("r-zone").hidden = false; $("r-zone").textContent = ZONE; }
         noCredit = !res.uncertain && res.tier === 0;
         noteResult("ms", res, o.noFee);
       }
     }
     zoneDetail($("zone-detail"), last && last.res);
-    msButton();
+    msButton(); msTile();
     refreshShared();
   }
   function leaveExample() { if (example) setExample(false); }
@@ -251,7 +270,7 @@
   function radio(name) { var r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : null; }
   var ownLast = null;     // {x, v, res, d, noFee}
   function ownCalc() {
-    var out = $("own-res"); clear(out); ownLast = null; OWNBAD = false;
+    var out = $("own-res"); clear(out); clear($("cd-o")); ownLast = null; OWNBAD = false;
     var said = function (t) { out.appendChild(el("p", { class: "r-line r-empty", id: "o-r-line", text: t })); };
     var tiers = Array.prototype.map.call($("o-tiers").children, function (row) { var i = row.querySelectorAll("input"); return { below: i[0].value.trim(), credit: whole(i[1].value) }; }).filter(function (t) { return t.below !== "" || t.credit !== null; });
     var win = radio("o-win"), terms = { vendor: $("o-vendor").value.trim(), service: $("o-service").value.trim(), creditUnit: radio("o-unit"), comparison: radio("o-cmp"), formula: "total-minutes", tiers: tiers,
@@ -289,7 +308,7 @@
     wb.addEventListener("click", goWrite); out.appendChild(wb);
     var box = el("div", { class: "deadline", id: "o-dl-box" }, [el("div", { class: "cal", "aria-hidden": "true" }, [el("span", { id: "o-dl-cal-m" }), el("b", { id: "o-dl-cal-d" })]),
       el("div", null, [el("p", null, [el("span", { id: "o-dl-date" })]), el("p", { class: "small", id: "o-dl-left" })])]);
-    out.appendChild(box);
+    $("cd-o").appendChild(box);
     writeButton(wb, deadlineTile("o-dl", e.d, v.vendor), none);
     if (none) wb.hidden = true;
     if (e.d.crossesMonth) out.appendChild(el("p", { class: "fine", text: e.d.crossNote }));
@@ -343,7 +362,8 @@
   function gCalcIf() { if (gKey() !== gSnap) gCalc(); }
   function gCalc() {
     gSnap = gKey();
-    var out = $("g-out"); clear(out); gLast = null;
+    var out = $("g-out"); clear(out); gLast = null; var cdg = $("cd-g"); clear(cdg);
+    cdg.appendChild(el("p", { id: "g-cd-pre", class: "cdp" }, [el("b", { text: "You have 30 days:" }), " this page counts them from the day the downtime started."]));
     $("g-form").classList.toggle("is-example", gExample);
     var r = gRead(), said = function (t) { out.appendChild(el("p", { class: "r-line r-empty", id: "g-r-line", text: t })); };
     GBAD = false;
@@ -374,8 +394,9 @@
       writeButton(wb, cd, false);
       var box = el("div", { class: "deadline" + (late ? " passed" : ""), id: "g-dl-box" }, [el("div", { class: "cal", "aria-hidden": "true" }, [el("span", { text: MON[pd2.m - 1] + " " + pd2.y }), el("b", { text: String(pd2.d) })]),
         el("div", null, [el("p", null, [late ? null : el("b", { id: "g-dl-days", text: /\.$/.test(cd.text) ? cd.text : cd.text + "." }), late ? null : " ", gSentence(e.d, cd, rs)]), el("p", { class: "small", id: "g-dl-left", text: gTail(e.d, cd) })])]);
-      out.appendChild(box);
-    }
+      clear(cdg); cdg.appendChild(box);
+      out.appendChild(el("p", { class: "small", id: "g-st-date", text: "Last day, counting from the day it started: " + E.fullDate(e.d.date) + ". See the countdown above." }));
+    } else clear(cdg);
     var dl = el("dl", { class: "work" }, [
       el("dt", null, ["Minutes in the month ", el("small", { text: "(the month's days × 1,440)" })]), el("dd", { id: "g-w-pm", text: num(res.periodMinutes) }),
       el("dt", { text: "Minutes of downtime" }), el("dd", { id: "g-w-dm", text: num(res.downtimeMinutes) }),
@@ -401,8 +422,8 @@
   function current() {
     if (mode === "g") return gLast ? { v: GW, inputs: gLast.inputs, res: gLast.res, d: gLast.d, x: gLast.x, name: "Google", g: true } : null;
     if (mode === "own") return ownLast ? { v: ownLast.v, inputs: ownLast.inputs, res: ownLast.res, d: ownLast.d, x: ownLast.x, name: ownLast.v.vendor } : null;
-    var d = E.deadline(MS.deadline, { start: MS.featured.start });
-    return { v: MS, inputs: last ? last.inc.inputs : {}, res: last ? last.res : null, d: d, name: "Microsoft", noRes: !last };
+    var d = msDeadlineFor({ start: MS.featured.start }, msReseller());
+    return { v: MS, inputs: last ? last.inc.inputs : { reseller: msReseller() }, res: last ? last.res : null, d: d, name: "Microsoft", noRes: !last };
   }
   function claimFields() { return { incidentId: $("c-id").value, startTime: $("c-start").value, endTime: $("c-end").value, description: $("c-desc").value, resources: $("c-res").value, locations: $("c-loc").value, errors: $("c-err").value }; }
   function refreshShared() {
@@ -410,18 +431,20 @@
     var c = current();
     var zero = !!(c && c.res && !c.res.error && !c.res.uncertain && c.res.tier === 0);
     $("letter").hidden = zero; $("copy-row").hidden = zero; $("sel-note").hidden = zero; $("no-letter").hidden = !zero;
-    $("sel-note").textContent = mode === "g" ? gSelNote(c && c.inputs) : mode === "ms" ? "Paste it into a support request to Microsoft. If someone else manages your Microsoft account, send it to them." : "Paste it into a support request to " + (c ? c.name : "your provider") + ". If someone else manages that account, send it to them.";
+    $("sel-note").textContent = mode === "g" ? gSelNote(c && c.inputs) : mode === "ms" ? (c && c.inputs.reseller === true ? "Send it to your provider. Your provider, or the partner they buy from, requests it from Microsoft. If someone else manages your Microsoft account, send it to them." : "Paste it into a support request to Microsoft. If someone else manages your Microsoft account, send it to them.") : "Paste it into a support request to " + (c ? c.name : "your provider") + ". If someone else manages that account, send it to them.";
     var text = c ? E.claimText(c.v, { fields: claimFields(), inputs: c.inputs, result: c.res, start: c.x && c.x.start, deadline: c.d && c.d.date, passed: !!(c.d && c.d.date && E.countdown(TODAY, c.d.date).state === "passed") }) : "Fill in the credit statement above first: the request is built from it.";
     if ((example && mode === "ms") || (gExample && mode === "g" && c)) text = "EXAMPLE ONLY: Harbor & Pine Dental is a made-up company.\n\n" + text;
     fillClaim($("claim"), text);
     // send it before
     if (c && c.d && c.d.date) {
       var p = E.parseISO(c.d.date), cd = E.countdown(TODAY, c.d.date);
-      $("s-cal-m").textContent = MON[p.m - 1] + " " + p.y; $("s-cal-d").textContent = String(p.d);
-      $("send-date").textContent = E.fullDate(c.d.date);
+      var rsl = mode === "ms" && c.inputs.reseller === true, shown = rsl && c.d.sendBy ? c.d.sendBy : c.d.date, ps = E.parseISO(shown);
+      $("s-cal-m").textContent = MON[ps.m - 1] + " " + ps.y; $("s-cal-d").textContent = String(ps.d);
+      $("send-date").textContent = E.fullDate(shown);
       var late = cd.state === "today" || (c.d.sendBy && TODAY >= c.d.sendBy);
-      $("send-left").textContent = (cd.state === "passed" ? "" : cd.text.replace(/\.$/, "") + ". ") + (mode === "g" ? gSentence(c.d, cd, c.inputs.reseller === true) + " " + gTail(c.d, cd) : deadlineSentence(c.name, c.d, cd) + " " +
+      $("send-left").textContent = (cd.state === "passed" ? "" : cd.text.replace(/\.$/, "") + ". ") + (mode === "g" ? gSentence(c.d, cd, c.inputs.reseller === true) + " " + gTail(c.d, cd) : deadlineSentence(c.name, c.d, cd, mode === "ms" && c.inputs.reseller === true) + " " +
         (cd.state === "passed" ? LATE : late ? LASTDAY : mode === "ms" ? "Last checked " + dayMonthYear(MS.document.lastChecked) + "." : "This is the window you typed."));
+      if (rsl) $("send-left").textContent = (cd.state === "passed" ? "" : cd.text.replace(/\.$/, "") + " to ask your provider. ") + deadlineSentence(c.name, c.d, cd, true) + (cd.state === "passed" ? "" : " Sooner is safer.") + " " + MS.resellerDeadline.ownWords;
     } else { $("send-date").textContent = mode === "g" ? "Fill in the credit statement first." : "Fill in your contract's terms first."; $("send-left").textContent = ""; $("s-cal-m").textContent = " "; $("s-cal-d").textContent = " "; }
     $("ics-btn").disabled = !(c && c.d && c.d.date);
     $("save-ms").disabled = (mode === "g" && GBAD) || (mode === "own" && OWNBAD);
@@ -432,8 +455,9 @@
     var own = mode === "own", g = mode === "g", passed = !own && !g && cd.state === "passed";
     $("need").textContent = g ? "You need two things: the day it started and how long the service was down." : own ? "You need three things: your agreement's credit terms, how long the service was down, and your invoice for the period." : "You need four numbers: users on your plan, how many lost email, for how long, and what you paid for November.";
     $("ol-work").textContent = g ? "Two things give the days of service the agreement allows." : own ? "Your agreement's terms give the credit it allows." : "Four numbers give the credit the agreement allows.";
-    $("ol-send").textContent = g ? "Send it within 30 days" : own ? "Send it before the deadline" : passed ? "The deadline was 31 December 2026" : "Send it before 31 December 2026";
-    $("ol-send-d").textContent = g ? "This page counts from the day the downtime started; the agreement does not say when the 30 days begin." : own ? "The day your vendor must receive it, and a reminder." : passed ? "That date has passed." : "The day Microsoft must receive it, and a reminder.";
+    var rs = !own && !g && msReseller();      // a reseller buyer asks the provider; the direct date must not show here
+    $("ol-send").textContent = g ? "Send it within 30 days" : own ? "Send it before the deadline" : rs ? "Ask your provider in time" : passed ? "The deadline was 31 December 2026" : "Send it before 31 December 2026";
+    $("ol-send-d").textContent = g ? "This page counts from the day the downtime started; the agreement does not say when the 30 days begin." : own ? "The day your vendor must receive it, and a reminder." : rs ? "The day this page counts for your provider, and a reminder." : passed ? "That date has passed." : "The day Microsoft must receive it, and a reminder.";
     $("h-send").textContent = passed ? "The deadline was 31 December 2026" : "Send it before";
   }
   var FIELD_IDS = ["c-id", "c-start", "c-end", "c-desc", "c-res", "c-loc", "c-err"], fieldsByMode = { ms: {}, own: {}, g: {} };
@@ -445,6 +469,7 @@
     var ms = m === "ms", g = m === "g", own = m === "own";
     $("mode-ms").setAttribute("aria-pressed", ms ? "true" : "false"); $("mode-g").setAttribute("aria-pressed", g ? "true" : "false"); $("mode-own").setAttribute("aria-pressed", own ? "true" : "false");
     $("statement").hidden = !ms; $("own-form").hidden = !own; $("g-form").hidden = !g;
+    $("dl-box").hidden = !ms; $("cd-g").hidden = !g; $("cd-o").hidden = !own;
     Array.prototype.forEach.call(document.querySelectorAll("[data-nog]"), function (e) { e.hidden = g; });
     $("cue").hidden = !ms; $("cue-g").hidden = !g; $("reseller-link").hidden = !ms; $("dl-words").hidden = !ms; $("dl-words-g").hidden = !g; $("sooner").hidden = g;
     $("rules-ms").hidden = !ms; $("rules-own").hidden = !own; $("rules-g").hidden = !g;
@@ -455,7 +480,6 @@
     $("c-res").placeholder = g ? "e.g. harborpine.example" : ms ? "e.g. harborpine.example, all mailboxes" : "e.g. main office line";
     $("sooner-why").textContent = ms ? "The agreement names no time zone, and the claim must arrive with all the information it asks for." : "Check your agreement for the time of day and the time zone it uses, and for what the claim must include.";
     $("trust").textContent = g ? "Not legal advice. Not run by or linked to Google or any vendor. Nothing you type leaves your browser. A credit is not cash." : "Not legal advice. Not run by or linked to Microsoft or any vendor. Nothing you type leaves your browser. A credit is not cash.";
-    $("who-vendor").textContent = g ? "Google" : "Microsoft";
     $("h1-t").textContent = g ? "An outage can mean days of service back." : "An outage can mean a credit on your next bill.";
     $("lede-t").textContent = g ? "Work out how many days of service you may be owed, get the request written and keep track of the deadline; you send it." : "Work out what your company may be owed, get the request written and keep track of the deadline; you send it.";
     $("save-ms").disabled = (g && GBAD) || (own && OWNBAD);
@@ -470,7 +494,13 @@
     var p = E.parseISO(x.start), inputs = Object.assign({}, x.inputs, { periodDays: v.period.type === "days" ? v.period.days : E.daysInMonth(p.y, p.m), month: p.m });
     if (x.own && x.own.clockCheck === true) inputs.clockCheck = true;
     var o = run(v, inputs);
-    return { v: v, inputs: inputs, res: o.res, noFee: o.noFee, d: E.deadline(v.deadline, x) };
+    return { v: v, inputs: inputs, res: o.res, noFee: o.noFee, d: x.own ? E.deadline(v.deadline, x) : msDeadlineFor(x, inputs.reseller === true, v) };
+  }
+  // Microsoft 365 bought through a provider: the calendar event is the day to ask the provider, worded as this page's reading
+  function msPartnerIcs(d, uid) {
+    var day = d.sendBy || d.date;
+    return E.icsFor({ deadline: day, uid: uid, vendor: "Microsoft", partner: { title: "Ask your provider about the Microsoft 365 service credit",
+      description: "Microsoft's partner rules give your provider one month after the billing month of the outage. This page counts that as " + E.fullDate(d.date) + "; ask them by " + E.fullDate(day) + ". Your provider, or the partner they buy from, requests it from Microsoft. This is this page's reading, not a date Microsoft states. Sooner is safer." } });
   }
   function gIcs(d, uid, v, inputs) {
     return E.icsFor({ deadline: d.date, sendBy: d.sendBy, uid: uid, vendor: v.vendor, product: v.service, service: inputs.service, supportCase: true,
@@ -491,7 +521,7 @@
         var cd = E.countdown(TODAY, e.d.date);
         var isG = e.v && e.v.letterStyle === "support-case";
         if (isG) li.appendChild(el("span", { class: "d" + (cd.state === "passed" ? " passed" : ""), text: (cd.state === "passed" ? "" : cd.text.replace(/\.$/, "") + ". ") + gSentence(e.d, cd, e.inputs.reseller === true) }));
-        else li.appendChild(el("span", { class: "d" + (cd.state === "passed" ? " passed" : ""), text: cd.state === "passed" ? "Must have been received by " + E.fullDate(e.d.date) + ": this date has passed." : "Must be received by " + E.fullDate(e.d.date) + ". " + cd.text + "." + (e.d.crossesMonth ? " " + e.d.crossNote : "") }));
+        else li.appendChild(el("span", { class: "d" + (cd.state === "passed" ? " passed" : ""), text: e.inputs.reseller === true && !e.v.own ? (cd.state === "passed" ? "By this page's count the provider's month has ended. Ask them today." : "Your provider's month, by this page's count, ends " + E.fullDate(e.d.date) + ": ask them by " + E.fullDate(e.d.sendBy) + ". " + cd.text + ".") : cd.state === "passed" ? "Must have been received by " + E.fullDate(e.d.date) + ": this date has passed." : "Must be received by " + E.fullDate(e.d.date) + ". " + cd.text + "." + (e.d.crossesMonth ? " " + e.d.crossNote : "") }));
       }
       if (e.v && e.res && !e.res.error && !e.res.uncertain && e.res.tier === 0) li.appendChild(el("span", { class: "m", text: "No credit level applies, so there is no request to send." }));
       else {
@@ -500,7 +530,7 @@
         li.appendChild(el("details", { class: "more" }, [el("summary", { text: "Request text" }), pre]));
       }
       var ics = el("button", { type: "button", class: "second", text: "Calendar file" });
-      ics.addEventListener("click", function () { if (e.d && e.d.date) download("deadline-" + e.d.date + ".ics", "text/calendar", e.v && e.v.letterStyle === "support-case" ? gIcs(e.d, x.id, e.v, e.inputs, name) : E.icsFor({ deadline: e.d.date, sendBy: e.d.sendBy, noTimeZone: !x.own, uid: x.id, vendor: e.v ? e.v.vendor : "", title: name })); });
+      ics.addEventListener("click", function () { if (e.d && e.d.date) download("deadline-" + (!x.own && e.inputs.reseller === true ? e.d.sendBy || e.d.date : e.d.date) + ".ics", "text/calendar", !x.own && e.inputs.reseller === true && !(e.v && e.v.letterStyle) ? msPartnerIcs(e.d, x.id) : e.v && e.v.letterStyle === "support-case" ? gIcs(e.d, x.id, e.v, e.inputs, name) : E.icsFor({ deadline: e.d.date, sendBy: e.d.sendBy, noTimeZone: !x.own, uid: x.id, vendor: e.v ? e.v.vendor : "", title: name, rule: !x.own && e.inputs.reseller === true ? "Your provider files the request with Microsoft, so ask them sooner." : "" })); });
       var rm = el("button", { type: "button", class: "second", text: "Remove", "aria-label": "Remove " + name });
       rm.addEventListener("click", function () { store.remove(x.id); renderIncidents(); $("inc-title").focus(); });
       li.appendChild(el("div", { class: "row" }, [ics, rm]));
@@ -587,12 +617,12 @@
     $("st-fine").textContent = "From the " + MS.document.title + ", dated " + dayMonthYear(MS.document.date) + ". Amounts are rounded to the nearest cent (a half cent rounds up). Microsoft states no rounding, so the amount is “about”.";
     var rs = $("reseller"); clear(rs);
     rs.appendChild(el("h3", { style: "margin-top:18px", text: "Bought through a reseller?" }));
-    rs.appendChild(el("p", { text: "Microsoft takes credit requests from its partners, not from customers who bought through a reseller. If a reseller such as GoDaddy sold you Microsoft 365, ask them now: they must submit the request by the same date." }));
+    rs.appendChild(el("p", { text: "Microsoft takes credit requests from its partners, not from customers who bought through a reseller. If a reseller such as GoDaddy sold you Microsoft 365, pick \u201cFrom a reseller or provider\u201d in the statement: the request is addressed to them, and they ask Microsoft for you. Your provider, or the partner they buy from, requests it from Microsoft. This page counts their date as one month after the billing month of the outage; that is its reading of the partner rule." }));
     var rq = $("reseller-quote"); clear(rq); rq.appendChild(quote(MS.resellerDeadline.quote, partnerCite()));
     var dq = $("deadline-quote"); clear(dq); dq.appendChild(quote(MS.deadline.quote, slaCite()));
     dq.appendChild(el("p", { text: "This outage started in November 2026, so the month after is December 2026." }));
     sourcesList(false);
-    deadlineTile("dl", E.deadline(MS.deadline, { start: MS.featured.start }), "Microsoft");
+    msTile();
   }
 
   // ---------- start ----------
@@ -609,7 +639,7 @@
     KNOWN = vendors.map(function (v) { return v.id; });
     window.addEventListener("storage", function (ev) { if (!ev.key || /^downtimecredit\.incidents/.test(ev.key)) { if (store.reload()) renderIncidents(); } });
     // the date moves on: recheck on a timer, when the tab comes back, on focus and at local midnight
-    function tick() { var t = OVERRIDE || E.localToday(new Date()); if (t !== TODAY) { TODAY = t; deadlineTile("dl", E.deadline(MS.deadline, { start: MS.featured.start }), "Microsoft"); msButton(); ownCalc(); if (GW) gCalc(); refreshShared(); renderIncidents(); } }
+    function tick() { var t = OVERRIDE || E.localToday(new Date()); if (t !== TODAY) { TODAY = t; msTile(); msButton(); ownCalc(); if (GW) gCalc(); refreshShared(); renderIncidents(); } }
     setInterval(tick, 30000);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) tick(); });
     window.addEventListener("focus", tick);
@@ -617,6 +647,7 @@
     vendorText();
     ["all", "g0u", "g0h", "g0m", "fee"].forEach(function (id) { $(id).addEventListener("input", recalc); $(id).addEventListener("focus", leaveExample); });
     ["c-id", "c-start", "c-end", "c-desc", "c-res", "c-loc", "c-err"].forEach(function (id) { $(id).addEventListener("input", refreshShared); });
+    Array.prototype.forEach.call(document.querySelectorAll('input[name="m-buy"]'), function (r) { r.addEventListener("change", recalc); });      // the route changes; the example numbers stay and are worked out again for it
     $("ex-toggle").addEventListener("click", function () { if (actor) countStep("example"); setExample(!example); });
     $("add-group").addEventListener("click", function () { leaveExample(); var k = addGroup(); $(k + "u").focus(); });
     $("write-btn").addEventListener("click", goWrite);
@@ -645,9 +676,10 @@
     });
     $("ics-btn").addEventListener("click", function () {
       var c = current(); if (!c || !c.d || !c.d.date) return;
+      if (mode === "ms" && c.inputs.reseller === true) { download("deadline-" + (c.d.sendBy || c.d.date) + ".ics", "text/calendar", msPartnerIcs(c.d, "microsoft-365-reseller-2026-11")); return; }
       if (mode === "g") { download("deadline-" + c.d.date + ".ics", "text/calendar", gIcs(c.d, "google-" + ownSession + "-" + c.x.start + "-" + c.inputs.service, GW, c.inputs, "Google Workspace " + c.inputs.service)); return; }
       download("deadline-" + c.d.date + ".ics", "text/calendar", E.icsFor({ deadline: c.d.date, sendBy: c.d.sendBy, noTimeZone: mode === "ms", uid: mode === "ms" ? "microsoft-365-2026-11" : "own-" + ownSession + "-" + c.x.start, vendor: c.name,
-        title: mode === "ms" ? "Microsoft 365 email outage, November 2026" : c.v.service, rule: mode === "ms" ? "The SLA's rule: by the end of the month after the month of the incident." : "" }));
+        title: mode === "ms" ? "Microsoft 365 email outage, November 2026" : c.v.service, rule: mode === "ms" ? (c.inputs.reseller === true ? "Your provider files the request with Microsoft, so ask them sooner. " : "") + "The SLA's rule: by the end of the month after the month of the incident." : "" }));
     });
     $("save-ms").addEventListener("click", saveCurrent);
     $("export-btn").addEventListener("click", function () { if (actor) countStep("exported"); download("downtime-credit-incidents.json", "application/json", store.exportText()); $("io-msg").textContent = "Exported " + store.all().length + " incidents."; });

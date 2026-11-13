@@ -57,6 +57,7 @@
   .pick button { font: 600 14px/1.25 var(--text); padding: 6px 10px; text-align: left; color: var(--ink); background: var(--sheet); border: 0; cursor: pointer; display: flex; align-items: center; min-height: 44px; }
   .pick button + button { border-left: 2px solid var(--ink); }
   .pick [aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .cd { margin: 8px 0 0; max-width: 40em; } .cd .deadline { margin: 0; } .cd .deadline p + p { margin-top: 2px; } .cd [hidden] { display: none; }
   .cue { margin: 6px 0 0; font-size: 13.5px; line-height: 1.35; }
   .cue a { font-weight: 600; }
   .outline { display: none; }
@@ -278,13 +279,20 @@
   <div class="intro">
     <h1 id="h1-t">An outage can mean a credit on your next bill.</h1>
     <p class="lede" id="lede-t">Work out what your company may be owed, get the request written and keep track of the deadline; you send it.</p>
+    <div class="cd" id="cd" aria-live="polite">
+    <div class="deadline" id="dl-box">
+      <div class="cal" aria-hidden="true"><span id="dl-cal-m">&nbsp;</span><b id="dl-cal-d">&nbsp;</b></div>
+      <div><p><span id="dl-date">&nbsp;</span></p><p class="small" id="dl-left"></p></div>
+    </div>
+      <div id="cd-g"></div><div id="cd-o"></div>
+    </div>
     <p class="need" id="need">You need four numbers: users on your plan, how many lost email, for how long, and what you paid for November.</p>
     <div class="pick" role="group" aria-label="Which outage">
       <button type="button" id="mode-ms" aria-pressed="true">Microsoft 365 outage, 12&nbsp;Nov</button>
       <button type="button" id="mode-g" aria-pressed="false">Google Workspace</button>
       <button type="button" id="mode-own" aria-pressed="false">Another vendor or my own contract</button>
     </div>
-    <p class="cue" id="cue"><b>Does this apply to us?</b> Probably, if your company buys a paid Microsoft 365 business plan from Microsoft itself, not through a reseller. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
+    <p class="cue" id="cue"><b>Does this apply to us?</b> Probably, if your company pays for a Microsoft 365 business plan. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
     <p class="cue" id="cue-g" hidden><b>Does this apply to us?</b> This agreement is for organisations with a Google Workspace agreement. Some editions and causes are left out. Check your edition: Essentials Starter is not covered. <a href="#who-g">See who cannot claim</a>.</p>
     <ul class="outline" aria-label="The three steps">
       <li><a href="#statement">Work it out</a><span id="ol-work">Four numbers give the credit the agreement allows.</span></li>
@@ -308,7 +316,10 @@
         </div></div>
       <div id="groups" class="span2"></div>
       <div class="span2"><button type="button" class="linkbtn" id="add-group">+ Some people were down for a different time</button></div>
-      <div class="f span2"><label for="fee">What you paid for <span class="long">this service for </span>November <small>(from your invoice)</small></label><input id="fee" inputmode="decimal" autocomplete="off" placeholder="$ e.g. 625.00"></div>
+      <div class="f span2"><label for="fee">What you paid for <span class="long">this service for </span>November <small>(from your invoice)</small></label><input id="fee" inputmode="decimal" autocomplete="off" placeholder="$ e.g. 625.00" aria-describedby="fee-h"><small class="hint" id="fee-h">From your invoice: the fee for this service for November. Billed yearly? Use the part that covers November (about one twelfth); the agreement speaks of fees &ldquo;applied to&rdquo; the month.</small></div>
+      <fieldset class="opt span2"><legend>Where did you buy Microsoft 365?</legend>
+        <label><input type="radio" name="m-buy" value="microsoft" checked><span>From Microsoft</span></label>
+        <label><input type="radio" name="m-buy" value="reseller"><span>From a reseller or provider (for example GoDaddy, or your IT company)</span></label></fieldset>
     </div>
     <div class="result" id="result" aria-live="polite">
       <p class="r-line r-empty" id="r-line">Your credit appears here.</p>
@@ -318,10 +329,7 @@
     </div>
     <p class="late" id="late-note" hidden></p>
     <button type="button" class="primary" id="write-btn">Write my request</button>
-    <div class="deadline" id="dl-box">
-      <div class="cal" aria-hidden="true"><span id="dl-cal-m">&nbsp;</span><b id="dl-cal-d">&nbsp;</b></div>
-      <div><p><span id="dl-date">&nbsp;</span></p><p class="small" id="dl-left"></p></div>
-    </div>
+    <p class="small" id="st-date" hidden></p>
     <p class="fine" id="st-source"></p>
     <details class="more" id="sums"><summary>How this was worked out</summary>
       <dl class="work">
@@ -401,7 +409,7 @@
       <div class="f span2"><label for="c-res"><span id="c-res-l">Your email domain and the affected mailboxes</span> <small class="ask" id="c-res-ask">asked for</small></label><input id="c-res" autocomplete="off" placeholder="e.g. harborpine.example, all mailboxes"></div>
       <div data-nog class="f"><label for="c-loc">Where your users are <small class="ask">asked for</small></label><input id="c-loc" autocomplete="off" placeholder="e.g. Portland, USA"></div>
       <div data-nog class="f"><label for="c-err">Error messages people saw <small class="ask">asked for</small></label><input id="c-err" autocomplete="off" placeholder="word for word"></div>
-      <p class="span2" id="reseller-link" data-nog><b>Bought through a reseller?</b> Your provider files the request. <a href="#who">See who cannot claim</a>.</p>
+      <p class="span2" id="reseller-link" data-nog><b>Bought through a reseller?</b> Your provider, or the partner they buy from, asks Microsoft for you. Pick that in the statement. <a href="#who">See who cannot claim</a>.</p>
     </div>
     <div class="sticky">
       <div class="letter" id="letter"><pre class="claim" id="claim" tabindex="0" aria-label="Your request text"></pre></div>
@@ -496,7 +504,7 @@
 <footer><div class="in"><div>
   <section>
     <h2 id="who-runs">Who runs this</h2>
-    <p id="who-runs-p">An independent, free tool. Not a vendor, a reseller or a law firm. No ads at present. It is not run by or linked to <span id="who-vendor">Microsoft</span> or any vendor, it is not legal advice, and it files nothing for you. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p id="who-runs-p">Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. A free tool. No ads at present. It is not legal advice, and it files nothing for you.</p>
     <p>The outage tracker: <a href="https://isit364yet.com">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
   </section>
   <section>

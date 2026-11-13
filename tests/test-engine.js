@@ -403,7 +403,8 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   ["feeCents", "allUsers", "periodDays"].forEach(function (k) { var i = { downMinutes: 5, service: "Gmail" }; i[k] = 5; ok(gadd(i).error !== undefined, "D9: a Google incident with " + k + " is refused", "google"); });
   ok(gadd({ downMinutes: 5, service: "Gmail", groups: [{ affectedUsers: 1, downMinutes: 1 }] }).error !== undefined, "D9: a Google incident with groups is refused", "google");
   ok(gadd({ downMinutes: 5, service: "Gmail", feeCents: 1 }, "microsoft-365-exchange").error !== undefined, "D9: a Microsoft incident with service is refused", "google");
-  ok(gadd({ downMinutes: 5, reseller: true }, "microsoft-365-exchange").error !== undefined, "D9: a Microsoft incident with reseller is refused", "google");
+  ok(gadd({ downMinutes: 5, reseller: true }, "microsoft-365-exchange").error === undefined, "D9: a Microsoft incident may carry the buyer choice (boolean)", "google");
+  ok(gadd({ downMinutes: 5, reseller: "yes" }, "microsoft-365-exchange").error !== undefined, "D9: a non-boolean buyer choice is refused", "google");
   ok(gadd({ downMinutes: 5, service: "Gmail" }, "own-contract").error !== undefined, "D9: an own incident with service is refused", "google");
   ok(!gadd({ downMinutes: 5, service: "Gmail", reseller: false }).error, "D9: a clean Google incident is accepted", "google");
 
@@ -444,6 +445,51 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
     eq(st.all().length, 0, "R2: a non-list loads as empty", "google"); eq(st.skipped(), 1, "R2: and says so", "google"); ok(m.unread() !== null && m.unread().indexOf("nope") > 0, "R2: the raw value is kept under the unreadable key", "google");
     st.add(good("n-1")); ok(m.unread().indexOf("nope") > 0, "R2: a save leaves it there", "google");
   })();
+})();
+
+// ---------- Microsoft reseller buyers ----------
+(function () {
+  var fixture = JSON.parse(file("tests/fixtures/ms-direct-letters.json")), idx = 0, same = 0, sameF = 0;
+  data.cases.forEach(function (c) {
+    if (c.expected.error) return;
+    var i = c.inputs, inp = { periodDays: i.days_in_month, allUsers: i.all_users, feeCents: i.fee_cents, groups: i.groups.map(function (g) { return { affectedUsers: g.affected_users, downMinutes: g.down_minutes }; }) };
+    var r = E.compute(MS, inp), f = { incidentId: "EX1", description: "d", startTime: "s", endTime: "e", resources: "r.example", locations: "l", errors: "x" };
+    var a = E.claimText(MS, { inputs: inp, result: r, fields: f, start: "2026-11-12", deadline: "2026-12-31" }), b = E.claimText(MS, { inputs: inp, result: r });
+    var a2 = E.claimText(MS, { inputs: Object.assign({ reseller: false }, inp), result: r, fields: f, start: "2026-11-12", deadline: "2026-12-31" });
+    if (a === fixture[idx] && b === fixture[idx + 1]) same++; if (a2 === fixture[idx]) sameF++; idx += 2;
+  });
+  eq(same, idx / 2, "direct letters are byte for byte as before (" + idx / 2 + " non-error reference cases, two letters each)", "reseller"); ok(idx / 2 >= 57, "the fixture covers the reference cases", "reseller"); eq(sameF, idx / 2, "reseller:false gives the same direct letter", "reseller");
+  var inp = { periodDays: 30, allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 1440 }], feeCents: 62500, reseller: true }, r = E.compute(MS, inp);
+  var t = E.claimText(MS, { inputs: inp, result: r, fields: { incidentId: "EX9", resources: "harborpine.example" }, start: "2026-11-12", deadline: "2026-12-31" });
+  ["Hello [your provider's name],", "We bought Microsoft 365 through you. We ask you to request a service credit from Microsoft for our tenant under the Service Level Agreement for Microsoft Online Services (1 November 2026), Exchange Online.",
+   "(i) Description of the Incident", "(v) Description of errors", "50 users for 24 h", "an uptime of 96.6666%", "Under the agreement's credit table this would be up to a 50% service credit of the $625.00 we paid for the period, about $312.50, if Microsoft accepts the request.", "Our tenant: [your Microsoft 365 tenant name or ID, if you know it]", "If you are not the one who files with Microsoft, please pass this to the partner you buy from.",
+   "within one month from the end of the billing month in which the incident occurred; please file it by Thursday 31 December 2026, the date we count. Sooner is safer.", "tell us when you have filed it"].forEach(function (w) { ok(t.indexOf(w) >= 0, "reseller letter holds: " + w, "reseller"); });
+  ok(t.indexOf("Hello Microsoft support") < 0 && t.indexOf("reaches you") < 0, "reseller letter: not addressed to Microsoft", "reseller");
+  var tn = E.claimText(MS, { inputs: { reseller: true }, result: null });
+  ok(tn.indexOf("Hello [your provider's name],") === 0 || tn.indexOf("Hello [your provider's name],") > 0, "reseller letter with nothing typed still addresses the provider", "reseller");
+  ok(E.claimText(MS, { inputs: inp, result: r }).indexOf("Please file it as soon as you can") > 0, "reseller letter without a date asks for it as soon as possible", "reseller");
+
+  // ---- fix round: the partner reading, the passed letter, the calendar file ----
+  var tp = E.claimText(MS, { inputs: inp, result: r, start: "2026-11-12", deadline: "2026-12-30", passed: true });
+  ok(tp.indexOf("By our count the month Microsoft's partner rules allow has ended. Please tell us whether a request is still possible, and file it if so.") > 0 && tp.indexOf("please file it by") < 0 && tp.indexOf("31 December") < 0, "reseller letter after the counted date: no 'file it by'", "reseller");
+  ok(tp.indexOf("must submit") < 0, "the letter never says the provider must submit", "reseller");
+  // the partner reading, 12 months of 2026 and a leap February; the cap at the direct date
+  var PD = [["2026-01-15", "2026-02-28"], ["2026-02-10", "2026-03-28"], ["2026-03-31", "2026-04-30"], ["2026-04-02", "2026-05-30"], ["2026-05-20", "2026-06-30"], ["2026-06-30", "2026-07-30"], ["2026-07-04", "2026-08-31"],
+    ["2026-08-31", "2026-09-30"], ["2026-09-09", "2026-10-30"], ["2026-10-31", "2026-11-30"], ["2026-11-12", "2026-12-30"], ["2026-12-31", "2027-01-31"], ["2028-01-31", "2028-02-29"], ["2028-02-29", "2028-03-29"], ["2027-02-01", "2027-03-28"]];
+  PD.forEach(function (c) { eq(E.partnerDeadline(c[0]), c[1], "partner reading of " + c[0], "reseller"); });
+  var RDR = MS.resellerDeadline; eq(RDR.rule, "end-of-month-plus-one-month", "the partner rule is data in the vendor file", "reseller"); ok(typeof RDR.ownWords === "string" && RDR.askByDaysBefore === 7, "the vendor file has the ask-by days and the own-words note", "reseller");
+  var rdx = E.resellerDeadline(RDR, { start: "2026-11-12" }, "2026-12-31"); eq(rdx.date, "2026-12-30", "partner last day for the featured outage", "reseller"); eq(rdx.sendBy, "2026-12-23", "ask by is 7 days before", "reseller");
+  eq(E.resellerDeadline(RDR, { start: "2026-11-12" }, "2026-12-20").date, "2026-12-20", "never later than the direct date", "reseller");
+  ok(E.resellerDeadline(RDR, { start: "2999-12-02" }, "2999-12-31").error !== undefined || E.resellerDeadline(RDR, { start: "garbage" }, "2026-12-31").error !== undefined, "a bad date is an error", "reseller");
+  var pics = E.icsFor({ deadline: "2026-12-23", uid: "p1", vendor: "Microsoft", partner: { title: "Ask your provider about the Microsoft 365 service credit", description: "Microsoft's partner rules give your provider one month after the billing month of the outage. This page counts that as " + E.fullDate("2026-12-30") + "; ask them by " + E.fullDate("2026-12-23") + "." } }).replace(/\r\n /g, "");
+  ok(pics.indexOf("SUMMARY:Ask your provider about the Microsoft 365 service credit") > 0 && pics.indexOf("DTSTART;VALUE=DATE:20261223") > 0 && pics.indexOf("must be received by") < 0 && pics.indexOf("31 December") < 0 && pics.indexOf("TRIGGER:-P14D") > 0 && pics.indexOf("days left to ask your provider") > 0, "partner calendar file: title, ask-by day, no direct wording, reminders", "reseller");
+  // the store keeps the buyer choice through export and import; an old incident without it is a direct buyer
+  var rs = S.createStore({ storage: null, knownVendors: ["microsoft-365-exchange"], newId: function () { return "r-1"; } });
+  ok(!rs.add({ vendorId: "microsoft-365-exchange", title: "R", start: "2026-11-12", inputs: { allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 60 }], feeCents: 100, reseller: true } }).error, "store accepts a reseller Microsoft incident", "reseller");
+  var ex = rs.exportText(), rs2 = S.createStore({ storage: null, knownVendors: ["microsoft-365-exchange"] });
+  eq(rs2.importText(ex).count, 1, "import of a reseller incident", "reseller"); eq(rs2.all()[0].inputs.reseller, true, "the choice survives export and import", "reseller");
+  var old = S.parseFile(JSON.stringify({ format: "downtimecredit-incidents", version: 1, incidents: [{ id: "o-1", vendorId: "microsoft-365-exchange", start: "2026-11-12", inputs: { allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 60 }], feeCents: 100 } }] }), ["microsoft-365-exchange"]);
+  ok(!old.error && old.incidents[0].inputs.reseller === undefined, "an old Microsoft incident loads, with no buyer choice (direct)", "reseller");
 })();
 
 // ---------- step counting: static checks ----------
