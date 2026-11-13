@@ -20,7 +20,8 @@ class Q(http.server.SimpleHTTPRequestHandler):
 h = functools.partial(Q, directory=SITE)
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), h); threading.Thread(target=srv.serve_forever, daemon=True).start()
 BASE = f"http://127.0.0.1:{PORT}/index.html"
-outside, errors = [], []
+outside, errors, counter = [], [], []
+COUNTER = "https://static.cloudflareinsights.com/beacon.min.js"   # the one allowed outside file: the visit counter
 tmp = tempfile.mkdtemp()
 
 def watch(page):
@@ -30,6 +31,7 @@ def route(ctx):
     def r(rt):
         u = rt.request.url
         if u.startswith(f"http://127.0.0.1:{PORT}/") or u.startswith("blob:") or u.startswith("data:"): rt.continue_()
+        elif u == COUNTER: counter.append(u); rt.fulfill(status=200, content_type="text/javascript", body="")
         else: outside.append(u); rt.abort()
     ctx.route("**/*", r)
 def open_page(ctx, q=""):
@@ -240,7 +242,7 @@ with sync_playwright() as pw:
         return out.join(' ').split(/\\s+/).filter(Boolean).length; }""")
     b.close()
 srv.shutdown()
-ok(not errors, f"0 console errors ({errors[:3]})"); ok(not outside, f"0 outside requests ({outside[:3]})")
+ok(not errors, f"0 console errors ({errors[:3]})"); ok(not outside, f"0 outside requests besides the visit counter ({outside[:3]})"); ok(not counter, "the visit counter does not load on a local copy"); src = open(os.path.join(SITE, "index.html")).read(); ok(src.count("https://static.cloudflareinsights.com/beacon.min.js") == 1 and "downtimecredit\\.com$/.test(location.hostname)" in src, "one outside script in the page: the visit counter, on the live host only")
 for f in fails[:30]: print("FAIL", f)
 print(f"first phone screen, filled with case 22: about {words} words")
 print(f"{passed} passed, {failed} failed")

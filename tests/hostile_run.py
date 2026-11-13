@@ -48,6 +48,8 @@ def ready(p):
 def new_ctx(b, flow, tz=None, **kw):
     ctx = b.new_context(accept_downloads=True, timezone_id=tz, **kw) if tz else b.new_context(accept_downloads=True, **kw)
     ctx.on("request", lambda r: REQS.append((flow, r.url)))
+    # the visit counter is answered with an empty file, so a test run sends nothing to Cloudflare
+    ctx.route("https://static.cloudflareinsights.com/**", lambda rt: rt.fulfill(status=200, content_type="text/javascript", body=""))
     return ctx
 
 def txt(p, sel):
@@ -463,8 +465,8 @@ def main():
     for flow, u in REQS:
         o = re.match(r"^[a-z]+://[^/]+", u); o = o.group(0) if o else u[:30]
         origins.setdefault(o, set()).add(flow)
-    foreign = {o: sorted(f) for o, f in origins.items() if not re.match(r"^(http://(127\.0\.0\.1|localhost|downtimecredit\.com|www\.downtimecredit\.com|localhost\.|localhost\.localdomain):%d|blob:|data:)" % PORT, o)}
-    row("privacy", f"network: {len(REQS)} requests across all flows", f"origins: {sorted(origins)}", "same origin only (blob: downloads are local)", not foreign)
+    foreign = {o: sorted(f) for o, f in origins.items() if not re.match(r"^(http://(127\.0\.0\.1|localhost|downtimecredit\.com|www\.downtimecredit\.com|localhost\.|localhost\.localdomain):%d|blob:|data:|https://static\.cloudflareinsights\.com$)" % PORT, o)}
+    row("privacy", f"network: {len(REQS)} requests across all flows", f"origins: {sorted(origins)}", "same origin, plus the visit counter script from static.cloudflareinsights.com (blob: downloads are local)", not foreign)
     paths = sorted({re.sub(r"^[a-z]+://[^/]+", "", u).split("?")[0] for _, u in REQS if u.startswith("http")})
     row("privacy", "request paths", ", ".join(paths), "only the site's own files; no typed text in any URL", all(("img" not in x and "onerror" not in x) for x in paths))
     json.dump(ROWS, open(os.path.join(OUT, "rows.json"), "w"), indent=1, ensure_ascii=False)
