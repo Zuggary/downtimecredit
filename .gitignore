@@ -1,0 +1,9 @@
+# kept out of the public repo
+design/
+refs/
+shots/
+NOTES.md
+og-source.html
+tests/output/
+*.log
+.DS_Store

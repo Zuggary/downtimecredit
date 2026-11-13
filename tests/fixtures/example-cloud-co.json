@@ -1,0 +1,24 @@
+{
+  "id": "example-cloud-co",
+  "vendor": "Example Cloud Co.",
+  "service": "Example Hosting",
+  "document": { "title": "Example Cloud Co. Service Terms", "url": "https://example.com/terms/sla", "date": "2026-01-01", "lastChecked": "2026-11-12" },
+  "formula": "total-minutes",
+  "formulaClause": { "quote": "Uptime is the minutes in the month less minutes down, over the minutes in the month.", "source": "https://example.com/terms/sla" },
+  "downtimeClause": { "quote": "Down means no request succeeds for a full minute.", "source": "https://example.com/terms/sla" },
+  "period": { "type": "days", "days": 30 },
+  "comparison": "at-or-below",
+  "creditUnit": "service-days",
+  "creditClause": { "quote": "Credits are added days of service.", "source": "https://example.com/terms/sla" },
+  "tiers": [
+    { "below": "99.5", "credit": 3, "quote": "99.5% or less: 3 days", "source": "https://example.com/terms/sla" },
+    { "below": "98", "credit": 10, "quote": "98% or less: 10 days", "source": "https://example.com/terms/sla" }
+  ],
+  "deadline": { "rule": "days-after", "days": 30, "quote": "Claim within 30 days of the end of the incident.", "source": "https://example.com/terms/sla" },
+  "cannotClaim": [ { "who": "Free plans.", "quote": "Free plans get no credits.", "source": "https://example.com/terms/sla" } ],
+  "claimItemsClause": { "quote": "Tell us what broke and when.", "source": "https://example.com/terms/sla" },
+  "claimItems": [
+    { "key": "time", "label": "When it broke", "fill": "time" },
+    { "key": "resources", "label": "Which sites", "fill": "resources" }
+  ]
+}

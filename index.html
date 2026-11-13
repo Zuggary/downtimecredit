@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Microsoft 365 outage SLA credit: work out what you may be owed | Downtime Credit</title>
+<meta name="description" content="Was your business hit by the Microsoft 365 email outage of 12 November 2026? Work out the service credit you may be owed under the SLA, get the request written, and send it so Microsoft receives it by 31 December 2026. Free, independent, nothing leaves your browser.">
+<link rel="canonical" href="https://www.downtimecredit.com/">
+<meta name="msvalidate.01" content="09A196455D98CAA5B1853FB6264F41E7">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.downtimecredit.com/">
+<meta property="og:site_name" content="Downtime Credit">
+<meta property="og:title" content="Microsoft 365 outage: work out the service credit you may be owed">
+<meta property="og:description" content="Work out the SLA service credit, get the request written, and send it so Microsoft receives it by 31 December 2026. Free and independent.">
+<meta property="og:image" content="https://www.downtimecredit.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A credit statement: users, hours without email, the fee, and the credit you may be owed, with the claim deadline.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="fonts/besley-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Besley DC"; src: url("fonts/besley-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "Hanken DC"; src: url("fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+  :root {
+    --page: #EEF2F0; --sheet: #FFFFFF; --ink: #0E3A2F; --ink-2: #33524A; --mute: #52685F; --rule: #C5D1CC; --tint: #E1EAE6;
+    --date: #1D4E89; --date-tint: #E6EEF7; --blank: #FCEBC4; --bad: #8F1D1D; --bad-tint: #F6E9E7; --write: #F7F9F8;
+    --head: "Besley DC", Georgia, "Times New Roman", serif; --text: "Hanken DC", Arial, Helvetica, sans-serif;
+    --gut: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--ink); font: 400 16.5px/1.5 var(--text); }
+  a { color: var(--ink); text-underline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--date); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .in { max-width: 1240px; margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut); }
+  small, .small { font-size: 13px; color: var(--mute); font-weight: 400; }
+
+  /* header */
+  .top .in { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; padding-bottom: 8px; }
+  .brand { font: 700 19px/1 var(--head); color: var(--ink); text-decoration: none; }
+
+  .top nav a { font-size: 14.5px; font-weight: 600; margin-left: 12px; white-space: nowrap; }
+  .trustbar { background: var(--ink); color: #DCE7E2; }
+  .trustbar p { margin: 0 auto; max-width: 1240px; padding: 6px var(--gut); font-size: 13.5px; line-height: 1.35; }
+
+  /* hero */
+  .hero { display: grid; gap: 14px; padding-top: 12px; padding-bottom: 28px; }
+  h1 { font: 700 clamp(24px, 6.6vw, 52px)/1.12 var(--head); margin: 0; text-wrap: balance; }
+  .lede { margin: 4px 0 0; font-size: 15px; line-height: 1.4; max-width: 34em; }
+  .indep { margin: 6px 0 0; font-size: 14px; line-height: 1.35; font-weight: 600; }
+  .indep span { font-weight: 400; color: var(--ink-2); }
+  .pick { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 12px 0 0; }
+  .pick button { font: 600 14px/1.25 var(--text); padding: 6px 10px; text-align: left; color: var(--ink); background: var(--sheet); border: 0; cursor: pointer; display: flex; align-items: center; min-height: 44px; }
+  .pick button + button { border-left: 2px solid var(--ink); }
+  .pick [aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .cue { margin: 6px 0 0; font-size: 13.5px; line-height: 1.35; }
+  .cue a { font-weight: 600; }
+  .outline { display: none; }
+  .need { margin: 6px 0 0; font-size: 14px; color: var(--ink-2); line-height: 1.4; }
+
+  /* the statement (also the own-contract statement) */
+  .sheet { background: var(--sheet); border: 1px solid var(--rule); border-top: 6px solid var(--ink); padding: 10px 12px 14px; box-shadow: 0 18px 40px -26px #0e3a2f66; }
+  .sheet.is-example { border-top-color: var(--date); }
+  .sh { display: flex; justify-content: space-between; align-items: center; gap: 8px 12px; }
+  .sh h2 { font: 700 18px/1.2 var(--head); margin: 0; }
+  .exbtn { font: 600 13.5px/1 var(--text); color: var(--ink); background: var(--tint); border: 1.5px solid var(--ink-2); border-radius: 99px; padding: 6px 11px; cursor: pointer; min-height: 32px; white-space: nowrap; }
+  .exbtn[aria-pressed="true"] { background: #fff; border-color: var(--date); color: var(--date); }
+  .sub { margin: 2px 0 6px; font-size: 13.5px; color: var(--mute); }
+  .exflag { display: none; margin: 0 0 6px; font-size: 13.5px; font-weight: 600; color: var(--date); background: var(--date-tint); padding: 3px 8px; }
+  .is-example .exflag { display: block; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; border-top: 2px solid var(--ink); padding-top: 8px; }
+  .f { display: grid; gap: 3px; align-content: end; }
+  .f > span, .f > label, .tl > span { font-weight: 600; font-size: 14px; line-height: 1.25; }
+  .f input, .f select, .f textarea, .daysin { font: 600 16px/1.2 var(--text); color: var(--ink); width: 100%; min-width: 0; padding: 7px 9px; border: 1.5px solid var(--ink-2); border-radius: 6px; background: #fff; font-variant-numeric: tabular-nums; }
+  .f textarea { font-weight: 400; min-height: 4.4em; resize: vertical; }
+  ::placeholder { color: #52685F; font-weight: 400; opacity: 1; font-style: normal; }
+  .is-example .fields input { background: var(--date-tint); }
+  .hm { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .hm .u { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px; font-size: 13.5px; color: var(--ink-2); }
+  .span2 { grid-column: 1 / -1; }
+  .tl { display: flex; justify-content: space-between; align-items: baseline; gap: 2px 12px; flex-wrap: wrap; }
+  .group { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end; padding-top: 8px; border-top: 1px dotted var(--rule); }
+  .linkbtn { font: 600 14px/1.3 var(--text); color: var(--ink); background: none; border: 0; padding: 2px 0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; text-align: left; min-height: 28px; }
+  .xbtn { font: 600 13.5px/1 var(--text); background: #fff; border: 1.5px solid var(--rule); border-radius: 6px; padding: 9px 8px; color: var(--ink); cursor: pointer; }
+  .result { padding: 8px 0 0; }
+  .r-line { margin: 0; font: 700 19px/1.25 var(--head); }
+  .r-line .amt { font-size: 1.3em; display: inline-block; }
+  .r-empty { color: var(--mute); font: 400 15px/1.4 var(--text); }
+  .r-err { color: var(--bad); font-size: 17px; }
+  .r-note { margin: 2px 0 0; font-size: 13.5px; }
+  .r-sum { margin: 2px 0 0; font-size: 13.5px; color: var(--ink-2); }
+  .zone { margin: 6px 0 0; font-size: 14px; line-height: 1.4; color: var(--ink); border-left: 3px solid var(--ink-2); padding: 2px 0 2px 10px; }
+  .primary { font: 700 17px/1.2 var(--text); color: #fff; background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 11px 16px; margin-top: 10px; width: 100%; cursor: pointer; min-height: 48px; }
+  .primary:hover { background: #0A2B22; }
+  .primary.quiet { background: #fff; color: var(--ink); }
+  .second { font: 600 15px/1.2 var(--text); color: var(--ink); background: #fff; border: 2px solid var(--ink); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; }
+  .deadline { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; margin: 8px 0 0; padding: 7px 10px; background: var(--date-tint); border-left: 4px solid var(--date); color: var(--date); }
+  .cal { width: 52px; border: 2px solid var(--date); border-radius: 7px; overflow: hidden; text-align: center; background: #fff; }
+  .cal span { display: block; background: var(--date); color: #fff; font-weight: 700; font-size: 11.5px; line-height: 1.4; padding: 1px 0; }
+  .cal b { display: block; font: 700 24px/1.15 var(--head); padding: 2px 0 3px; }
+  .deadline p { margin: 0; font-size: 13.5px; line-height: 1.35; }
+  .deadline strong { font-size: 15px; display: block; }
+  .deadline .lbl { display: block; font-size: 12.5px; font-weight: 600; }
+  .deadline.passed { background: var(--bad-tint); border-color: var(--bad); color: var(--bad); }
+  .deadline.passed .cal { border-color: var(--bad); } .deadline.passed .cal span { background: var(--bad); }
+  details.more { margin: 10px 0 0; font-size: 14px; }
+  details.more > summary { cursor: pointer; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; gap: 10px; list-style: none; text-decoration: underline; text-underline-offset: 3px; padding-right: 8px; }
+  details.more > summary::-webkit-details-marker { display: none; }
+  details.more > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); margin-left: 2px; flex: none; }
+  details.more[open] > summary::before { transform: rotate(45deg); margin-top: -4px; }
+  .dl-line { margin: 10px 0 0; padding: 8px 0 0; border-top: 1px dotted var(--rule); color: var(--date); }
+  .dl-line p { margin: 0; font-size: 14.5px; line-height: 1.4; }
+  .dl-line .small { color: var(--ink-2); margin-top: 2px; }
+  .dl-line.passed { color: var(--bad); }
+  .dangerlink { font: 600 15px/1.2 var(--text); color: var(--bad); background: none; border: 0; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px; }
+  dl.who { display: grid; grid-template-columns: 1fr; gap: 0; margin: 0 0 6px; padding: 0; border-top: 1px solid var(--rule); }
+  dl.who dt { font-weight: 700; padding: 10px 0 0; }
+  dl.who dd { margin: 0; padding: 2px 0 10px; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+  .late { margin: 10px 0 0; font-size: 14.5px; color: var(--bad); font-weight: 600; }
+  .hint { font-size: 12.5px; color: var(--ink-2); line-height: 1.3; order: 3; }
+  .f .hint { margin-top: 1px; }
+  .f:has(> .hint) { align-content: start; }
+  .ask { white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--date); background: var(--date-tint); padding: 1px 6px; border-radius: 99px; }
+  .echo { min-height: 1.2em; color: var(--ink-2); }
+  .r-line .nw { white-space: nowrap; }
+  .r-line .rest { display: block; font: 600 16px/1.35 var(--text); margin-top: 10px; }
+  .step.after-tint h2.sec { border-top: 0; margin-bottom: 18px; }
+  #rules h3#who { margin-top: 14px; }
+  .work { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 6px 0 0; padding: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .work dt small { display: block; }
+  .work dd { margin: 0; text-align: right; font-weight: 600; white-space: nowrap; }
+  .fine { margin: 8px 0 0; font-size: 13px; color: var(--mute); }
+  blockquote { margin: 8px 0; padding: 2px 0 2px 12px; border-left: 3px solid var(--rule); color: var(--ink-2); }
+  blockquote p { margin: 0; }
+  blockquote cite { display: block; font-style: normal; font-size: 13px; color: var(--mute); margin-top: 2px; }
+  fieldset.opt { border: 0; padding: 0; margin: 0; display: grid; gap: 6px; min-width: 0; }
+  fieldset.opt legend { font-weight: 600; font-size: 14px; padding: 0; margin-bottom: 4px; }
+  .opt label { display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start; font-size: 14.5px; line-height: 1.35; }
+  .opt input[type=radio] { margin: 2px 0 0; accent-color: var(--ink); width: 18px; height: 18px; }
+  .tier { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; margin-bottom: 6px; }
+  .own-note { font-size: 13.5px; margin: 0 0 6px; color: var(--ink-2); }
+  .chk { display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start; font-size: 14px; line-height: 1.35; }
+  .chk input { margin: 2px 0 0; width: 18px; height: 18px; accent-color: var(--ink); }
+  label.second:focus-within { outline: 3px solid var(--date); outline-offset: 2px; }
+  input:focus, textarea:focus, select:focus, input[type=date]:focus-within, .f:focus-within > input[type=date] { outline: 3px solid var(--date) !important; outline-offset: 2px; }
+  #io-choice { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+
+  /* sections */
+  .step > .in { padding-top: 0; padding-bottom: 32px; }
+  .step h2.sec { font: 700 clamp(25px, 6vw, 36px)/1.15 var(--head); margin: 0 0 10px; padding-top: 20px; border-top: 1px solid var(--rule); }
+  .step .lead { margin: 0 0 16px; max-width: 40em; font-size: 16.5px; }
+  .step h3 { font: 700 19px/1.25 var(--head); margin: 0 0 6px; }
+  .step p { max-width: 42em; }
+  .tinted { background: var(--write); }
+  .tinted.blue { background: var(--date-tint); }
+  .tinted h2.sec { border-top-color: transparent; padding-top: 26px; }
+  .wgrid { display: grid; gap: 18px; }
+  .wfields { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .letter { background: #fff; border: 1px solid var(--rule); border-left: 4px solid var(--ink); padding: 14px; }
+  pre.claim { margin: 0; white-space: pre-wrap; overflow-wrap: break-word; font: 400 15.5px/1.55 var(--text); color: var(--ink); }
+  pre.claim mark { background: var(--blank); color: var(--ink); padding: 0 2px; border-radius: 2px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+  .sendbox { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
+  .sendbox .cal { width: 84px; } .sendbox .cal span { font-size: 14px; } .sendbox .cal b { font-size: 40px; }
+  .bigdate { font: 700 clamp(24px, 6vw, 38px)/1.15 var(--head); color: var(--date); margin: 0; }
+  .sendbox p { margin: 4px 0 0; }
+  .who { list-style: none; padding: 0; margin: 0 0 6px; display: grid; gap: 6px; }
+  .who li { padding-left: 12px; border-left: 3px solid var(--ink); }
+  .uv { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .rules { display: grid; gap: 22px; }
+  .inc { list-style: none; padding: 0; margin: 12px 0 0; background: #fff; border: 1px solid var(--rule); }
+  .inc > li { padding: 12px 14px; border-bottom: 1px solid var(--rule); display: grid; gap: 4px; }
+  .inc > li:last-child { border-bottom: 0; }
+  .inc .t { font-weight: 700; font-size: 17px; }
+  .inc .m { font-size: 14.5px; color: var(--ink-2); }
+  .inc .d { font-size: 14.5px; color: var(--date); font-weight: 600; }
+  .inc .d.passed { color: var(--bad); }
+  .savebar { display: grid; grid-template-columns: 1fr; gap: 10px; align-items: end; max-width: 640px; }
+  .note { font-size: 14.5px; padding: 8px 10px; background: #fff; border-left: 4px solid var(--ink-2); max-width: 42em; }
+  footer { padding-top: 0; padding-bottom: 40px; font-size: 14.5px; }
+  footer .in > div { border-top: 1px solid var(--rule); padding-top: 20px; display: grid; gap: 4px 40px; }
+  footer h2 { font: 700 17px/1.2 var(--head); margin: 8px 0 4px; }
+  footer p, footer ul { margin: 0 0 8px; max-width: 46em; }
+  footer ul { padding-left: 18px; }
+  .err-load { background: var(--bad-tint); color: var(--bad); padding: 10px; }
+
+  .short { display: none; }
+  .indep .short { font-weight: 600; }
+  .brand { white-space: nowrap; }
+  @media (max-width: 959px) {
+    .lede { margin-top: 16px; }
+    .top nav { white-space: nowrap; }
+    .top nav a { font-size: 12.5px; margin-left: 8px; }
+    .top .in { gap: 8px; }
+    .brand { font-size: 18px; }
+    .long { display: none; } .short { display: inline; }
+    #statement .sub { display: none; }
+    .lede { font-size: 14px; }
+    .indep { font-size: 13.5px; margin-top: 4px; }
+    .hero { gap: 12px; padding-top: 10px; }
+    h1 { font-size: 23.5px; }
+    .f input { padding: 6px 9px; }
+    .result { padding-top: 6px; }
+  }
+  @media (max-width: 479px) {
+    .tier { grid-template-columns: 1fr 1fr; } .tier .xbtn { grid-column: 1 / -1; justify-self: start; }
+    #own-form .fields { grid-template-columns: 1fr; }
+    .group { grid-template-columns: 1fr 1fr; } .group .f:first-child { grid-column: 1 / -1; }
+  }
+  @media (min-width: 640px) {
+    .wfields { grid-template-columns: 1fr 1fr; gap: 24px 20px; }
+    .savebar { grid-template-columns: 1fr auto; }
+  }
+  @media (min-width: 960px) {
+    :root { --gut: 40px; }
+    body { font-size: 17.5px; }
+    .top .in { padding-top: 16px; padding-bottom: 12px; }
+    .brand { font-size: 24px; }
+    .trustbar p { font-size: 14.5px; padding-top: 8px; padding-bottom: 8px; }
+    .hero { grid-template-columns: 1fr 520px; column-gap: 56px; padding-top: 32px; padding-bottom: 44px; align-items: start; }
+    h1 { font-size: clamp(40px, 3.6vw, 52px); }
+    .lede { font-size: 19px; margin-top: 22px; }
+    .indep { font-size: 15.5px; margin-top: 12px; }
+    .pick { margin-top: 22px; max-width: 560px; }
+    .pick button { font-size: 16px; padding: 10px 16px; min-height: 52px; }
+    .cue { font-size: 15.5px; margin-top: 10px; }
+    .outline { display: grid; gap: 0; list-style: none; padding: 0; margin: 28px 0 0; max-width: 560px; border-top: 1px solid var(--rule); }
+    .outline li { border-bottom: 1px solid var(--rule); padding: 12px 0; display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: baseline; }
+    .outline a { font: 700 19px/1.2 var(--head); }
+    .outline span { font-size: 15.5px; color: var(--ink-2); }
+    .sheet { padding: 18px 24px 20px; }
+    .sh h2 { font-size: 22px; }
+    .fields { gap: 10px 14px; padding-top: 10px; }
+    .r-line { font-size: 24px; } .r-line .amt { font-size: 1.45em; }
+    .r-empty { font-size: 16px; }
+    dl.who { grid-template-columns: 2fr 3fr; column-gap: 0; }
+    dl.who dt { padding: 12px 32px 12px 0; border-bottom: 1px solid var(--rule); }
+    dl.who dd { padding: 12px 0; }
+    .rules { grid-template-columns: 1fr 1fr; column-gap: 56px; margin-top: 26px; }
+    .outline { display: grid; list-style: none; padding: 0; margin: 30px 0 0; max-width: 560px; border-top: 1px solid var(--rule); }
+    .outline li { border-bottom: 1px solid var(--rule); padding: 14px 0; display: grid; grid-template-columns: 1fr; gap: 2px; }
+    .outline a { font: 700 19px/1.25 var(--head); }
+    .outline span { font-size: 15.5px; color: var(--ink-2); }
+    .need { font-size: 16px; margin-top: 10px; }
+    h1 { font-size: clamp(44px, 4.2vw, 60px); }
+    .deadline { padding: 10px 14px; }
+    .cal { width: 62px; } .cal b { font-size: 30px; } .cal span { font-size: 12.5px; }
+    .deadline p { font-size: 14.5px; } .deadline strong { font-size: 16.5px; }
+    .primary { width: auto; padding: 12px 22px; }
+    .step > .in { padding-bottom: 46px; }
+    .step h2.sec { padding-top: 30px; }
+    .tinted h2.sec { padding-top: 40px; }
+    .wgrid { grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .wgrid .sticky { position: sticky; top: 16px; }
+
+    footer .in > div { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="./">Downtime Credit</a>
+    <nav aria-label="Sections"><a href="#incidents">Your incidents</a> <a href="#who-runs">Who runs this</a></nav></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to Microsoft or any vendor. Nothing you type leaves your browser. A credit is not cash.</p></div>
+</header>
+
+<main>
+<div class="in hero">
+  <div class="intro">
+    <h1>An outage can mean a credit on your next bill.</h1>
+    <p class="lede">Work out what your company may be owed, get the request written and keep track of the deadline; you send it.</p>
+    <p class="need" id="need">You need four numbers: users on your plan, how many lost email, for how long, and what you paid for November.</p>
+    <div class="pick" role="group" aria-label="Which outage">
+      <button type="button" id="mode-ms" aria-pressed="true">Microsoft 365 outage, 12&nbsp;Nov</button>
+      <button type="button" id="mode-own" aria-pressed="false">Another vendor or my own contract</button>
+    </div>
+    <p class="cue" id="cue"><b>Does this apply to us?</b> Probably, if your company buys a paid Microsoft 365 business plan from Microsoft itself, not through a reseller. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
+    <ul class="outline" aria-label="The three steps">
+      <li><a href="#statement">Work it out</a><span id="ol-work">Four numbers give the credit the agreement allows.</span></li>
+      <li><a href="#write">Write it</a><span>The request, with the details the agreement asks for.</span></li>
+      <li><a href="#send" id="ol-send">Send it before 31 December 2026</a><span id="ol-send-d">The day Microsoft must receive it, and a reminder.</span></li>
+    </ul>
+  </div>
+
+  <div class="panels">
+  <form class="sheet" id="statement" novalidate aria-labelledby="st-title">
+    <div class="sh"><h2 id="st-title">Credit statement</h2><button type="button" class="exbtn" id="ex-toggle" aria-pressed="false">Example</button></div>
+    <p class="sub">Microsoft 365 email outage reported on 12 November 2026</p>
+    <p class="exflag">Example numbers: Harbor &amp; Pine Dental (made up).</p>
+    <div class="fields">
+      <div class="f"><label for="all">Users on your plan</label><input id="all" inputmode="numeric" autocomplete="off" placeholder="e.g. 50" aria-describedby="all-h"><small class="hint" id="all-h">everyone with an email account on the plan</small></div>
+      <div class="f"><label for="g0u">Of them, without email</label><input id="g0u" inputmode="numeric" autocomplete="off" placeholder="e.g. 35" aria-describedby="g0u-h"><small class="hint" id="g0u-h">the ones who could not send or receive</small></div>
+      <div class="f span2"><div class="tl"><span id="g0t">How long they had no email</span></div>
+        <div class="hm" role="group" aria-labelledby="g0t">
+          <span class="u"><input id="g0h" inputmode="numeric" autocomplete="off" placeholder="e.g. 24" aria-label="Hours without email"><span aria-hidden="true">hours</span></span>
+          <span class="u"><input id="g0m" inputmode="numeric" autocomplete="off" placeholder="e.g. 30" aria-label="Minutes without email"><span aria-hidden="true">minutes</span></span>
+        </div></div>
+      <div id="groups" class="span2"></div>
+      <div class="span2"><button type="button" class="linkbtn" id="add-group">+ Some people were down for a different time</button></div>
+      <div class="f span2"><label for="fee">What you paid for <span class="long">this service for </span>November <small>(from your invoice)</small></label><input id="fee" inputmode="decimal" autocomplete="off" placeholder="$ e.g. 625.00"></div>
+    </div>
+    <div class="result" id="result" aria-live="polite">
+      <p class="r-line r-empty" id="r-line">Your credit appears here.</p>
+      <p class="r-sum" id="r-sum" hidden></p>
+      <p class="zone" id="r-zone" hidden></p>
+      <p class="r-note">A credit lowers a later bill. It is not cash.</p>
+    </div>
+    <p class="late" id="late-note" hidden></p>
+    <button type="button" class="primary" id="write-btn">Write my request</button>
+    <div class="deadline" id="dl-box">
+      <div class="cal" aria-hidden="true"><span id="dl-cal-m">&nbsp;</span><b id="dl-cal-d">&nbsp;</b></div>
+      <div><p><span id="dl-date">&nbsp;</span></p><p class="small" id="dl-left"></p></div>
+    </div>
+    <p class="fine" id="st-source"></p>
+    <details class="more" id="sums"><summary>How this was worked out</summary>
+      <dl class="work">
+        <dt>All email-minutes in November <small id="w-um-f">30 days &times; 1,440 minutes &times; your users (the agreement calls these User Minutes)</small></dt><dd id="w-um"></dd>
+        <dt>Email-minutes lost <small id="w-dum-f">each user without email &times; the minutes they were down (Downtime User Minutes)</small></dt><dd id="w-dum"></dd>
+        <dt>Share of the month email worked <small>to 4 decimals, never rounded up (the uptime)</small></dt><dd id="w-up"></dd>
+        <dt>Credit level <small id="w-tier-f">from the agreement's credit table</small></dt><dd id="w-tier"></dd>
+      </dl>
+      <div id="zone-detail"></div>
+      <details class="more"><summary>See the agreement's text</summary><div id="sla-quotes"></div></details>
+    </details>
+    <p class="fine" id="st-fine"></p>
+  </form>
+
+  <form class="sheet" id="own-form" novalidate aria-labelledby="own-title" hidden>
+    <div class="sh"><h2 id="own-title">Credit statement</h2></div>
+    <p class="sub">Your own contract, or another vendor</p>
+    <p class="own-note">Copy these from your agreement's service level section. We do not know your agreement; these are the terms you typed.</p>
+    <div class="fields">
+      <div class="f"><label for="o-vendor">Provider</label><input id="o-vendor" autocomplete="off" placeholder="e.g. Harbor Fiber"></div>
+      <div class="f"><label for="o-service">Service</label><input id="o-service" autocomplete="off" placeholder="e.g. Internet"></div>
+      <div class="f"><label for="o-start">Outage started</label><input id="o-start" type="date" aria-describedby="o-start-w"><small id="o-start-w" class="echo"></small></div>
+      <div class="f"><label for="o-end">Outage ended</label><input id="o-end" type="date" aria-describedby="o-end-w"><small id="o-end-w" class="echo"></small></div>
+      <div class="f span2"><span id="o-time">Time down</span><div class="hm" role="group" aria-labelledby="o-time"><span class="u"><input id="o-h" inputmode="numeric" placeholder="e.g. 9" aria-label="Hours down"><span aria-hidden="true">hours</span></span><span class="u"><input id="o-m" inputmode="numeric" placeholder="e.g. 30" aria-label="Minutes down"><span aria-hidden="true">minutes</span></span></div></div>
+      <label class="chk span2"><input type="checkbox" id="o-clock"><span>My agreement's month includes a clock change</span></label>
+      <div class="f span2"><label for="o-fee">What you paid for the period <small>(for a percent credit)</small></label><input id="o-fee" inputmode="decimal" placeholder="$ e.g. 199.00"></div>
+      <fieldset class="opt span2"><legend>The agreement counts uptime over</legend>
+        <label><input type="radio" name="o-period" value="month" checked><span>The calendar month of the outage</span></label>
+        <label><input type="radio" name="o-period" value="days"><span>A fixed number of days (type it below)</span></label></fieldset>
+      <div class="f span2"><label for="o-pdays">Days in the period, if fixed</label><input id="o-pdays" inputmode="numeric" placeholder="e.g. 30"></div>
+      <fieldset class="opt span2"><legend>The credit is paid as</legend>
+        <label><input type="radio" name="o-unit" value="percent-of-fee" checked><span>A percent of the fee</span></label>
+        <label><input type="radio" name="o-unit" value="service-days"><span>Days of service</span></label></fieldset>
+      <fieldset class="opt span2"><legend>The agreement words its limits as</legend>
+        <label><input type="radio" name="o-cmp" value="strict-below" checked><span>"Below" or "less than": exactly 95.0000% is not below 95%.</span></label>
+        <label><input type="radio" name="o-cmp" value="at-or-below"><span>"At or below" or "or less": exactly 95.0000% counts as 95% or less.</span></label></fieldset>
+      <div class="span2"><span class="f"><span>Credit table, 1 to 5 rows</span></span><div id="o-tiers"></div><button type="button" class="linkbtn" id="o-add-tier">+ Add a row</button></div>
+      <fieldset class="opt span2"><legend>The claim must arrive</legend>
+        <label><input type="radio" name="o-win" value="end-of-next-month" checked><span>By the end of the month after the outage</span></label>
+        <label><input type="radio" name="o-win" value="days-after"><span>Within a number of days after it ends (type it below)</span></label></fieldset>
+      <div class="f span2"><label for="o-wdays">Days to claim, if counted in days</label><input id="o-wdays" inputmode="numeric" placeholder="e.g. 30"></div>
+    </div>
+    <div id="own-res" aria-live="polite"></div>
+  </form>
+  </div>
+</div>
+
+<section class="step tinted" id="write" aria-labelledby="h-write"><div class="in">
+  <h2 class="sec" id="h-write">Write it</h2>
+  <p class="lead">Fill in what you know. Anything left out stays as a highlighted blank in the request, for you to complete before you send it.</p>
+  <div class="wgrid">
+    <div class="wfields" id="claim-fields">
+      <p class="span2 small" style="margin:0">Fields marked <b>asked for</b> are items the agreement lists; leave any blank and fill it in later in the letter.</p>
+      <div class="f span2"><label for="c-id">Incident ID <small>(helps, not required)</small></label><small id="c-id-help"></small><input id="c-id" autocomplete="off" placeholder="e.g. EX0000000"></div>
+      <div class="f"><label for="c-start">Started (date, time, time zone) <small class="ask">asked for</small></label><input id="c-start" autocomplete="off" placeholder="e.g. 12 Nov 2026, 8:15 am Pacific"></div>
+      <div class="f"><label for="c-end">Ended, or "still down" <small class="ask">asked for</small></label><input id="c-end" autocomplete="off" placeholder="e.g. 13 Nov 2026, 9:00 am Pacific"></div>
+      <div class="f span2"><label for="c-desc">What happened, in your words <small class="ask">asked for</small></label><textarea id="c-desc" placeholder="e.g. Nobody in the office could send or receive email."></textarea></div>
+      <div class="f span2"><label for="c-res"><span id="c-res-l">Your email domain and the affected mailboxes</span> <small class="ask">asked for</small></label><input id="c-res" autocomplete="off" placeholder="e.g. harborpine.example, all mailboxes"></div>
+      <div class="f"><label for="c-loc">Where your users are <small class="ask">asked for</small></label><input id="c-loc" autocomplete="off" placeholder="e.g. Portland, USA"></div>
+      <div class="f"><label for="c-err">Error messages people saw <small class="ask">asked for</small></label><input id="c-err" autocomplete="off" placeholder="word for word"></div>
+      <p class="span2" id="reseller-link"><b>Bought through a reseller?</b> Your provider files the request. <a href="#who">See who cannot claim</a>.</p>
+    </div>
+    <div class="sticky">
+      <div class="letter" id="letter"><pre class="claim" id="claim" tabindex="0" aria-label="Your request text"></pre></div>
+      <p class="note" id="no-letter" hidden>No credit level applies at this uptime, so there is no request to send.</p>
+      <div class="row" id="copy-row"><button type="button" class="primary" id="copy-claim">Copy request</button><span class="small" id="copy-state" aria-live="polite"></span></div>
+      <p id="sel-note">Paste it into a support request to Microsoft. If someone else manages your Microsoft account, send it to them.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="step tinted blue" id="send" aria-labelledby="h-send"><div class="in">
+  <h2 class="sec" id="h-send">Send it before</h2>
+  <div class="sendbox">
+    <div class="cal" aria-hidden="true"><span id="s-cal-m">&nbsp;</span><b id="s-cal-d">&nbsp;</b></div>
+    <div><p class="bigdate" id="send-date"></p><p id="send-left"></p></div>
+  </div>
+  <div class="row"><button type="button" class="second" id="ics-btn">Download calendar file</button></div>
+  <p class="fine">One all-day event on the deadline, with reminders 14 days and 3 days before.</p>
+  <p id="sooner"><b>Sooner is safer.</b> <span id="sooner-why">The agreement names no time zone, and the claim must arrive with all the information it asks for.</span></p>
+  <details class="more" id="dl-words"><summary>See the agreement's text</summary><div id="deadline-quote"></div></details>
+</div></section>
+
+<section class="step after-tint" id="rules" aria-labelledby="h-rules"><div class="in">
+  <h2 class="sec" id="h-rules">Who can claim, and what counts</h2>
+  <div id="rules-ms">
+    <p class="lead">Check these before you send: who the agreement leaves out, what it counts as down, and which fee to type.</p>
+    <h3 id="who">Who cannot claim here</h3>
+    <dl class="who" id="who-list"></dl>
+    <div id="reseller"></div>
+  <div class="rules">
+    <div>
+      <h3>What counts as down</h3>
+      <p>Microsoft counts a user as down only when they could not send or receive email in Outlook on the web (the browser version of Outlook). Count only those people and that time.</p>
+      <h3 style="margin-top:18px">Groups of people</h3>
+      <p>If some people were down longer than others, add a line for each group. Each group holds different people: count nobody twice.</p>
+    </div>
+    <div>
+      <h3>The fee and the month</h3>
+      <p id="suite-note"></p>
+      <p id="tz-note"></p>
+    </div>
+  </div>
+  <details class="more"><summary>See the agreement's text</summary><div id="who-quotes"></div><div id="downtime-def"></div><div id="reseller-quote"></div></details>
+  </div>
+  <p id="rules-own" hidden>These rules are Microsoft's. For your own contract, check who can claim and what counts as down in your agreement.</p>
+</div></section>
+
+<section class="step" id="incidents" aria-labelledby="h-inc"><div class="in">
+  <h2 class="sec" id="h-inc">Your incidents</h2>
+  <p class="lead">Keep each outage here with its credit and deadline, nearest deadline first. The list stays in this browser only.</p>
+  <p class="note" id="store-note" hidden>This browser is not saving: your list lasts for this visit only. Use Export to keep a copy.</p>
+  <div class="savebar">
+    <div class="f"><label for="inc-title">Name for this incident</label><input id="inc-title" autocomplete="off" placeholder="e.g. Email outage, November"></div>
+    <button type="button" class="second" id="save-ms">Save this statement</button>
+  </div>
+  <p class="fine" id="save-msg" aria-live="polite"></p>
+  <ol class="inc" id="inc-list"></ol>
+  <p class="fine" id="inc-empty">No incidents saved yet.</p>
+  <div class="row">
+    <button type="button" class="second" id="export-btn">Export to a file</button>
+    <label class="second" for="import-file">Import a file<input type="file" id="import-file" accept=".json,application/json" class="vh"></label>
+    <button type="button" class="dangerlink" id="clear-btn">Clear the list</button>
+  </div>
+  <p class="fine" id="io-msg" aria-live="polite"></p>
+  <div id="io-choice" hidden><button type="button" class="second" id="imp-add">Add to my list</button><button type="button" class="second" id="imp-replace">Replace my list</button><button type="button" class="second" id="imp-cancel">Cancel</button></div>
+</div></section>
+</main>
+
+<footer><div class="in"><div>
+  <section>
+    <h2 id="who-runs">Who runs this</h2>
+    <p>An independent, free tool. Not a vendor, a reseller or a law firm. No ads at present. It is not run by or linked to Microsoft or any vendor, it is not legal advice, and it files nothing for you. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>The outage tracker: <a href="https://isit364yet.com">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
+  </section>
+  <section>
+    <h2>Sources</h2>
+    <ul id="sources"></ul>
+  </section>
+</div></div></footer>
+<script src="engine.js"></script>
+<script src="store.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

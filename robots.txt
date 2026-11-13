@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /design/
+Disallow: /refs/
+Disallow: /shots/
+Disallow: /tests/
+
+Sitemap: https://www.downtimecredit.com/sitemap.xml

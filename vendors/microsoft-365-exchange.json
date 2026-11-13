@@ -1,0 +1,174 @@
+{
+  "id": "microsoft-365-exchange",
+  "vendor": "Microsoft",
+  "service": "Exchange Online",
+  "featured": {
+    "title": "Microsoft 365 email outage reported on 12 November 2026",
+    "start": "2026-11-12",
+    "note": "Start date as reported by third parties (CLAIMED in the research). The visitor confirms the dates from the Service health page of their admin center."
+  },
+  "document": {
+    "title": "Service Level Agreement for Microsoft Online Services",
+    "url": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services",
+    "file": "OnlineSvcsConsolidatedSLA(WW)(English)(November_2026)(CR).docx",
+    "date": "2026-11-01",
+    "lastChecked": "2026-11-12",
+    "checkedBy": "research/TF2-quote-check.md (independent checker, docx SHA-256 80f71d44...a8c04)",
+    "label": "Microsoft SLA"
+  },
+  "formula": "user-minutes",
+  "formulaClause": {
+    "quote": "where Downtime is measured in user-minutes; that is, for each Applicable Period, Downtime is the sum of the length (in minutes) of each Incident that occurs during that Applicable Period multiplied by the number of users impacted by that Incident.",
+    "quoteNote": "The SLA shows the uptime as a fraction (numerator \"User Minutes -Downtime \", denominator \"User Minutes\", then \" x 100\"). `layout` is the site's own plain statement of it, never shown in quote marks.",
+    "also": [
+      "“User Minutes” means the total number of minutes in an Applicable Period, less all Scheduled Downtime, multiplied by the total number of users."
+    ],
+    "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services",
+    "layout": "(User Minutes - Downtime User Minutes) / User Minutes x 100"
+  },
+  "downtimeClause": {
+    "quote": "Downtime: Any period of time when users are unable to send or receive email with Outlook Web Access. There is no Scheduled Downtime for this service.",
+    "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+  },
+  "period": {
+    "type": "calendar-month",
+    "quote": "For other services, (e.g. M365 E3) “Applicable Period” means the calendar month in which a Service Credit is owed.",
+    "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services",
+    "timeZoneNote": "The SLA names no time zone. November 2026 has 43,260 minutes in US Pacific time (clocks change on 1 November). The engine checks the period 60 minutes shorter and longer."
+  },
+  "comparison": "strict-below",
+  "creditUnit": "percent-of-fee",
+  "creditClause": {
+    "quote": "“Service Credit” is the percentage of the Applicable Service Fees credited to you following Microsoft’s claim approval.",
+    "also": [
+      "“Applicable Service Fees” means the total fees actually paid by you for a Service that are applied to the Applicable Period in which a Service Credit is owed.",
+      "Service Credits apply only to fees paid for the particular Service, Service Resource, or Service tier for which a Service Level has not been met.",
+      "The Service Credits awarded in any billing month for a particular Service or Service Resource will not, under any circumstance, exceed your monthly service fees for that Service or Service Resource, as applicable, in the Applicable Period.",
+      "If we determine that a Service Credit is owed to you, we will apply the Service Credit to your Applicable Service Fees."
+    ],
+    "roundingNote": "The SLA states no rounding. The site rounds half a cent up and shows the credit as \"about\".",
+    "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+  },
+  "tiers": [
+    {
+      "below": "99.9",
+      "credit": 25,
+      "quote": "< 99.9%",
+      "quoteNote": "A cell of the Exchange Online credit table; creditCell is the cell beside it. Shown on the page as a table row, outside quote marks.",
+      "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services",
+      "creditCell": "25%"
+    },
+    {
+      "below": "99",
+      "credit": 50,
+      "quote": "< 99%",
+      "quoteNote": "A cell of the Exchange Online credit table; creditCell is the cell beside it. Shown on the page as a table row, outside quote marks.",
+      "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services",
+      "creditCell": "50%"
+    },
+    {
+      "below": "95",
+      "credit": 100,
+      "quote": "< 95%",
+      "quoteNote": "A cell of the Exchange Online credit table; creditCell is the cell beside it. Shown on the page as a table row, outside quote marks.",
+      "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services",
+      "creditCell": "100%"
+    }
+  ],
+  "deadline": {
+    "rule": "end-of-next-month",
+    "sendByDaysBefore": 1,
+    "quote": "For claims related to all other Services, we must receive the claim by the end of the Applicable Period following the month in which the Incident occurred. For example, if the Incident occurred on February 15th, we must receive the claim and all required information by March 31st.",
+    "advice": "Microsoft must receive the claim by this date. No time zone is stated. Send it by the day before, or sooner.",
+    "crossNote": "An incident that crosses a month end: the SLA text does not say which month it occurred in. The site uses the month it started (the earlier deadline).",
+    "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+  },
+  "resellerDeadline": {
+    "quote": "For claims related to all other services, credit requests must be submitted within one month from the end of the billing month in which the incident occurred.",
+    "advice": "Ask your provider now: the provider must submit the request by the same date.",
+    "documentDate": "2026-06-16",
+    "source": "https://learn.microsoft.com/en-us/partner-center/billing/request-credit"
+  },
+  "cannotClaim": [
+    {
+      "who": "Bought through a reseller such as GoDaddy: your provider files the request. Ask them now.",
+      "quote": "Credit requests are accepted only from CSP direct and indirect providers. Requests aren't accepted from indirect resellers.",
+      "documentDate": "2026-06-16",
+      "source": "https://learn.microsoft.com/en-us/partner-center/billing/request-credit"
+    },
+    {
+      "who": "Open and Open Value licences (bought through Microsoft volume licensing): the credit is days of service, not money off the fee.",
+      "quote": "Services purchased through Open, Open Value, and Open Value Subscription volume licensing agreements, and Services in an Office 365 Small Business Premium suite purchased in the form of a product key are not eligible for Service Credits based on service fees.",
+      "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+    },
+    {
+      "who": "Trials, previews and betas: not covered.",
+      "quote": "preview, pre-release, beta or trial versions ... (as determined by us) or to purchases made using Microsoft subscription credits",
+      "quoteNote": "Exact words as the checker read them in the Limitations list; the ellipsis is the checker's.",
+      "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+    },
+    {
+      "who": "Free plans: not covered.",
+      "quote": "service tiers provided free of charge are not included or eligible for SLA claims or credits.",
+      "quoteNote": "From the SLA Introduction.",
+      "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+    },
+    {
+      "who": "Personal and Family plans.",
+      "unverified": true,
+      "finding": "We found no credit term for Personal and Family plans. These plans are not under this business SLA. Not verified in Microsoft's consumer terms.",
+      "source": "https://www.microsoft.com/en-us/servicesagreement"
+    }
+  ],
+  "claimItemsClause": {
+    "quote": "(i) a detailed description of the Incident; (ii) information regarding the time and duration of downtime; (iii) affected resource names; (iv) the number and location(s) of affected users; and v) a description of errors that occurred during the incident. Failure to provide the required information will result in claims being rejected.",
+    "also": [
+      "you must submit the claim to customer support at Microsoft Corporation including all information necessary for Microsoft to validate the claim"
+    ],
+    "quoteNote": "The list is \"including but not limited to\".",
+    "source": "https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services"
+  },
+  "claimItems": [
+    {
+      "key": "incident",
+      "label": "Description of the Incident",
+      "sla": "(i) detailed description of the Incident",
+      "fill": "incident"
+    },
+    {
+      "key": "time",
+      "label": "Time and duration of the downtime",
+      "sla": "(ii) time and duration of downtime",
+      "fill": "time"
+    },
+    {
+      "key": "resources",
+      "label": "Affected resource names",
+      "sla": "(iii) affected resource names",
+      "fill": "resources"
+    },
+    {
+      "key": "users",
+      "label": "Number and location of affected users",
+      "sla": "(iv) number and location(s) of affected users",
+      "fill": "users"
+    },
+    {
+      "key": "errors",
+      "label": "Description of errors",
+      "sla": "(v) description of errors",
+      "fill": "errors"
+    }
+  ],
+  "incidentIdHelp": {
+    "quote": "You can find the identifier for the outage incident on the Service Health page in the Microsoft 365 admin center.",
+    "source": "https://learn.microsoft.com/en-us/partner-center/billing/request-credit"
+  },
+  "notes": [
+    "The fee for a suite licence is an upper limit: Microsoft publishes no email share of a suite price.",
+    "Microsoft outage communications are not a confirmation of missed Service Levels or Service Credits eligibility (SLA, Limitations).",
+    "Month minutes are the days in the month times 1,440. The SLA names no time zone.",
+    "Each group holds different people. The SLA sums each incident's minutes times its users; the site asks for groups of different people so the total cannot pass all users.",
+    "A customer's governing SLA is the version current at their renewal date."
+  ]
+}
