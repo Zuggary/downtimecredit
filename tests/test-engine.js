@@ -504,11 +504,11 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
       var ii = Object.assign({ reseller: z[1] }, inp), d = z[1] ? dRS : dMS, t = sane(E.summaryText(MS, ii, r, d, { today: z[0], start: "2026-11-12" }), "MS case " + c.id);
       var none = !r.uncertain && r.tier === 0, res = E.partsText(E.resultParts(r, "Microsoft", {}));
       ok(t.indexOf("Result: " + res) >= 0, "MS case " + c.id + ": the page's result sentence", "pack");
-      ok(t.length <= 950, "MS case " + c.id + " " + z.join("/") + ": about 900 characters (" + t.length + ")", "pack");
-      if (!none) { ok(t.indexOf("Date: " + E.countdownText("ms", d, { today: z[0], reseller: z[1], name: "Microsoft" })) >= 0, "MS case " + c.id + ": the page's date line", "pack");
+      ok(t.length <= 1150, "MS case " + c.id + " " + z.join("/") + ": about 900 characters (" + t.length + ")", "pack");
+      if (!none) { ok(t.indexOf("Date: " + E.countdownText("ms", d, { today: z[0], reseller: z[1], name: "Microsoft", product: "Microsoft 365", start: "2026-11-12" })) >= 0, "MS case " + c.id + ": the page's date line", "pack");
         ok(z[1] ? t.indexOf("Your provider, or the partner they buy from, requests it from Microsoft.") >= 0 && t.indexOf("send the request to Microsoft") < 0 : t.indexOf("You send the request to Microsoft support.") >= 0, "MS case " + c.id + ": who asks", "pack"); }
-      else ok(t.indexOf("Date:") < 0 && t.indexOf("Nothing to send") >= 0, "MS case " + c.id + ": no credit, no date line", "pack");
-      ok(t.indexOf("Microsoft decides.") > 0 && t.indexOf("Open downtimecredit.com, enter the same numbers, and copy the request.") > 0, "MS case " + c.id + ": next step and closing line", "pack");
+      else ok(t.indexOf("Date:") < 0 && t.indexOf("Who asks: Nothing to file: by this count the uptime stays at or above the first credit level.") >= 0 && t.indexOf("Next step: Keep this as a record. If your own figures differ, enter them at downtimecredit.com.") > 0, "MS case " + c.id + ": no credit, no date line", "pack");
+      ok(t.indexOf("Microsoft decides.") > 0 && (none || t.indexOf("Open downtimecredit.com, enter the same numbers, and copy the request.") > 0), "MS case " + c.id + ": next step and closing line", "pack");
     });
   });
   var dG = E.deadline(GWV.deadline, { start: "2026-11-03" });
@@ -518,8 +518,8 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
     [false, true].forEach(function (rs) {
       var t = sane(E.summaryText(GWV, { downMinutes: c.inputs.down_minutes, service: "Gmail", reseller: rs }, r, dG, { today: "2026-11-13", start: "2026-11-03" }), "Google case " + c.id);
       ok(t.indexOf("$") < 0 && t.indexOf("Result: " + E.partsText(E.googleResultParts(r))) >= 0 && t.indexOf("Google decides.") > 0, "Google case " + c.id + ": no dollar, the page's result sentence", "pack");
-      ok(t.length <= 950, "Google case " + c.id + ": about 900 characters (" + t.length + ")", "pack");
-      if (r.tier > 0 || r.uncertain) ok(t.indexOf(rs ? "You tell your reseller, who tells Google" : "You create a support case with Google.") >= 0 && t.indexOf("send the request to Microsoft") < 0, "Google case " + c.id + ": who asks", "pack");
+      ok(t.length <= 1150, "Google case " + c.id + ": about 900 characters (" + t.length + ")", "pack");
+      if (r.tier > 0 || r.uncertain) ok(t.indexOf(rs ? "You tell your reseller; the agreement says the reseller must notify Google." : "You create a support case with Google.") >= 0 && t.indexOf("send the request to Microsoft") < 0, "Google case " + c.id + ": who asks", "pack");
     });
   });
   var ownCases = [[{ vendor: "Harbor Fiber", service: "Internet", periodDays: 30, comparison: "strict-below", tiers: [{ below: "99.9", credit: 10 }, { below: "95", credit: 50 }], window: { rule: "days-after", days: 30 } }, 2160, 20000],
@@ -543,6 +543,52 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   ok(!/<script|src="|href="|https?:\/\/[^<\s]*"/.test(rec.replace(/<img[^>]*>/g, "")) || (rec.indexOf("<script") < 0 && !/\ssrc=|\shref=/.test(rec)), "the record has no script, src or href", "pack");
   var gr0 = E.compute(GWV, { periodDays: 30, month: 11, downMinutes: 300 }), grec = E.recordHtml(GWV, { downMinutes: 300, service: "Gmail", reseller: false }, gr0, dG, { today: "2026-11-13", start: "2026-11-03", letter: "x", example: true, fields: {} });
   ok(grec.indexOf("EXAMPLE ONLY: Harbor &amp; Pine Dental is a made-up company.") > 0 && grec.indexOf("$") < 0 && grec.indexOf("https://workspace.google.com/terms/sla/") > 0 && grec.indexOf("Made on 13 November 2026 with downtimecredit.com. Not legal advice.") > 0, "the Google record: example mark, no dollar, the agreement address as plain text", "pack");
+})();
+
+// ---------- polish round: the countdown model, the pack wording, the letter ----------
+(function () {
+  var GWV = loaded.vendors.filter(function (v) { return v.id === "google-workspace"; })[0];
+  var dMS = E.deadline(MS.deadline, { start: "2026-11-12" }), dRS = E.resellerDeadline(MS.resellerDeadline, { start: "2026-11-12" }, dMS.date), dG = E.deadline(GWV.deadline, { start: "2026-11-03" });
+  var own = E.ownVendor({ vendor: "Harbor Fiber", service: "Internet", periodDays: 30, tiers: [{ below: "99.9", credit: 10 }], window: { rule: "days-after", days: 30 } }), dO = E.deadline(own.deadline, { start: "2026-11-20", end: "2026-11-21" });
+  function cm(kind, d, today, rs, nm) { return E.countdownModel(kind, d, { today: today, reseller: rs, name: nm, product: "Microsoft 365", start: "2026-11-12", ownWords: GWV.deadline.ownWords }); }
+  // N counts to the send-by day (the ask-by day for a reseller); states: open, one day before, send-by day, last day, passed
+  [["ms", dMS, false, "Microsoft", ["2026-11-13", "2026-12-29", "2026-12-30", "2026-12-31", "2027-01-01"], ["47 days left to send it.", "1 day left to send it.", "Send it today.", "Today is the last day.", "The window has closed."], "30", "send by"],
+   ["ms", dRS, true, "Microsoft", ["2026-11-13", "2026-12-22", "2026-12-23", "2026-12-30", "2026-12-31"], ["40 days left to ask your provider.", "1 day left to ask your provider.", "Ask your provider today.", "Today is the last day.", "The window has closed."], "23", "ask by"],
+   ["g", dG, false, "Google", ["2026-11-13", "2026-12-01", "2026-12-02", "2026-12-03", "2026-12-04"], ["19 days left to send it.", "1 day left to send it.", "Send it today.", "Today is the last day.", "The window has closed."], "2", "send by"],
+   ["own", dO, false, "Harbor Fiber", ["2026-11-13", "2026-12-20", "2026-12-21", "2026-12-21", "2026-12-22"], ["38 days left to send it.", "1 day left to send it.", "Today is the last day.", "Today is the last day.", "The window has closed."], "21", "last day"]].forEach(function (c) {
+    c[4].forEach(function (today, i) {
+      var m = cm(c[0], c[1], today, c[2], c[3]); eq(m.lead, c[5][i], c[0] + (c[2] ? " reseller" : "") + " " + today + ": the lead", "countdown");
+      if (i < 4) { eq(m.tile.day, c[6], c[0] + " " + today + ": the tile day", "countdown"); eq(m.tile.label, c[7], c[0] + " " + today + ": the tile label", "countdown"); } else ok(m.tile.closed === true && m.tile.day === "closed", c[0] + ": passed tile is closed", "countdown");
+    });
+  });
+  eq(cm("ms", dMS, "2026-12-30", false, "Microsoft").sentence, "Your request must reach Microsoft by tomorrow, Thursday 31 December 2026.", "send-by day sentence", "countdown");
+  eq(cm("ms", dMS, "2026-12-31", false, "Microsoft").sentence, "Your request must reach Microsoft today, Thursday 31 December 2026.", "last day sentence", "countdown");
+  eq(cm("ms", dMS, "2027-01-05", false, "Microsoft").sentence, "Microsoft had to receive the request by Thursday 31 December 2026. The agreement gives no right to a late claim. You can still ask Microsoft.", "passed sentence", "countdown");
+  eq(cm("ms", dMS, "2026-11-13", false, "Microsoft").quiet, "Sooner is safer. For the Microsoft 365 outage reported on 12 November 2026. From Microsoft's Service Level Agreement.", "the quiet line", "countdown");
+  eq(cm("g", dG, "2026-11-13", false, "Google").sentence, "By this page's count, a support case with Google is due by Thursday 3 December 2026; send it by Wednesday 2 December 2026.", "Google sentence", "countdown");
+  ok(cm("g", dG, "2026-11-13", false, "Google").why === GWV.deadline.ownWords && /several outages/.test(cm("g", dG, "2026-11-13", false, "Google").why), "Google: the full hedge and the several-outages note are the 'why' text", "countdown");
+  eq(cm("own", dO, "2026-11-13", false, "Harbor Fiber").sentence, "Your request must reach Harbor Fiber by Monday 21 December 2026.", "own sentence names the vendor", "countdown");
+  ok(cm("own", dO, "2026-11-13", false, "<b>x</b>").sentence.indexOf("<b>x</b>") > 0, "the model keeps typed names as text (the page sets them as text)", "countdown");
+  // the pack follows the model, and the new items
+  var inp = { periodDays: 30, allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 1440 }], feeCents: 62500 }, r = E.compute(MS, inp);
+  var t = E.summaryText(MS, inp, r, dMS, { today: "2026-11-13", start: "2026-11-12" });
+  ok(t.indexOf("Date: " + cm("ms", dMS, "2026-11-13", false, "Microsoft").text) > 0 && t.indexOf("outage reported on 12 November 2026.") > 0, "the summary quotes the countdown and says 'outage reported on'", "countdown");
+  var gr = E.compute(GWV, { periodDays: 30, month: 11, downMinutes: 300 }), gt = E.summaryText(GWV, { downMinutes: 300, service: "Gmail" }, gr, dG, { today: "2026-11-13", start: "2026-11-03" });
+  ok(gt.indexOf("If there were several outages this month, this page counts the 30 days from the first one, the earliest reading.") > 0, "the Google summary carries the full hedge", "countdown");
+  var fl = E.compute(GWV, { periodDays: 30, month: 11, downMinutes: 2161 }), ft = E.summaryText(GWV, { downMinutes: 2161, service: "Gmail" }, fl, dG, { today: "2026-11-13", start: "2026-11-03" });
+  ok(ft.indexOf("Why: Uptime 94.9976% as counted: under 95% gives 15 days. Counted another way (a clock-change month): under 99% gives 7 days.") > 0 && ft.indexOf("Up to 15 days of service (7 days with a clock-change month)") > 0, "flagged Google: the Why line leads with the level the result leads with", "countdown");
+  var mf = E.compute(MS, { periodDays: 30, month: 11, allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 2161 }], feeCents: 100000 }), mt = E.summaryText(MS, { allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 2161 }], feeCents: 100000 }, mf, dMS, { today: "2026-11-13", start: "2026-11-12" });
+  ok(mf.uncertain && mt.indexOf("Why: Uptime 94.9976% as counted: under 99% gives 50%. Counted another way (a clock-change month): under 95% gives 100%.") > 0, "flagged Microsoft: the Why line leads with the lower level the result leads with", "countdown");
+  var ot = E.summaryText(own, { downMinutes: 500, feeCents: 10000 }, E.compute(own, { periodDays: 30, downMinutes: 500, feeCents: 10000 }), dO, { today: "2026-11-13", start: "2026-11-20", end: "2026-11-21" });
+  ok(ot.indexOf("Who asks: You send the request to the vendor named in your contract, the way the contract says; this page has not read it.") > 0, "own: who asks", "countdown");
+  var nr = E.compute(MS, { periodDays: 30, allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 30 }], feeCents: 62500 }), nt = E.summaryText(MS, { allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 30 }], feeCents: 62500 }, nr, dMS, { today: "2026-11-13", start: "2026-11-12" });
+  ok(nt.indexOf("Who asks: Nothing to file: by this count the uptime stays at or above the first credit level.") > 0 && nt.indexOf("Next step: Keep this as a record. If your own figures differ, enter them at downtimecredit.com.") > 0 && nt.indexOf("Open downtimecredit.com, enter the same numbers") < 0 && nt.indexOf("send the request") < 0, "no credit: the pack asks no one to file", "countdown");
+  var rec = E.recordHtml(MS, inp, r, dMS, { today: "2026-11-13", start: "2026-11-12", letter: "x" });
+  ok(rec.indexOf("overflow-wrap:anywhere") > 0 && rec.split("overflow-wrap:anywhere").length >= 4, "the record wraps long unbroken text in cells, the summary and the letter, and in print", "countdown");
+  // the letter: a trailing full stop in typed text is not doubled
+  var lt = E.claimText(MS, { inputs: inp, result: r, fields: { description: "Nobody could send email.", incidentId: "EX1.", resources: "a.example.", locations: "Ohio.", errors: "Oops.", endTime: "9 am." } });
+  ok(lt.indexOf("..") < 0 && lt.indexOf("Nobody could send email. Incident EX1.") > 0 && lt.indexOf("Affected resource names: a.example.") > 0, "no doubled full stop in the letter", "countdown");
+  ok(E.claimText(MS, { inputs: inp, result: r, fields: { description: "." } }).indexOf("[what happened, in your words]") > 0, "a typed lone full stop falls back to the blank", "countdown");
 })();
 
 // ---------- step counting: static checks ----------

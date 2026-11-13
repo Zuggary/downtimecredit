@@ -111,7 +111,7 @@ def main():
                 p.goto(f"http://{host}:{PORT}/?today=2026-12-31&demo=example"); ready(p)
                 days = txt(p, "#dl-box"); allv = p.input_value("#all")
                 local = host in ("127.0.0.1", "localhost")
-                want_days = "Today is the last day" if local else f"{(datetime.date(2026,12,31)-real_today).days} days left"
+                want_days = "Today is the last day" if local else f"{(datetime.date(2026,12,30)-real_today).days} days left to send it"
                 ok = (want_days in days) and ((allv == "50") == local)
                 row("fence", f"host={host} ?today=2026-12-31&demo=example", f"{days[:40]!r}; #all={allv!r}", f"override {'ON' if local else 'OFF'}: {want_days}; demo {'on' if local else 'off'}", ok)
             except Exception as e:
@@ -164,9 +164,9 @@ def main():
         ctx.close()
 
         # ---------- 2. countdown with ?today ----------
-        for t, want in [("2026-11-13", "48 days left"), ("2026-12-29", "2 days left"), ("2026-12-30", "1 day left"), ("2026-12-31", "Today is the last day"), ("2027-01-01", "has passed"), ("2030-01-01", "has passed")]:
+        for t, want in [("2026-11-13", "47 days left to send it"), ("2026-12-29", "1 day left to send it"), ("2026-12-30", "Send it today"), ("2026-12-31", "Today is the last day"), ("2027-01-01", "window has closed"), ("2030-01-01", "window has closed")]:
             ctx = new_ctx(b, "countdown"); p = ctx.new_page(); p.goto(BASE + f"?today={t}"); ready(p)
-            dl = txt(p, "#dl-date") + " " + txt(p, "#dl-left"); sl = txt(p, "#send-left")
+            dl = txt(p, "#dl-box"); sl = txt(p, "#send-left")
             ok = want in dl and "31 December 2026" in dl
             note = ""
             if t in ("2026-12-31",) and "30 December" in sl: note = "still tells the visitor to send by 30 December, which is yesterday"
@@ -180,16 +180,16 @@ def main():
         # ---------- 3. visitor time zones (real clock, no override) ----------
         tzcases = [
             ("Pacific/Kiritimati", "2026-12-30T10:30:00Z", "Thursday 31 December local (UTC+14); Pacific: 30 Dec 02:30", "Today is the last day"),
-            ("Pacific/Kiritimati", "2026-12-31T10:30:00Z", "1 Jan local; Pacific still 31 Dec 02:30", "has passed"),
+            ("Pacific/Kiritimati", "2026-12-31T10:30:00Z", "1 Jan local; Pacific still 31 Dec 02:30", "window has closed"),
             ("Etc/GMT+12", "2027-01-01T11:00:00Z", "31 Dec 23:00 local (UTC-12); Pacific 1 Jan 03:00, UTC 1 Jan 11:00", "Today is the last day"),
-            ("Etc/GMT+12", "2027-01-01T12:30:00Z", "1 Jan 00:30 local", "has passed"),
+            ("Etc/GMT+12", "2027-01-01T12:30:00Z", "1 Jan 00:30 local", "window has closed"),
             ("America/Los_Angeles", "2027-01-01T07:59:00Z", "31 Dec 23:59 Pacific", "Today is the last day"),
         ]
         for tz, instant, desc, want in tzcases:
             ctx = new_ctx(b, "timezone", tz=tz); p = ctx.new_page()
             p.clock.set_fixed_time(datetime.datetime.fromisoformat(instant.replace("Z", "+00:00")))
             p.goto(BASE); ready(p)
-            dl = txt(p, "#dl-date") + " " + txt(p, "#dl-left")
+            dl = txt(p, "#dl-box")
             ok = want in dl
             note = "date math right for the visitor's clock; but on this local day the deadline has passed in US Pacific and UTC, and the page still says 'Today is the last day'" if tz == "Etc/GMT+12" and want.startswith("Today") else ""
             row("deadline-tz", f"tz={tz} at {instant} ({desc})", dl[:120], want + " (local date)", ok if not note else "WARN", note)

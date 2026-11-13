@@ -393,21 +393,52 @@ var DTC = (function () {
     var late = cd.state === "today" || (d.sendBy && today >= d.sendBy);
     return base + (d.sendBy && !late ? " " + (reseller ? "Tell your reseller by " : "Send it by ") + fullDate(d.sendBy) + "." + (reseller ? " They notify Google." : "") : "");
   }
-  // the whole countdown text as the page shows it: the bold count, the sentence, the short line after it
-  // kind: "ms" | "g" | "own"; o: {today, reseller, name, ownWords}
-  function countdownText(kind, d, o) {
-    var cd = countdown(o.today, d.date), rs = o.reseller === true, late = cd.state === "today" || (d.sendBy && o.today >= d.sendBy), lead = "", sentence, tail;
-    if (cd.state !== "passed") { lead = cd.state === "open" && kind === "ms" ? cd.text + (rs ? " to ask your provider." : " to ask.") : /\.$/.test(cd.text) ? cd.text : cd.text + "."; lead += " "; }
+  // The countdown, as one model: the page draws it and the hand-off pack quotes it (one source).
+  // kind: "ms" | "g" | "own"; o: {today, reseller, name, product, start (the featured outage), ownWords}
+  // The count is to the send-by day (the ask-by day for a reseller buyer); an own contract has no send-by, so it counts to the last day.
+  function countdownModel(kind, d, o) {
+    var today = o.today, rs = o.reseller === true, last = d.date, ask = d.sendBy || d.date, name = o.name, m = {};
+    var toLast = daysLeft(today, last), n = daysLeft(today, ask);
+    var state = toLast < 0 ? "passed" : toLast === 0 ? "last" : (d.sendBy && n <= 0) ? "sendby" : "open";
+    var fd = function (iso) { return fullDate(iso); }, shortSend = fd(ask).replace(/ \d{4}$/, "");
+    var about = "For the " + (o.product || "outage") + " outage reported on " + plainDate(o.start) + ".";
+    m.state = state;
+    m.lead = state === "passed" ? "The window has closed." : state === "last" ? "Today is the last day." : state === "sendby" ? (rs ? "Ask your provider today." : "Send it today.")
+      : (n === 1 ? "1 day left to " : n + " days left to ") + (rs ? "ask your provider." : "send it.");
     if (kind === "g") {
-      sentence = googleDateLine(d, cd, rs, o.today);
-      tail = cd.state === "passed" ? TEXT.GPASSED : late ? TEXT.LASTDAY : String(o.ownWords || "").replace(/ If there were several outages.*$/, "");
+      var due = rs ? "tell your reseller by " : "send it by ";
+      m.sentence = state === "passed" ? "Counting from the day it started, the 30 days ended on " + fd(last) + ". That date has passed. " + TEXT.GPASSED
+        : state === "last" ? "By this page's count, a support case with Google is due today, " + fd(last) + "."
+        : state === "sendby" ? "By this page's count, a support case with Google is due by tomorrow, " + fd(last) + "."
+        : "By this page's count, a support case with Google is due by " + fd(last) + "; " + due + fd(ask) + "." + (rs ? " They notify Google." : "");
+      m.quiet = state === "last" ? TEXT.LASTDAY : "";
+      m.why = state === "passed" ? "" : String(o.ownWords || "");
+    } else if (rs) {
+      m.sentence = state === "passed" ? "By this page's count the provider's month has ended. Ask them today; they can tell you if a request is still possible."
+        : "Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as " + fd(last) + (state === "open" ? "; ask them by " + fd(ask) + "." : "; ask them today.");
+      m.quiet = (state === "passed" ? "" : "Sooner is safer. ") + about + (state === "passed" ? "" : " This is this page's reading of the partner rule.");
+      m.why = "";
+    } else if (kind === "own") {
+      m.sentence = state === "passed" ? name + " had to receive the request by " + fd(last) + ". The window you typed has closed; you can still ask " + name + "."
+        : state === "last" ? "Your request must reach " + name + " today, " + fd(last) + "." : "Your request must reach " + name + " by " + fd(last) + ".";
+      m.quiet = state === "last" ? TEXT.LASTDAY : state === "passed" ? "" : "Sooner is safer. This is the window you typed.";
+      m.why = "";
     } else {
-      sentence = deadlineLine(o.name, d, cd, rs, o.today);
-      tail = cd.state === "passed" ? (kind === "own" ? TEXT.LATE : "") : !rs && late ? TEXT.LASTDAY : "Sooner is safer.";
+      m.sentence = state === "passed" ? name + " had to receive the request by " + fd(last) + ". The agreement gives no right to a late claim. You can still ask " + name + "."
+        : state === "last" ? "Your request must reach " + name + " today, " + fd(last) + "."
+        : state === "sendby" ? "Your request must reach " + name + " by tomorrow, " + fd(last) + "."
+        : "Your request must reach " + name + " by " + fd(last) + ", so send it by " + shortSend + ".";
+      var src = "From " + name + "'s Service Level Agreement.";
+      m.quiet = (state === "last" ? TEXT.LASTDAY + " " : state === "passed" ? "" : "Sooner is safer. ") + about + " " + src;
+      m.why = "";
     }
-    return (lead + sentence + (tail ? " " + tail : "")).trim();
+    var ap = parseISO(ask);
+    m.tile = state === "passed" ? { month: "Window", day: "closed", label: "", closed: true }
+      : { month: MONTHS[ap.m - 1].slice(0, 3) + " " + ap.y, day: String(ap.d), label: kind === "own" ? "last day" : rs ? "ask by" : "send by" };
+    m.text = [m.lead, m.sentence, m.quiet, m.why].filter(Boolean).join(" ");
+    return m;
   }
-
+  function countdownText(kind, d, o) { return countdownModel(kind, d, o).text; }
 
   // ---------- the hand-off pack: a summary, and a record file (pure text; the page decides what to do with it) ----------
   function esc(x) { return String(x == null ? "" : x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
@@ -449,18 +480,19 @@ var DTC = (function () {
     return rows;
   }
   function whyLine(v, res) {
-    var k = kindOf(v), un = v.creditUnit === "service-days" ? " days" : "%", hit = null;
-    (v.tiers || []).forEach(function (t) { if (t.credit === res.tier) hit = t; });
+    var k = kindOf(v), un = v.creditUnit === "service-days" ? " days" : "%";
+    function cond(t) { var hit = null; (v.tiers || []).forEach(function (x) { if (x.credit === t) hit = x; }); return t === 0 ? "no credit level applies" : hit ? "under " + hit.below + "% gives " + hit.credit + un : "a credit level applies"; }
     var base = "Uptime " + res.uptimePct + "% as counted" + (k === "own" ? " in the terms typed" : "") + ": ";
     if (res.tier === 0 && !res.uncertain) return base + "no credit level applies.";
-    var cond = hit ? "under " + hit.below + "% gives " + hit.credit + un : "a credit level applies";
-    return base + cond + "." + (res.uncertain ? " It sits at a line between two levels." : "");
+    if (!res.uncertain) return base + cond(res.tier) + ".";
+    var lv = levelsOf(res), lead = k === "g" ? res.tier : lv[0].tier, other = lv.filter(function (c) { return c.tier !== lead; }).map(function (c) { return c.tier; });   // the level the result leads with, then the other
+    return base + cond(lead) + ". Counted another way (a clock-change month): " + other.map(cond).join("; ") + ".";
   }
   function whoLine(v, inputs, noCredit, vn) {
     var k = kindOf(v), rs = inputs && inputs.reseller === true;
-    if (noCredit) return "Nothing to send at this uptime.";
-    if (k === "g") return rs ? "You tell your reseller, who tells Google by creating a support case." : "You create a support case with Google.";
-    if (k === "own") return "You send the request to " + (vn || v.vendor) + ", as your agreement says.";
+    if (noCredit) return "Nothing to file: by this count the uptime stays at or above the first credit level.";
+    if (k === "g") return rs ? "You tell your reseller; the agreement says the reseller must notify Google." : "You create a support case with Google.";
+    if (k === "own") return "You send the request to the vendor named in your contract, the way the contract says; this page has not read it.";
     return rs ? "Your provider, or the partner they buy from, requests it from Microsoft. You ask them." : "You send the request to Microsoft support.";
   }
   function agreementTitle(v) { return v.own ? "contract terms typed on the page" : v.document.title + ", dated " + plainDate(v.document.date); }
@@ -472,20 +504,20 @@ var DTC = (function () {
     var parts = k === "g" ? googleResultParts(res) : resultParts(res, vn, { noFee: o.noFee, own: k === "own" }), none = !res.uncertain && res.tier === 0;
     var what = k === "g" ? v.vendor + " " + clip(inputs.service, nm) + ", down from " + plainDate(o.start) + "."
       : k === "own" ? clip(v.vendor, nm) + " " + clip(v.service, nm) + ", outage from " + plainDate(o.start) + (o.end ? " to " + plainDate(o.end) : "") + "."
-      : v.vendor + " " + v.service + ", outage of " + plainDate(o.start) + ".";
+      : v.vendor + " " + v.service + ", outage reported on " + plainDate(o.start) + ".";
     if (o.example) L.push("EXAMPLE ONLY: Harbor & Pine Dental is a made-up company.");
     L.push("What happened: " + what);
     if (drop.indexOf("numbers") < 0) L.push("Numbers as typed: " + numberRows(v, inputs, { start: o.start, end: o.end, nameMax: nm }).filter(function (r) { return !/^(Provider|Service|Outage|Day the|Credit table|Domain)/.test(r[0]); }).map(function (r) { return r[0] + " " + r[1]; }).join("; ") + ".");
     L.push("Result: " + partsText(parts));
     if (drop.indexOf("why") < 0) L.push("Why: " + whyLine(v, res));
     L.push("Who asks: " + whoLine(v, inputs, none, vn));
-    if (!none && d && d.date) L.push("Date: " + countdownText(k, d, { today: o.today, reseller: rs, name: vn, ownWords: v.deadline && v.deadline.ownWords }));
-    L.push("Next step: Open downtimecredit.com, enter the same numbers, and copy the request.");
+    if (!none && d && d.date) L.push("Date: " + countdownText(k, d, { today: o.today, reseller: rs, name: vn, product: v.product, start: o.start, ownWords: v.deadline && v.deadline.ownWords }));
+    L.push(none ? "Next step: Keep this as a record. If your own figures differ, enter them at downtimecredit.com." : "Next step: Open downtimecredit.com, enter the same numbers, and copy the request.");
     if (o.shortened) L.push("(shortened: download the record for the full text)");
     L.push("Worked out by downtimecredit.com from the " + agreementTitle(v) + ". Not legal advice. " + vn + " decides.");
     return L.join("\n");
   }
-  var RECORD_CSS = "body{font:16px/1.5 Georgia,'Times New Roman',serif;color:#000;background:#fff;max-width:46em;margin:24px auto;padding:0 16px}h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:22px 0 6px;border-bottom:1px solid #000}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px 8px;text-align:left;vertical-align:top;font-size:15px}th{width:55%;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:break-word;font:15px/1.5 Georgia,'Times New Roman',serif;margin:6px 0;padding:10px;border:1px solid #888}.ex{border:2px solid #000;padding:6px 10px;font-weight:700}.foot{margin-top:24px;font-size:14px}@media print{body{margin:0;max-width:none;font-size:12pt}h2,table,pre{break-inside:avoid}pre{border-color:#000}}";
+  var RECORD_CSS = "body{font:16px/1.5 Georgia,'Times New Roman',serif;color:#000;background:#fff;max-width:46em;margin:24px auto;padding:0 16px}h1{font-size:26px;margin:0 0 4px}h2{font-size:18px;margin:22px 0 6px;border-bottom:1px solid #000}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px 8px;text-align:left;vertical-align:top;font-size:15px;overflow-wrap:anywhere}th{width:55%;font-weight:600}pre,p{overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:15px/1.5 Georgia,'Times New Roman',serif;margin:6px 0;padding:10px;border:1px solid #888}.ex{border:2px solid #000;padding:6px 10px;font-weight:700}.foot{margin-top:24px;font-size:14px}@media print{body{margin:0;max-width:none;font-size:12pt}h2{break-after:avoid}table{table-layout:fixed}td,th,pre,p{overflow-wrap:anywhere;word-break:break-word}pre{border-color:#000;white-space:pre-wrap}}";
   // recordHtml(vendor, inputs, result, deadline, opts): one self-contained page, no script, no outside address. o: summary opts plus {letter, today, fields}
   function recordHtml(v, inputs, res, d, o) {
     o = o || {}; var k = kindOf(v), rs = inputs && inputs.reseller === true, none = !res.uncertain && res.tier === 0, h = [];
@@ -496,7 +528,7 @@ var DTC = (function () {
     h.push("<h2>Summary</h2><pre>" + esc(summaryText(v, inputs, res, d, Object.assign({}, o, { example: false }))) + "</pre>");
     h.push("<h2>The numbers, as typed</h2>" + table(numberRows(v, inputs, o)));
     h.push("<h2>How this was worked out</h2>" + table(workingRows(v, res)));
-    if (!none && d && d.date) h.push("<h2>The date</h2><p>" + esc(countdownText(k, d, { today: o.today, reseller: rs, name: v.vendor, ownWords: v.deadline && v.deadline.ownWords })) + "</p>");
+    if (!none && d && d.date) h.push("<h2>The date</h2><p>" + esc(countdownText(k, d, { today: o.today, reseller: rs, name: v.vendor, product: v.product, start: o.start, ownWords: v.deadline && v.deadline.ownWords })) + "</p>");
     h.push("<h2>The request</h2>" + (none ? "<p>No credit level applies at this uptime, so there is no request to send.</p>" : "<pre>" + esc(o.letter || "") + "</pre>"));
     h.push("<h2>The agreement</h2><p>" + esc(v.own ? "The contract terms typed on the page. Check them against your agreement." : v.document.title + ", dated " + plainDate(v.document.date) + ". " + v.document.url) + "</p>");
     h.push("<p class=\"foot\">Made on " + esc(plainDate(o.today)) + " with downtimecredit.com. Not legal advice.</p></body></html>");
@@ -568,17 +600,19 @@ var DTC = (function () {
     var f = inc.fields || {}, inp = inc.inputs || {}, r = inc.result && !inc.result.error ? inc.result : null;
     var blanks = Object.assign({}, BLANKS, v.blanks || {});
     function val(k) { return has(f[k]) ? String(f[k]).trim().slice(0, 2000) : blanks[k]; }
+    // a typed value that the template follows with a full stop loses its own trailing stop, so the letter never shows two
+    function valD(k) { var t = val(k); if (!has(f[k])) return t; t = t.replace(/[.\s]+$/, ""); return t === "" ? blanks[k] : t; }
     var g = Array.isArray(inp.groups) ? inp.groups.filter(function (x) { return x && isWhole(x.affectedUsers) && isWhole(x.downMinutes); }) : [];
     var downtime = g.length ? g.map(function (x) { return groupText(x.affectedUsers) + " users for " + hm(x.downMinutes); }).join("; ")
       : isWhole(inp.downMinutes) ? hm(inp.downMinutes) : blanks.downtime;
     var affected = g.reduce(function (s, x) { return s + x.affectedUsers; }, 0);
     var users = g.length ? groupText(affected) + " of " + (isWhole(inp.allUsers) ? "our " + groupText(inp.allUsers) : "[all users]") + " users" : blanks.users + " users";
     var FILL = {
-      incident: function () { return val("description") + ". Incident " + val("incidentId"); },
-      time: function () { return "from " + val("startTime") + " to " + val("endTime") + ". " + downtime; },
-      resources: function () { return val("resources"); },
-      users: function () { return users + ", in " + val("locations"); },
-      errors: function () { return val("errors"); }
+      incident: function () { return valD("description") + ". Incident " + valD("incidentId"); },
+      time: function () { return "from " + val("startTime") + " to " + valD("endTime") + ". " + downtime; },
+      resources: function () { return valD("resources"); },
+      users: function () { return users + ", in " + valD("locations"); },
+      errors: function () { return valD("errors"); }
     };
     var ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii"], resell = !v.own && inp.reseller === true;
     var name = v.own ? "our agreement with " + v.vendor + (v.service ? " for " + v.service : "")
@@ -623,7 +657,7 @@ var DTC = (function () {
   return {
     isLeap: isLeap, daysInMonth: daysInMonth, parseISO: parseISO, addDays: addDays, localToday: localToday, daysLeft: daysLeft, fullDate: fullDate, countdown: countdown,
     deadline: deadline, resellerDeadline: resellerDeadline, partnerDeadline: partnerDeadline, deadlineFor: deadlineFor, parseLimit: parseLimit, validateVendor: validateVendor, loadVendors: loadVendors, ownVendor: ownVendor,
-    summaryText: summaryText, recordHtml: recordHtml, numberRows: numberRows, workingRows: workingRows, esc: esc, TEXT: TEXT, levelsOf: levelsOf, resultParts: resultParts, googleResultParts: googleResultParts, partsText: partsText, deadlineLine: deadlineLine, googleDateLine: googleDateLine, countdownText: countdownText,
+    summaryText: summaryText, recordHtml: recordHtml, numberRows: numberRows, workingRows: workingRows, esc: esc, TEXT: TEXT, levelsOf: levelsOf, resultParts: resultParts, googleResultParts: googleResultParts, partsText: partsText, deadlineLine: deadlineLine, googleDateLine: googleDateLine, countdownText: countdownText, countdownModel: countdownModel,
     compute: compute, CLOCK: CLOCK, parseDollars: parseDollars, parseDuration: parseDuration, centsText: centsText, icsFor: icsFor, claimText: claimText, BLANKS: BLANKS
   };
 })();

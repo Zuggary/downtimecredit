@@ -57,12 +57,12 @@ with sync_playwright() as pw:
     eq(p.text_content("#w-um"), "", "empty: no workings value")
     ok(all(p.input_value(f"#{i}") == "" for i in ["all", "g0u", "g0h", "g0m", "fee"]), "empty: no prefilled value")
     ok(not re.search(r"(^|\s)(0|-|\u2013)(\s|$)", p.inner_text("#result")), "empty: no 0 or dash that reads as a value")
-    ok("Microsoft must receive it by Thursday 31 December 2026, so send it by Wednesday 30 December." in p.inner_text("#dl-box"), "deadline: the one sentence")
+    ok("Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in p.inner_text("#dl-box"), "deadline: the one sentence")
     ok("Last checked 12 November 2026" in p.inner_text("#st-source") and "Check it against your invoice" in p.inner_text("#st-source"), "source and last-checked date beside the result")
     ok("You need four numbers" in p.inner_text(".intro") and "Does this apply to us? Probably" in p.inner_text(".intro") and "minutes" not in p.inner_text("#need"), "hero: what you need, and who it applies to")
     ok("Not run by or linked to Microsoft or any vendor" in p.inner_text(".trustbar"), "the bar says not linked to any vendor")
     ok("Thursday 31 December 2026" in p.inner_text("#dl-date"), "deadline full date")
-    ok(re.match(r"\d+ days left to ask\.", p.inner_text("#dl-days")) is not None, "days left shown")
+    ok(re.match(r"\d+ days left to send it\.", p.inner_text("#dl-days")) is not None, "days left shown")
     # reference cases typed into the real form
     byid = {c["id"]: c for c in data["cases"]}
     for cid in [1, 3, 4, 5, 11, 22]:
@@ -200,19 +200,19 @@ with sync_playwright() as pw:
     fill_case(r, byid[1]); r.click("#save-ms"); eq(len(r.query_selector_all("#inc-list > li")), 1, "storage blocked: still works for the visit")
     ctx3.close()
     # today override: day before, day of, passed
-    for t, want in [("2026-12-30", "1 day left to ask."), ("2026-12-31", "Today is the last day.")]:
+    for t, want in [("2026-12-29", "1 day left to send it."), ("2026-12-30", "Send it today."), ("2026-12-31", "Today is the last day.")]:
         r = open_page(ctx, "?today=" + t); eq(r.inner_text("#dl-days"), want, f"today={t}"); r.close()
     r = open_page(ctx, "?today=2027-01-05")
-    ok("has passed" in r.inner_text("#dl-date") and r.query_selector("#dl-days") is None, "after the deadline: passed, no countdown")
-    eq(r.inner_text("#late-note"), "The agreement gives no right to a late claim. You can still ask your vendor.", "passed: the late-claim sentence directly above the button")
-    eq(r.inner_text("#write-btn"), "Write a request anyway", "passed: button is no longer Write my request"); ok("quiet" in r.get_attribute("#write-btn", "class"), "passed: button is secondary"); r.close()
+    ok("Microsoft had to receive the request by Thursday 31 December 2026. The agreement gives no right to a late claim. You can still ask Microsoft." in r.inner_text("#dl-box") and r.query_selector("#dl-days") is None and r.inner_text("#dl-lead") == "The window has closed.", "after the deadline: passed, no countdown")
+    ok(r.is_hidden("#late-note") and "late claim" not in r.inner_text("#statement") and "countdown above" not in r.inner_text("#statement"), "passed: no second late-claim note, no see-the-countdown note in the statement")
+    eq(r.inner_text("#write-btn"), "Write a request to ask anyway", "passed: button is no longer Write my request"); ok("quiet" in r.get_attribute("#write-btn", "class"), "passed: button is secondary"); r.close()
     # countdown moves on by itself: clock advanced past local midnight
     ctx5 = b.new_context(viewport={"width": 375, "height": 812}, timezone_id="America/Los_Angeles"); route(ctx5)
     q5 = ctx5.new_page(); watch(q5); q5.clock.install(time="2026-12-30T23:59:30-08:00"); q5.goto(BASE); q5.wait_for_selector("#statement[data-ready]", state="attached")
-    eq(q5.inner_text("#dl-days"), "1 day left to ask.", "clock: 1 day left on 30 Dec")
+    eq(q5.inner_text("#dl-days"), "Send it today.", "clock: send-by day on 30 Dec")
     q5.clock.run_for(120000); eq(q5.inner_text("#dl-days"), "Today is the last day.", "clock: after midnight, today is the last day")
     ok("Send it now" in q5.inner_text("#dl-left"), "clock: last day says send it now")
-    q5.clock.run_for(24 * 3600 * 1000); ok("has passed" in q5.inner_text("#dl-date") and q5.query_selector("#dl-days") is None, "clock: next day, passed and no countdown")
+    q5.clock.run_for(24 * 3600 * 1000); ok("Microsoft had to receive the request" in q5.inner_text("#dl-date") and q5.query_selector("#dl-days") is None, "clock: next day, passed and no countdown")
     ctx5.close()
     # labels and keyboard
     unl = p.evaluate("""() => [...document.querySelectorAll('input,select,textarea')].filter(e => {
@@ -304,18 +304,18 @@ with sync_playwright() as pw:
     ok("Saturday 12 December 2026" in g.inner_text("#g-dl-box") and "Friday 11 December 2026" in g.inner_text("#g-dl-box"), "google: start 12 Nov -> Saturday 12 December 2026, send by Friday 11 December 2026: " + g.inner_text("#g-dl-box"))
     eq(g.inner_text("#send-date"), "Saturday 12 December 2026", "google: the Send it before date")
     ok("Friday 11 December 2026" in g.inner_text("#send-left") and "The agreement does not say when you become eligible. This date counts 30 days from the day the downtime started, the earliest reading. Sooner is safer." in g.inner_text("#send-left"), "google: the eligibility sentence beside the date")
-    ok("The agreement does not say when you become eligible. This date counts 30 days from the day the downtime started, the earliest reading. Sooner is safer." in g.inner_text("#g-dl-box"), "google: the eligibility sentence in the statement")
+    ok("The agreement does not say when you become eligible. This date counts 30 days from the day the downtime started, the earliest reading. Sooner is safer." in g.text_content("#g-dl-why-t"), "google: the eligibility sentence is in the countdown, under Why this date")
     ok("Where to" not in g.inner_text("#send"), "google: no invented where-to-send")
-    for t, want in [("2026-12-11", "1 day left."), ("2026-12-12", "Today is the last day.")]:
+    for t, want in [("2026-12-10", "1 day left to send it."), ("2026-12-11", "Send it today."), ("2026-12-12", "Today is the last day.")]:
         gt = open_page(ctxG, "?demo=google-empty&today=" + t); gfill(gt, "Gmail", "2026-11-12", 5, 0); eq(gt.inner_text("#g-dl-days"), want, f"google: today={t}"); gt.close()
     gt = open_page(ctxG, "?demo=google-empty&today=2027-01-05"); gfill(gt, "Gmail", "2026-11-12", 5, 0)
-    ok("the 30 days ended on Saturday 12 December 2026. That date has passed." in gt.inner_text("#g-dl-box") and gt.query_selector("#g-dl-days") is None and "may be later" in gt.inner_text("#g-dl-left"), "google: after the date, passed and no countdown"); gt.close()
+    ok("the 30 days ended on Saturday 12 December 2026. That date has passed." in gt.inner_text("#g-dl-box") and gt.query_selector("#g-dl-days") is None and "may be later" in gt.inner_text("#g-dl-box"), "google: after the date, passed and no countdown"); gt.close()
     # reseller
     gfill(g, "Gmail", "2026-11-12", 5, 0)
     ok(g.inner_text("#claim").startswith("Subject:") and "Hello Google Workspace support," in g.inner_text("#claim"), "google: direct letter goes to Google")
     g.check("input[name=g-buy][value=reseller]")
     cl = g.inner_text("#claim"); ok("Hello [your reseller's name]," in cl and "The Google Workspace SLA asks for a support case within thirty days from when we became eligible. Counting from the day the downtime started, that is Saturday 12 December 2026. Please open it before then" in cl and "at the latest" not in cl and "must open" not in cl and "Hello Google Workspace support," not in cl, "google: the reseller choice addresses the letter to the reseller")
-    ok("Counting from the day it started, the 30 days end on Saturday 12 December 2026. Tell your reseller by Friday 11 December 2026." in g.inner_text("#g-dl-box") and "reseller" in g.inner_text("#sel-note") and "must open" not in g.inner_text("#send"), "google: reseller wording in the date and the note")
+    ok("a support case with Google is due by Saturday 12 December 2026; tell your reseller by Friday 11 December 2026. They notify Google." in g.inner_text("#g-dl-box") and "reseller" in g.inner_text("#sel-note") and "must open" not in g.inner_text("#send"), "google: reseller wording in the date and the note")
     # the letter
     ok("$" not in cl and "users" not in cl, "google: the letter asks for no money and gives no user count")
     for w in ["Domain: [your Google Workspace domain", "Service: Gmail", "Date the downtime started: 12 November 2026", "300 of 43,200 minutes", "99.3055%", "up to 3 days of service, if Google accepts the claim", "Google Workspace Service Level Agreement", "measures Downtime on the server side, as an error rate for our domain."]:
@@ -374,7 +374,7 @@ with sync_playwright() as pw:
     g.click("#mode-ms"); eq(g.inner_text("#h1-t"), "An outage can mean a credit on your next bill.", "fix 5: the Microsoft headline is unchanged"); g.click("#mode-own"); eq(g.inner_text("#h1-t"), "An outage can mean a credit on your next bill.", "fix 5: the own headline is unchanged"); g.click("#mode-g")
     gfill(g, "Gmail", "2026-11-03", 5, 0)
     ok("(bought from a reseller, Google issues it to the reseller)" in g.inner_text("#g-days-note"), "fix 9: Essentials through a reseller")
-    ok("Counting from the day it started, the 30 days end on Thursday 3 December 2026. Send it by Wednesday 2 December 2026." in g.inner_text("#g-dl-box"), "fix 6: the bold line is the site's count")
+    ok("By this page's count, a support case with Google is due by Thursday 3 December 2026; send it by Wednesday 2 December 2026." in g.inner_text("#g-dl-box"), "fix 6: the sentence is the site's count")
     ok("If there were several outages this month, this page counts the 30 days from the first one, the earliest reading." in g.inner_text("#send-left"), "fix 7: the first-day note beside the date")
     ok("Minutes in the next month count toward that month, as a separate request." in g.inner_text("#rules-g"), "fix 8: next-month sentence")
     # 12: Enter on Write my request lands on the domain field
@@ -391,7 +391,7 @@ with sync_playwright() as pw:
     ok("open the support case" in ic.replace("\r\n ", "") and "send the credit claim" not in ic and "service credit: 30 days end (Google Drive)" in ic.replace("\r\n ", "") and ic.replace("\r\n ", "").count("Google Drive") == 2, "fix 13: reminder text and title in Google mode")
     # 11: a day that has not happened
     g.fill("#g-start", "2027-05-03")
-    eq(g.inner_text("#g-r-line"), "That day has not happened yet.", "fix 11: a future start date gives no result"); ok(g.query_selector("#g-dl-box") is None and g.is_disabled("#save-ms"), "fix 11: no deadline, Save disabled")
+    eq(g.inner_text("#g-r-line"), "That day has not happened yet.", "fix 11: a future start date gives no result"); ok(g.query_selector("#g-dl-days") is not None and "You have 30 days." in g.inner_text("#g-dl-box") and g.is_disabled("#save-ms"), "fix 11: no deadline of its own, the 30-days box, Save disabled")
     # D1: a start date whose deadline leaves the calendar
     gfill(g, "Gmail", "2026-11-03", 5, 0); ok(not g.is_disabled("#save-ms"), "D1: Save is enabled for a good date")
     gz = open_page(ctxG, "?demo=google-empty&today=2999-12-31")
@@ -538,20 +538,20 @@ with sync_playwright() as pw:
     def cdn(pg): return pg.locator("[id$='dl-days']:visible").count()
     inhero = lambda pg: pg.evaluate("[...document.querySelectorAll('[id$=dl-days]')].every(e => !e.closest('form') && e.closest('.hero'))")
     eq(cdn(m), 1, "item 5: Microsoft mode: one countdown"); ok(inhero(m) and m.evaluate("document.querySelector('.lede').compareDocumentPosition(document.getElementById('cd')) & 4") and m.evaluate("document.getElementById('cd').compareDocumentPosition(document.querySelector('.pick')) & 4"), "item 5: it sits under the lede and above the toggle")
-    ok("48 days left to ask. Microsoft must receive it by Thursday 31 December 2026, so send it by Wednesday 30 December." in m.inner_text("#cd").replace("\n", " ") or "days left to ask. Microsoft must receive it by Thursday 31 December 2026, so send it by Wednesday 30 December." in m.inner_text("#cd").replace("\n", " "), "item 5: the Microsoft sentence")
-    m.click("#mode-g"); eq(cdn(m), 0, "item 5: Google mode before a day: no countdown number")
-    ok("You have 30 days: this page counts them from the day the downtime started." in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and "Microsoft" not in m.inner_text("#cd"), "item 5: Google mode: the 30-days line, no Microsoft date")
+    ok("47 days left to send it. Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in m.inner_text("#cd").replace("\n", " "), "item 5: the Microsoft sentence")
+    m.click("#mode-g"); ok("days left" not in m.inner_text("#cd"), "item 5: Google mode before a day: no count of days")
+    ok("You have 30 days. Send your request to Google (or tell your reseller) within 30 days of the day the downtime started. Enter that day in the statement to get your date." in m.inner_text("#cd").replace("\n", " ") and "31 December" not in m.inner_text("#cd") and "Microsoft" not in m.inner_text("#cd"), "item 5: Google mode: the 30-days line, no Microsoft date")
     gfill(m, "Gmail", "2026-11-03", 0, 44); eq(cdn(m), 1, "item 5: Google mode: one countdown")
-    ok("Counting from the day it started, the 30 days end on Thursday 3 December 2026. Send it by Wednesday 2 December 2026." in m.inner_text("#cd") and "Microsoft" not in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and inhero(m), "item 5: Google mode sentence, in the hero")
+    ok("By this page's count, a support case with Google is due by Thursday 3 December 2026; send it by Wednesday 2 December 2026." in m.inner_text("#cd").replace("\n", " ") and "Microsoft" not in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and inhero(m), "item 5: Google mode sentence, in the hero")
     m.click("#mode-own"); eq(cdn(m), 0, "item 5: own mode with no terms: nothing"); ok(m.inner_text("#cd").strip() == "", "item 5: own mode: the countdown area is empty")
     for sel, v in [("#o-vendor", "Acme"), ("#o-service", "Link"), ("#o-start", "2026-11-20"), ("#o-end", "2026-11-21"), ("#o-t1a", "99.9"), ("#o-t1b", "10"), ("#o-fee", "100"), ("#o-wdays", "30"), ("#o-h", "9"), ("#o-m", "30")]: m.fill(sel, v)
     eq(cdn(m), 1, "item 5: own mode: one countdown"); ok("Microsoft" not in m.inner_text("#cd") and "31 December" not in m.inner_text("#cd") and inhero(m), "item 5: own mode: no Microsoft date")
     m.click("#mode-ms"); eq(cdn(m), 1, "item 5: back in Microsoft mode: one countdown"); m.close()
-    for t, want in [("2026-12-30", "1 day left to ask."), ("2026-12-31", "Today is the last day."), ("2027-01-05", "That date has passed.")]:
-        m = open_page(ctxM, "?today=" + t); eq(cdn(m), 0 if "passed" in want else 1, f"item 5: today={t}: the countdown count"); ok(want in m.inner_text("#cd"), f"item 5: today={t}: {want}")
-        ok("For the outage reported on 12 November 2026." not in m.inner_text("#cd") or True, "tail"); m.close()
+    for t, want in [("2026-12-29", "1 day left to send it."), ("2026-12-30", "Send it today."), ("2026-12-31", "Today is the last day."), ("2027-01-05", "The window has closed.")]:
+        m = open_page(ctxM, "?today=" + t); eq(cdn(m), 0 if "closed" in want else 1, f"item 5: today={t}: the countdown count"); ok(want in m.inner_text("#cd"), f"item 5: today={t}: {want}")
+        m.close()
     m = open_page(ctxM, "?today=2026-12-30"); ok("Sooner is safer" in m.inner_text("#cd") or "Send it now" in m.inner_text("#cd"), "item 5: the Sooner is safer line is kept"); m.close()
-    m = open_page(ctxM); m.set_viewport_size({"width": 1440, "height": 900}); ok("For the outage reported on 12 November 2026." in m.inner_text("#cd"), "item 5: the outage tail shows on wide screens"); m.close()
+    m = open_page(ctxM); ok("Sooner is safer. For the Microsoft 365 outage reported on 12 November 2026. From Microsoft's Service Level Agreement." in m.inner_text("#cd").replace("\n", " "), "item 9: the quiet line shows at 375 px"); m.close()
     m = open_page(ctxM); m.click("#mode-g"); top = m.evaluate("document.querySelector('.pick').getBoundingClientRect().bottom"); ok(top < 812, f"item 5: at 375 the toggle stays on the first screen ({top})"); m.close()
     ctxM.close()
 
@@ -574,14 +574,14 @@ with sync_playwright() as pw:
     # B1: the passed state
     n = open_page(ctxN, "?today=2027-01-05"); rfill(n)
     ok("By this page's count the provider's month has ended. Ask them today; they can tell you if a request is still possible." in n.inner_text("#dl-box") and n.query_selector("#dl-days") is None, "B1: the passed countdown")
-    ok("Ask your provider anyway: they can tell you if a request is still possible." in n.inner_text("#late-note") and "no right to a late claim" not in n.inner_text("#statement"), "B1: the late note for a reseller buyer")
+    ok(n.is_hidden("#late-note") and n.inner_text("#write-btn") == "Write a request to ask anyway" and "The window has closed." in n.inner_text("#dl-box"), "B1: no separate late note for a reseller buyer; the button says to ask anyway")
     cl = n.inner_text("#claim")
     ok("By our count the month Microsoft's partner rules allow has ended. Please tell us whether a request is still possible, and file it if so." in cl and "please file it by" not in cl, "F1: the passed letter")
     n.close()
     # B1: the open state, last-day and ask-by-day states
-    for t, want in [("2026-12-22", "8 days left to ask your provider."), ("2026-12-23", "7 days left to ask your provider."), ("2026-12-30", "Today is the last day.")]:
+    for t, want in [("2026-12-15", "8 days left to ask your provider."), ("2026-12-22", "1 day left to ask your provider."), ("2026-12-23", "Ask your provider today."), ("2026-12-30", "Today is the last day.")]:
         n = open_page(ctxN, "?today=" + t); rfill(n); ok(want in n.inner_text("#dl-box"), f"B1: today={t}: {want}")
-        if t == "2026-12-30": ok("ask them today." in n.inner_text("#dl-box"), "B1: on the last day: ask them today")
+        if t in ("2026-12-23", "2026-12-30"): ok("ask them today." in n.inner_text("#dl-box"), "B1: from the ask-by day: ask them today")
         n.close()
     # F7: the radio keeps the example
     n = open_page(ctxN); n.click("#ex-toggle"); n.click("input[name=m-buy][value=reseller]")
@@ -608,9 +608,10 @@ with sync_playwright() as pw:
     def check_pack(pg, label, kind, sub_want, route_words, result_sel):
         ok(not pg.is_hidden("#passon"), f"{label}: the block shows with a result")
         t = clip(pg)
-        ok(len(t) <= 950 and "undefined" not in t and "NaN" not in t, f"{label}: summary size and sanity ({len(t)})")
+        ok(len(t) <= 1150 and "undefined" not in t and "NaN" not in t, f"{label}: summary size and sanity ({len(t)})")
         ok("Result: " + vis(pg, result_sel) in re.sub(r"\s+", " ", t), f"{label}: the summary holds the visible result sentence")
-        cdv = re.sub(r"^[A-Z][a-z]{2} \d{4} \d{1,2} ", "", vis(pg, "#cd")).replace(" For the outage reported on 12 November 2026.", "").split(" If there were several outages")[0]
+        cdv = re.sub(r"^(Example dates, not yours\. )?", "", re.sub(r"^([A-Z][a-z]{2} \d{4} \d{1,2} (send by|ask by|days|last day) |Window closed )", "", vis(pg, "#cd"))).replace(" Why this date", "")
+        cdv = re.sub(r"^Example dates, not yours\. ", "", cdv)
         if "No credit" not in vis(pg, result_sel): ok("Date: " + cdv in re.sub(r"\s+", " ", t), f"{label}: the summary holds the visible countdown: {cdv[:60]}")
         ok(route_words in t, f"{label}: who asks ({route_words})")
         sub, bi = mailparts(pg, "#mail-it"); sub2, bs = mailparts(pg, "#mail-self")
@@ -621,18 +622,18 @@ with sync_playwright() as pw:
     # Microsoft, direct
     m = popen(); ok(m.is_hidden("#passon"), "pack: hidden with no result")
     for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", "24"), ("#g0m", "0"), ("#fee", "625")]: m.fill(sel, v)
-    t = check_pack(m, "pack MS direct", "ms", "Service credit: Microsoft outage of 12 November 2026", "You send the request to Microsoft support.", "#r-line")
+    t = check_pack(m, "pack MS direct", "ms", "Service credit: Microsoft outage reported on 12 November 2026", "You send the request to Microsoft support.", "#r-line")
     ok("Up to about $312.50 credit, if Microsoft accepts the claim." in t and "Microsoft decides." in t and "Numbers as typed: Users on the plan 50; Users without email 50 for 24 h; Paid for November $625.00; Bought from Microsoft." in t, "pack MS direct: the example words")
     h0 = m.get_attribute("#mail-it", "href"); m.evaluate("() => { const e = document.getElementById('g0h'); e.value = '10'; e.dispatchEvent(new Event('change', {bubbles: true})); }")
     ok(m.get_attribute("#mail-it", "href") != h0 and "10 h" in unquote(m.get_attribute("#mail-self", "href")), "pack MS: a change-only event updates the mail links")
     m.fill("#g0h", "24")
     # Microsoft, reseller; passed
-    m.check("input[name=m-buy][value=reseller]"); t = check_pack(m, "pack MS reseller", "ms", "Service credit: Microsoft outage of 12 November 2026", "Your provider, or the partner they buy from, requests it from Microsoft.", "#r-line")
+    m.check("input[name=m-buy][value=reseller]"); t = check_pack(m, "pack MS reseller", "ms", "Service credit: Microsoft outage reported on 12 November 2026", "Your provider, or the partner they buy from, requests it from Microsoft.", "#r-line")
     ok("send the request to Microsoft" not in t.lower() and "Microsoft's partner rules give them one month" in t, "pack MS reseller: the provider asks, with the reading wording")
     mp = popen("?today=2027-01-05"); [mp.fill(a, b) for a, b in [("#all", "50"), ("#g0u", "50"), ("#g0h", "24"), ("#g0m", "0"), ("#fee", "625")]]
-    t = check_pack(mp, "pack MS passed", "ms", "Service credit: Microsoft outage of 12 November 2026", "You send the request to Microsoft support.", "#r-line"); ok("That date has passed." in t, "pack MS passed: the passed wording"); mp.close()
+    t = check_pack(mp, "pack MS passed", "ms", "Service credit: Microsoft outage reported on 12 November 2026", "You send the request to Microsoft support.", "#r-line"); ok("The window has closed." in t, "pack MS passed: the passed wording"); mp.close()
     # no credit
-    m.fill("#g0h", "0"); m.fill("#g0m", "43"); ok(not m.is_hidden("#passon") and "No credit" in m.inner_text("#r-line"), "pack: shown with a no-credit result"); tt = clip(m); ok("Nothing to send at this uptime." in tt and "Date:" not in tt, "pack: the no-credit summary has no date line")
+    m.fill("#g0h", "0"); m.fill("#g0m", "43"); ok(not m.is_hidden("#passon") and "No credit" in m.inner_text("#r-line"), "pack: shown with a no-credit result"); tt = clip(m); ok("Who asks: Nothing to file: by this count the uptime stays at or above the first credit level." in tt and "Next step: Keep this as a record. If your own figures differ, enter them at downtimecredit.com." in tt and "Date:" not in tt, "pack: the no-credit summary asks no one to file")
     # example
     m.fill("#g0h", "24"); m.fill("#g0m", "0"); m.click("#ex-toggle"); te = clip(m); ok(te.startswith("EXAMPLE ONLY: Harbor & Pine Dental is a made-up company."), "pack: the example summary is marked")
     ok(mailparts(m, "#mail-it")[1].count("EXAMPLE ONLY") == 1 and mailparts(m, "#mail-self")[1].startswith("EXAMPLE ONLY"), "pack: the example mails are marked")
@@ -657,7 +658,7 @@ with sync_playwright() as pw:
     g = popen(); g.click("#mode-g"); ok(g.is_hidden("#passon"), "pack Google: hidden with no result")
     gfill(g, "Google Drive", "2026-11-03", 0, 44)
     t = check_pack(g, "pack Google", "g", "Google Drive downtime from 3 November 2026", "You create a support case with Google.", "#g-r-line"); ok("$" not in t and "Up to 3 days of service, if Google accepts the claim." in t, "pack Google: days only, no dollar")
-    g.check("input[name=g-buy][value=reseller]"); t = check_pack(g, "pack Google reseller", "g", "Google Drive downtime from 3 November 2026", "You tell your reseller, who tells Google by creating a support case.", "#g-r-line")
+    g.check("input[name=g-buy][value=reseller]"); t = check_pack(g, "pack Google reseller", "g", "Google Drive downtime from 3 November 2026", "You tell your reseller; the agreement says the reseller must notify Google.", "#g-r-line")
     g.evaluate("() => { const e = document.getElementById('g-m'); e.value = '500'; e.dispatchEvent(new Event('change', {bubbles: true})); }")
     ok("7 days" in unquote(g.get_attribute("#mail-it", "href")), "pack Google: a change-only event updates the mail links")
     g.fill("#c-res", HOSTILE)
@@ -675,8 +676,81 @@ with sync_playwright() as pw:
     with o.expect_download() as d: o.click("#rec-dl")
     raw = open(d.value.path(), encoding="utf-8").read(); ok("<img" not in raw and "<script" not in raw and "&lt;img" in raw, "pack own: the record escapes typed names")
     o.fill("#o-vendor", "Harbor Fiber"); o.fill("#o-service", "Internet")
-    check_pack(o, "pack own", "own", "Service credit: Harbor Fiber outage of 20 November 2026", "You send the request to Harbor Fiber, as your agreement says.", "#o-r-line")
+    check_pack(o, "pack own", "own", "Service credit: Harbor Fiber outage of 20 November 2026", "You send the request to the vendor named in your contract, the way the contract says; this page has not read it.", "#o-r-line")
     ok(not dialogs, "pack: no script ran in any mode"); o.close(); ctxP.close()
+
+    # ---------- polish round: the countdown, the pack wording, the letter, the headline ----------
+    ctxQ = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); route(ctxQ); ctxQ.grant_permissions(["clipboard-read", "clipboard-write"])
+    def qopen(q): return open_page(ctxQ, q)
+    def msfill(pg, h="24", m_="0"):
+        for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", h), ("#g0m", m_), ("#fee", "625")]: pg.fill(sel, v)
+    def tile(pg, pre): return (pg.inner_text(f"#{pre}-cal-d"), pg.inner_text(f"#{pre}-cal-l"))
+    # item 9: Microsoft direct, each state; N counts to the send-by day; the tile shows the send-by day
+    for t, lead, sent, tl in [("2026-11-13", "47 days left to send it.", "Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December.", ("30", "send by")),
+                              ("2026-12-29", "1 day left to send it.", "Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December.", ("30", "send by")),
+                              ("2026-12-30", "Send it today.", "Your request must reach Microsoft by tomorrow, Thursday 31 December 2026.", ("30", "send by")),
+                              ("2026-12-31", "Today is the last day.", "Your request must reach Microsoft today, Thursday 31 December 2026.", ("30", "send by"))]:
+        q = qopen("?today=" + t)
+        eq(q.inner_text("#dl-days"), lead, f"item 9: today={t}: the lead"); ok(sent in q.inner_text("#dl-date"), f"item 9: today={t}: the sentence"); eq(tile(q, "dl"), tl, f"item 9: today={t}: the tile shows the send-by day")
+        ok("From Microsoft's Service Level Agreement." in q.inner_text("#dl-left") and "For the Microsoft 365 outage reported on 12 November 2026." in q.inner_text("#dl-left"), f"item 9: today={t}: the quiet line shows at 375 px")
+        ok("Send by Wednesday 30 December 2026. See the countdown above." in q.inner_text("#st-date"), f"item 9: today={t}: the statement's note"); q.close()
+    q = qopen("?today=2027-01-05")
+    ok(q.inner_text("#dl-lead") == "The window has closed." and "Microsoft had to receive the request by Thursday 31 December 2026. The agreement gives no right to a late claim. You can still ask Microsoft." in q.inner_text("#dl-date") and tile(q, "dl")[0] == "closed", "item 14: Microsoft passed: lead, sentence, grey tile")
+    bg = q.evaluate("getComputedStyle(document.getElementById('dl-box')).backgroundColor"); ok(bg != "rgb(246, 233, 231)" and q.evaluate("getComputedStyle(document.getElementById('dl-box')).color") != "rgb(143, 29, 29)", f"item 14: passed is not red ({bg})")
+    ok(q.is_hidden("#st-date") and q.is_hidden("#late-note"), "item 14: no 'see the countdown' note and no red late note when passed"); q.close()
+    # item 10: reseller
+    for t, lead, tl in [("2026-12-15", "8 days left to ask your provider.", ("23", "ask by")), ("2026-12-22", "1 day left to ask your provider.", ("23", "ask by")), ("2026-12-23", "Ask your provider today.", ("23", "ask by"))]:
+        q = qopen("?today=" + t); msfill(q); q.check("input[name=m-buy][value=reseller]"); eq(q.inner_text("#dl-days"), lead, f"item 10: today={t}: the lead"); eq(tile(q, "dl"), tl, f"item 10: today={t}: the tile")
+        ok("Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as Wednesday 30 December 2026" in q.inner_text("#dl-date"), f"item 10: today={t}: the reading sentence"); q.close()
+    # item 11 and 12: Google
+    q = qopen("?today=2026-11-13"); q.click("#mode-g")
+    ok(q.inner_text("#g-dl-days") == "You have 30 days." and "Send your request to Google (or tell your reseller) within 30 days of the day the downtime started. Enter that day in the statement to get your date." in q.inner_text("#g-dl-date") and tile(q, "g-dl") == ("30", "days"), "item 11: Google, no start day: the same box, 30 days")
+    gfill(q, "Gmail", "2026-11-03", 0, 44)
+    eq(q.inner_text("#g-dl-days"), "19 days left to send it.", "item 12: Google: N counts to the send-by day"); eq(tile(q, "g-dl"), ("2", "send by"), "item 12: the tile shows the send-by day")
+    ok("By this page's count, a support case with Google is due by Thursday 3 December 2026; send it by Wednesday 2 December 2026." in q.inner_text("#g-dl-date"), "item 12: the sentence")
+    ok(q.evaluate("document.getElementById('g-dl-why').open") is False and q.inner_text("#g-dl-why summary") == "Why this date" and "several outages" in q.text_content("#g-dl-why-t") and "The agreement does not say when you become eligible." in q.text_content("#g-dl-why-t"), "item 12: the hedge is in a closed 'Why this date'")
+    q.click("#g-dl-why summary"); ok("several outages this month" in q.inner_text("#g-dl-why"), "item 12: and opens"); 
+    q.click("#g-ex"); ok(q.inner_text("#g-dl-ex") == "Example dates, not yours." and not q.is_hidden("#g-dl-ex"), "item 12: the Google example box says so")
+    q.click("#g-ex"); ok(q.is_hidden("#g-dl-ex"), "item 12: and not when the example is off")
+    for t, lead in [("2026-12-01", "1 day left to send it."), ("2026-12-02", "Send it today.")]:
+        q2 = qopen("?today=" + t); q2.click("#mode-g"); gfill(q2, "Gmail", "2026-11-03", 0, 44); eq(q2.inner_text("#g-dl-days"), lead, f"item 12: today={t}"); q2.close()
+    q2 = qopen("?today=2026-12-04"); q2.click("#mode-g"); gfill(q2, "Gmail", "2026-11-03", 0, 44); ok(q2.inner_text("#g-dl-lead") == "The window has closed." and "the 30 days ended on Thursday 3 December 2026. That date has passed." in q2.inner_text("#g-dl-date") and "real last day may be later" in q2.inner_text("#g-dl-date") and tile(q2, "g-dl")[0] == "closed", "item 14: Google passed"); q2.close()
+    q.close()
+    q = qopen("?today=2026-11-13"); q.click("#ex-toggle"); ok(q.inner_text("#dl-ex") == "Example dates, not yours.", "item 12: the Microsoft example box says so"); q.close()
+    # item 13: own
+    q = qopen("?demo=own&today=2026-11-13"); q.click("#mode-own")
+    eq(q.inner_text("#o-dl-days"), "38 days left to send it.", "item 13: own: the lead"); ok("Your request must reach Harbor Fiber by Monday 21 December 2026." in q.inner_text("#o-dl-date"), "item 13: own: the sentence names the vendor as typed")
+    q.fill("#o-vendor", "<i>V</i>"); ok("<i>V</i>" in q.inner_text("#o-dl-date") and q.query_selector("#o-dl-date i") is None, "item 13: own: the vendor name is text, not markup"); q.close()
+    q = qopen("?demo=own&today=2027-01-05"); q.click("#mode-own"); ok(q.inner_text("#o-dl-lead") == "The window has closed." and "Harbor Fiber had to receive the request by Monday 21 December 2026." in q.inner_text("#o-dl-date"), "item 14: own passed"); q.close()
+    # item 15: at 1024x768 the countdown starts above the middle of the screen in Microsoft mode
+    q = ctxQ.new_page(); q.set_viewport_size({"width": 1024, "height": 768}); q.goto(BASE + "?today=2026-11-13"); q.wait_for_selector("#statement[data-ready]", state="attached")
+    top = q.evaluate("document.getElementById('cd').getBoundingClientRect().top"); ok(top < 384, f"item 15: at 1024x768 the countdown starts above the middle ({top:.0f})")
+    q.set_viewport_size({"width": 900, "height": 768}); ok(q.evaluate("document.getElementById('cd').getBoundingClientRect().top") < 384, "item 15: and at 900 px"); q.close()
+    # items 1 to 6 (pack)
+    q = qopen("?today=2026-11-13"); msfill(q, "0", "30")
+    ok("No credit" in q.inner_text("#r-line"), "item 1: no credit state")
+    sub, bi = mailparts(q, "#mail-it"); sub2, bs = mailparts(q, "#mail-self")
+    ok(bi.startswith("Hello,\nPlease check the numbers below. By this count there is no service credit to ask for; tell me if your figures differ.\n\n") and "file" not in bi.split("\n\n")[0], "item 1: the IT mail asks no one to file")
+    ok("Who asks: Nothing to file: by this count the uptime stays at or above the first credit level." in bs and "Next step: Keep this as a record. If your own figures differ, enter them at downtimecredit.com." in bs and bs.endswith("The numbers are on the page: download the record to keep them."), "item 1: the self mail follows")
+    with q.expect_download() as d: q.click("#rec-dl")
+    rec = open(d.value.path(), encoding="utf-8").read(); ok("Nothing to file" in rec and "There is no request to send" not in rec.replace("no request to send", "") or "no request to send" in rec, "item 1: the record follows")
+    msfill(q, "36", "1"); t = clip(q); ok("Why: Uptime 94.9976% as counted: under 99% gives 50%. Counted another way (a clock-change month): under 95% gives 100%." in t and "Up to about" in t, "item 5: the Microsoft Why line leads with the level the result leads with")
+    q.close()
+    q = qopen("?today=2026-11-13"); q.click("#mode-g"); gfill(q, "Gmail", "2026-11-03", 5, 0); t = clip(q)
+    ok("If there were several outages this month, this page counts the 30 days from the first one, the earliest reading." in t, "item 2: the pack carries the full Google hedge")
+    sub, bi = mailparts(q, "#mail-it"); ok("several outages" in bi or "shortened" in bi, "item 2: the mail keeps the hedge or says it was shortened")
+    q.close()
+    # item 8: no doubled full stop
+    q = qopen("?today=2026-11-13"); msfill(q)
+    for sel in ["#c-desc", "#c-res", "#c-loc", "#c-err", "#c-id", "#c-end"]: q.fill(sel, "typed text.")
+    ok(".." not in q.inner_text("#claim") and "typed text. Incident typed text." in q.inner_text("#claim"), "item 8: the letter has no doubled full stop"); q.fill("#c-desc", "Real words."); ok("Real words. Incident" in q.inner_text("#claim"), "item 8: a real visitor's text keeps its words"); q.close()
+    # item 7: the record wraps long unbroken text at a narrow width
+    q = qopen("?today=2026-11-13"); q.click("#mode-own")
+    for sel, v in [("#o-vendor", "W" * 300), ("#o-service", "S" * 300), ("#o-start", "2026-11-20"), ("#o-end", "2026-11-21"), ("#o-t1a", "99.9"), ("#o-t1b", "10"), ("#o-fee", "100"), ("#o-wdays", "30"), ("#o-h", "9"), ("#o-m", "30")]: q.fill(sel, v)
+    with q.expect_download() as d: q.click("#rec-dl")
+    rf = os.path.join(tmp, "long-record.html"); d.value.save_as(rf); r2 = ctxQ.new_page(); r2.set_viewport_size({"width": 375, "height": 800}); r2.set_content(open(rf, encoding="utf-8").read())
+    ok(r2.evaluate("document.documentElement.scrollWidth <= innerWidth"), "item 7: the record has no sideways scroll with 300-character unbroken names"); r2.emulate_media(media="print"); ok(r2.evaluate("document.documentElement.scrollWidth <= innerWidth"), "item 7: and in print"); r2.close(); q.close()
+    ctxQ.close()
     # the four steps on the routed live host: once each, never a typed value
     ctxS2 = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); ctxS2.grant_permissions(["clipboard-read", "clipboard-write"], origin="https://www.downtimecredit.com")
     ctxS2.add_init_script("""(function () { var o = history.replaceState; window.__rs = []; history.replaceState = function (s, t, u) { window.__rs.push(String(u)); return o.apply(this, arguments); }; })();""")

@@ -106,8 +106,14 @@
   .deadline p { margin: 0; font-size: 13.5px; line-height: 1.35; }
   .deadline strong { font-size: 15px; display: block; }
   .deadline .lbl { display: block; font-size: 12.5px; font-weight: 600; }
-  .deadline.passed { background: var(--bad-tint); border-color: var(--bad); color: var(--bad); }
-  .deadline.passed .cal { border-color: var(--bad); } .deadline.passed .cal span { background: var(--bad); }
+  .deadline.passed { background: var(--tint); border-color: var(--ink-2); color: var(--ink-2); }
+  .deadline.passed .cal { border-color: var(--mute); } .deadline.passed .cal span { background: var(--mute); }
+  .cal i { display: block; font: 600 11px/1.2 var(--text); font-style: normal; padding: 0 2px 3px; }
+  .cal.gone b { font-size: 15px; padding: 8px 0 7px; }
+  .cdex { margin: 0 0 3px; font-size: 12.5px; font-weight: 700; }
+  .deadline details.more { margin: 4px 0 0; font-size: 13px; } .deadline details.more > summary { min-height: 32px; }
+  .deadline details.more p { margin: 2px 0 0; }
+  .deadline details:not([open]) > :not(summary) { display: none; }
   details.more { margin: 10px 0 0; font-size: 14px; }
   details.more > summary { cursor: pointer; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; gap: 10px; list-style: none; text-decoration: underline; text-underline-offset: 3px; padding-right: 8px; }
   details.more > summary::-webkit-details-marker { display: none; }
@@ -270,6 +276,7 @@
 
     footer .in > div { grid-template-columns: 1fr 1fr; }
   }
+  @media (min-width: 900px) and (max-width: 1199px) { h1 { font-size: 31px; line-height: 1.12; } .lede { font-size: 16px; margin-top: 10px; } .hero { padding-top: 16px; } .indep { margin-top: 6px; } .need { margin-top: 6px; } }
 </style>
 </head>
 <body>
@@ -285,10 +292,6 @@
     <h1 id="h1-t">An outage can mean a credit on your next bill.</h1>
     <p class="lede" id="lede-t">Work out what your company may be owed, get the request written and keep track of the deadline; you send it.</p>
     <div class="cd" id="cd" aria-live="polite">
-    <div class="deadline" id="dl-box">
-      <div class="cal" aria-hidden="true"><span id="dl-cal-m">&nbsp;</span><b id="dl-cal-d">&nbsp;</b></div>
-      <div><p><span id="dl-date">&nbsp;</span></p><p class="small" id="dl-left"></p></div>
-    </div>
       <div id="cd-g"></div><div id="cd-o"></div>
     </div>
     <p class="need" id="need">You need four numbers: users on your plan, how many lost email, for how long, and what you paid for November.</p>

@@ -108,19 +108,23 @@
   // one sentence, the same everywhere
   function msReseller() { return radio("m-buy") === "reseller"; }
   function deadlineSentence(name, d, cd, reseller) { return E.deadlineLine(name, d, cd, reseller, TODAY); }
-  function deadlineTile(prefix, d, vendorName, reseller) {      // the one countdown, under the lede: text only (the tile belongs to "Send it before")
-    var cd = E.countdown(TODAY, d.date), dt = $(prefix + "-date"), left = $(prefix + "-left"), pd = E.parseISO(d.date);
-    if ($(prefix + "-cal-m")) { $(prefix + "-cal-m").textContent = MON[pd.m - 1] + " " + pd.y; $(prefix + "-cal-d").textContent = String(pd.d); }
-    $(prefix + "-box").classList.toggle("passed", cd.state === "passed");
-    clear(dt); clear(left);
-    if (cd.state !== "passed") { var dtxt = /\.$/.test(cd.text) ? cd.text : cd.text + "."; if (prefix === "dl" && cd.state === "open") dtxt = cd.text + (reseller ? " to ask your provider." : " to ask."); dt.appendChild(el("b", { id: prefix + "-days", text: dtxt })); dt.appendChild(document.createTextNode(" ")); }
-    dt.appendChild(document.createTextNode(deadlineSentence(vendorName, d, cd, reseller)));
-    if (cd.state === "passed") left.textContent = prefix === "dl" ? "" : LATE;   // the statement shows it once, above its button
-    else if (!reseller && (cd.state === "today" || (d.sendBy && TODAY >= d.sendBy))) left.textContent = LASTDAY;
-    else left.textContent = "Sooner is safer.";
-    if (prefix === "dl") { if (left.textContent) left.appendChild(document.createTextNode(" ")); left.appendChild(el("span", { class: "long", text: "For the outage reported on " + dayMonthYear(MS.featured.start) + "." })); }
-    return cd;
+  // the one countdown box (under the lede): built once per mode, filled from E.countdownModel (the same model the hand-off pack quotes)
+  function buildBox(prefix) {
+    return el("div", { class: "deadline", id: prefix + "-box" }, [
+      el("div", { class: "cal", "aria-hidden": "true" }, [el("span", { id: prefix + "-cal-m" }), el("b", { id: prefix + "-cal-d" }), el("i", { id: prefix + "-cal-l" })]),
+      el("div", null, [el("p", { class: "cdex", id: prefix + "-ex", hidden: "", text: "Example dates, not yours." }), el("p", null, [el("b", { id: prefix + "-days", "data-lead": "1" }), " ", el("span", { id: prefix + "-date" })]),
+        el("p", { class: "small", id: prefix + "-left" }), el("details", { class: "more", id: prefix + "-why", hidden: "" }, [el("summary", { text: "Why this date" }), el("p", { id: prefix + "-why-t" })])])]);
   }
+  function fillBox(prefix, m, example) {
+    var box = $(prefix + "-box"), lead = box.querySelector("[data-lead]");
+    box.classList.toggle("passed", m.state === "passed"); box.querySelector(".cal").classList.toggle("gone", !!m.tile.closed);
+    $(prefix + "-cal-m").textContent = m.tile.month; $(prefix + "-cal-d").textContent = m.tile.day; $(prefix + "-cal-l").textContent = m.tile.label;
+    $(prefix + "-ex").hidden = !example;
+    lead.textContent = m.lead; lead.id = prefix + (m.state === "passed" ? "-lead" : "-days");
+    $(prefix + "-date").textContent = m.sentence; $(prefix + "-left").textContent = m.quiet; $(prefix + "-left").hidden = !m.quiet;
+    $(prefix + "-why").hidden = !m.why; $(prefix + "-why-t").textContent = m.why;
+  }
+  function cdOpts(kind, extra) { return Object.assign({ today: TODAY }, kind === "ms" ? { name: "Microsoft", product: MS.product, start: MS.featured.start } : {}, extra || {}); }
   // the Microsoft deadline for this buyer: the SLA date for a direct customer; this page's reading of the partner rule for a reseller buyer
   function msDeadlineFor(inc, reseller, vendor) {
     var v = vendor || MS, d = E.deadline(v.deadline, inc);
@@ -128,20 +132,21 @@
     return d;
   }
   function msTile() {
-    var rs = msReseller(), d = msDeadlineFor({ start: MS.featured.start }, rs), cd = deadlineTile("dl", d, "Microsoft", rs), sd = $("st-date");
-    sd.textContent = rs ? (cd.state === "passed" ? "By this page's count the provider's month has ended. See the countdown above." : "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown above.") : "Last day: " + E.fullDate(d.date) + ". See the countdown above."; sd.hidden = noCredit;
-    return cd;
+    var rs = msReseller(), d = msDeadlineFor({ start: MS.featured.start }, rs), m = E.countdownModel("ms", d, cdOpts("ms", { reseller: rs })), sd = $("st-date");
+    fillBox("dl", m, example);
+    sd.textContent = m.state === "passed" ? "" : rs ? "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown above." : "Send by " + E.fullDate(d.sendBy) + ". See the countdown above."; sd.hidden = noCredit || m.state === "passed";
+    return E.countdown(TODAY, d.date);
   }
   function writeButton(btn, cd, none) {
     var late = cd && cd.state === "passed";
-    btn.textContent = none ? "See the request text" : late ? "Write a request anyway" : "Write my request";
+    btn.textContent = none ? "See the request text" : late ? "Write a request to ask anyway" : "Write my request";
     btn.classList.toggle("quiet", late || !!none);
   }
   function msButton() {
-    var cd = E.countdown(TODAY, E.deadline(MS.deadline, { start: MS.featured.start }).date);
-    stripText(cd);
+    var cd = E.countdown(TODAY, msDeadlineFor({ start: MS.featured.start }, msReseller()).date);
+    stripText(E.countdown(TODAY, E.deadline(MS.deadline, { start: MS.featured.start }).date));
     writeButton($("write-btn"), cd, noCredit); $("write-btn").hidden = noCredit;
-    $("late-note").hidden = cd.state !== "passed" || noCredit; $("late-note").textContent = msReseller() ? "Ask your provider anyway: they can tell you if a request is still possible." : "The agreement gives no right to a late claim. You can still ask your vendor.";
+    $("late-note").hidden = true; $("late-note").textContent = "";      // the late-claim words now live in the countdown box
   }
 
   // ---------- the Microsoft statement ----------
@@ -286,10 +291,8 @@
     var none = !res.uncertain && res.tier === 0;
     var wb = el("button", { type: "button", class: "primary", id: "o-write", text: "Write my request" });
     wb.addEventListener("click", goWrite); out.appendChild(wb);
-    var box = el("div", { class: "deadline", id: "o-dl-box" }, [el("div", { class: "cal", "aria-hidden": "true" }, [el("span", { id: "o-dl-cal-m" }), el("b", { id: "o-dl-cal-d" })]),
-      el("div", null, [el("p", null, [el("span", { id: "o-dl-date" })]), el("p", { class: "small", id: "o-dl-left" })])]);
-    $("cd-o").appendChild(box);
-    writeButton(wb, deadlineTile("o-dl", e.d, v.vendor), none);
+    var cdo = $("cd-o"); cdo.appendChild(buildBox("o-dl")); fillBox("o-dl", E.countdownModel("own", e.d, { today: TODAY, name: v.vendor }), false);
+    writeButton(wb, E.countdown(TODAY, e.d.date), none);
     if (none) wb.hidden = true;
     if (e.d.crossesMonth) out.appendChild(el("p", { class: "fine", text: e.d.crossNote }));
     var dl = el("dl", { class: "work" }, [
@@ -333,7 +336,7 @@
   function gCalc() {
     gSnap = gKey();
     var out = $("g-out"); clear(out); gLast = null; var cdg = $("cd-g"); clear(cdg);
-    cdg.appendChild(el("p", { id: "g-cd-pre", class: "cdp" }, [el("b", { text: "You have 30 days:" }), " this page counts them from the day the downtime started."]));
+    cdg.appendChild(buildBox("g-dl")); fillBox("g-dl", { state: "open", lead: "You have 30 days.", sentence: "Send your request to Google (or tell your reseller) within 30 days of the day the downtime started. Enter that day in the statement to get your date.", quiet: "", why: "", tile: { month: "Within", day: "30", label: "days" } }, false);
     $("g-form").classList.toggle("is-example", gExample);
     var r = gRead(), said = function (t) { out.appendChild(el("p", { class: "r-line r-empty", id: "g-r-line", text: t })); };
     GBAD = false;
@@ -362,10 +365,8 @@
       out.appendChild(wb);
       var late = cd.state === "passed";
       writeButton(wb, cd, false);
-      var box = el("div", { class: "deadline" + (late ? " passed" : ""), id: "g-dl-box" }, [el("div", { class: "cal", "aria-hidden": "true" }, [el("span", { text: MON[pd2.m - 1] + " " + pd2.y }), el("b", { text: String(pd2.d) })]),
-        el("div", null, [el("p", null, [late ? null : el("b", { id: "g-dl-days", text: /\.$/.test(cd.text) ? cd.text : cd.text + "." }), late ? null : " ", gSentence(e.d, cd, rs)]), el("p", { class: "small", id: "g-dl-left", text: gTail(e.d, cd) })])]);
-      clear(cdg); cdg.appendChild(box);
-      out.appendChild(el("p", { class: "small", id: "g-st-date", text: "Last day, counting from the day it started: " + E.fullDate(e.d.date) + ". See the countdown above." }));
+      clear(cdg); cdg.appendChild(buildBox("g-dl")); var gm = E.countdownModel("g", e.d, { today: TODAY, reseller: rs, ownWords: GW.deadline.ownWords }); fillBox("g-dl", gm, gExample);
+      if (gm.state !== "passed") out.appendChild(el("p", { class: "small", id: "g-st-date", text: "Send by " + E.fullDate(e.d.sendBy) + ". See the countdown above." }));
     } else clear(cdg);
     var dl = el("dl", { class: "work" }, [
       el("dt", null, ["Minutes in the month ", el("small", { text: "(the month's days × 1,440)" })]), el("dd", { id: "g-w-pm", text: num(res.periodMinutes) }),
@@ -407,16 +408,17 @@
   function packSubject(nameMax) {
     var c = pack.c, v = c.v, o = pack.o, cl = function (x) { return nameMax && String(x).length > nameMax ? String(x).slice(0, nameMax) + "..." : x; };
     if (mode === "g") return cl(c.inputs.service) + " downtime from " + dayMonthYear(o.start);
-    return "Service credit: " + (mode === "own" ? cl(v.vendor) : v.vendor) + " outage of " + dayMonthYear(o.start);
+    return "Service credit: " + (mode === "own" ? cl(v.vendor) + " outage of " : v.vendor + " outage reported on ") + dayMonthYear(o.start);
   }
   // a mailto: link, empty recipient, under 1,800 characters: drop the reason line, then the numbers, then shorten typed names; never the result, the date or the hedges
   function mailHref(kind) {
     var steps = [{}, { drop: ["why"], shortened: true }, { drop: ["why", "numbers"], shortened: true }, { drop: ["why", "numbers"], shortened: true, nameMax: 20 }, { drop: ["why", "numbers"], shortened: true, nameMax: 8 }, { drop: ["why", "numbers"], shortened: true, nameMax: 3 }], href = "";
-    var rs = pack.c.inputs.reseller === true;
+    var rs = pack.c.inputs.reseller === true, none = !pack.c.res.uncertain && pack.c.res.tier === 0;
     for (var i = 0; i < steps.length; i++) {
       var sum = packSummary(steps[i]), body = kind === "it"
-        ? "Hello,\nPlease check the numbers below, then " + (rs ? "ask our provider to request" : "file") + " the service credit" + (rs ? "." : " request.") + "\nIf anything looks wrong, tell me before you send anything.\n\n" + sum
-        : sum + "\n\nThe full request text is on the page: copy it there, or download the record.";
+        ? (none ? "Hello,\nPlease check the numbers below. By this count there is no service credit to ask for; tell me if your figures differ.\n\n"
+          : "Hello,\nPlease check the numbers below, then " + (rs ? "ask our provider to request" : "file") + " the service credit" + (rs ? "." : " request.") + "\nIf anything looks wrong, tell me before you send anything.\n\n") + sum
+        : sum + "\n\n" + (none ? "The numbers are on the page: download the record to keep them." : "The full request text is on the page: copy it there, or download the record.");
       href = "mailto:?subject=" + encodeURIComponent(packSubject(steps[i].nameMax)) + "&body=" + encodeURIComponent(body.replace(/\n/g, "\r\n"));
       if (href.length < 1800) break;
     }
@@ -646,6 +648,7 @@
     document.addEventListener("visibilitychange", function () { if (!document.hidden) tick(); });
     window.addEventListener("focus", tick);
     (function atMidnight() { var n = new Date(), next = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1, 0, 0, 1); setTimeout(function () { tick(); atMidnight(); }, Math.max(1000, next - n)); })();
+    $("cd").insertBefore(buildBox("dl"), $("cd-g"));
     vendorText();
     ["all", "g0u", "g0h", "g0m", "fee"].forEach(function (id) { $(id).addEventListener("change", recalc); $(id).addEventListener("input", recalc); $(id).addEventListener("focus", leaveExample); });
     ["c-id", "c-start", "c-end", "c-desc", "c-res", "c-loc", "c-err"].forEach(function (id) { $(id).addEventListener("input", refreshShared); });
