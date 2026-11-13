@@ -1,0 +1,149 @@
+{
+  "id": "google-workspace",
+  "vendor": "Google",
+  "service": "Google Workspace",
+  "document": {
+    "title": "Google Workspace Service Level Agreement",
+    "url": "https://workspace.google.com/terms/sla/",
+    "date": "2026-08-31",
+    "lastChecked": "2026-11-13",
+    "label": "Google Workspace SLA",
+    "checkedBy": "research/TF2-google-sla-source.txt (page text fetched 2026-11-13)"
+  },
+  "letterStyle": "support-case",
+  "scopeNote": "This agreement is for organisations with a Google Workspace agreement.",
+  "services": [
+    "Gmail",
+    "Google Calendar",
+    "Google Chat",
+    "Google Cloud Search",
+    "Google Docs",
+    "Google Drive",
+    "Google Forms",
+    "Google Groups for Business",
+    "Google Keep",
+    "Google Meet",
+    "Google Pics",
+    "Google Sheets",
+    "Google Sites",
+    "Google Slides",
+    "Google Tasks",
+    "Google Vault",
+    "Google Vids",
+    "Google Voice"
+  ],
+  "servicesClause": {
+    "quote": "the Gmail, Google Calendar, Google Chat, Google Cloud Search, Google Docs, Google Drive, Google Forms, Google Groups for Business, Google Keep, Google Meet, Google Pics, Google Sheets, Google Sites, Google Slides, Google Tasks, Google Vault, Google Vids, and Google Voice components of the Services, excluding Gmail Labs functionality",
+    "source": "https://workspace.google.com/terms/sla/"
+  },
+  "formula": "total-minutes",
+  "formulaClause": {
+    "quote": "\"Monthly Uptime Percentage\" means total number of minutes in a calendar month minus the number of minutes of Downtime in a calendar month, divided by the total number of minutes in a calendar month.",
+    "source": "https://workspace.google.com/terms/sla/",
+    "layout": "(minutes in the month - minutes of Downtime) / minutes in the month x 100"
+  },
+  "downtimeClause": {
+    "quote": "\"Downtime\" means, for a domain, a period of time during which the user web interface for the applicable Covered Services used by Customer has more than a five percent user error rate. Downtime is measured based on server side error rate.",
+    "source": "https://workspace.google.com/terms/sla/"
+  },
+  "period": {
+    "type": "calendar-month",
+    "quote": "\"Monthly Uptime Percentage\" means total number of minutes in a calendar month minus the number of minutes of Downtime in a calendar month, divided by the total number of minutes in a calendar month.",
+    "source": "https://workspace.google.com/terms/sla/",
+    "timeZoneNote": "The SLA names no time zone. The engine checks the month 60 minutes shorter and longer when the month holds a clock change."
+  },
+  "comparison": "strict-below",
+  "creditUnit": "service-days",
+  "creditClause": {
+    "quote": "Days of Service added to the end of the Service term (for offline billing customers), or monetary credit equal to the value of days applied to a future invoice (for online billing customers), for the applicable Covered Service(s) that did not meet the Google Workspace SLA",
+    "also": [
+      "Google Workspace Essentials Service Credit. If Customer orders Google Workspace Essentials edition directly from Google, any Service Credits that may be due to Customer will be issued in the form of monetary credits (and not additional Service days) that will be applied to Customer's next invoice.",
+      "shall not exceed fifteen days of Service added to the end of Customer's term for that Covered Service"
+    ],
+    "valueNote": "The agreement does not say how Google values a day, so the site gives no dollar figure.",
+    "source": "https://workspace.google.com/terms/sla/"
+  },
+  "tiers": [
+    {
+      "below": "99.9",
+      "credit": 3,
+      "quote": "< 99.9% - >= 99.0%",
+      "creditCell": "3",
+      "quoteNote": "A cell of the credit table; creditCell is the cell beside it.",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "below": "99",
+      "credit": 7,
+      "quote": "< 99.0% - >= 95.0%",
+      "creditCell": "7",
+      "quoteNote": "A cell of the credit table; creditCell is the cell beside it.",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "below": "95",
+      "credit": 15,
+      "quote": "< 95.0%",
+      "creditCell": "15",
+      "quoteNote": "A cell of the credit table; creditCell is the cell beside it.",
+      "source": "https://workspace.google.com/terms/sla/"
+    }
+  ],
+  "maxClause": {
+    "quote": "shall not exceed fifteen days of Service added to the end of Customer's term for that Covered Service",
+    "source": "https://workspace.google.com/terms/sla/"
+  },
+  "deadline": {
+    "rule": "days-after",
+    "days": 30,
+    "from": "start",
+    "sendByDaysBefore": 1,
+    "quote": "Customer must notify Google (or, if Customer ordered Services from a Reseller, Customer must notify Customer's Reseller who must notify Google) by creating a support case within thirty days from the time Customer becomes eligible to receive a Service Credit.",
+    "ownWords": "The agreement does not say when you become eligible. This date counts 30 days from the day the downtime started, the earliest reading. Sooner is safer. If there were several outages this month, this page counts the 30 days from the first one, the earliest reading.",
+    "source": "https://workspace.google.com/terms/sla/"
+  },
+  "resellerClause": {
+    "quote": "If Customer ordered Services from a Reseller and complies with this requirement, Customer will receive the applicable Service Credit from Customer's Reseller on behalf of Google.",
+    "also": [
+      "Customer must notify Customer's Reseller who must notify Google"
+    ],
+    "source": "https://workspace.google.com/terms/sla/"
+  },
+  "cannotClaim": [
+    {
+      "who": "Google Workspace Essentials Starter edition: the agreement does not apply to it.",
+      "quote": "any services comprised within the Google Workspace Essentials Starter edition (notwithstanding that this SLA may define such services as Google Workspace Covered Services)",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "who": "Services whose own documentation excludes this agreement: not covered.",
+      "quote": "any services that expressly exclude it (as stated in the documentation for such services)",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "who": "Gmail Labs functionality: not a covered service.",
+      "quote": "excluding Gmail Labs functionality",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "who": "Problems caused by force majeure: not covered.",
+      "quote": "caused by factors described in the \"Force Majeure\" section of the Agreement",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "who": "Problems caused by your own equipment or third-party equipment: not covered.",
+      "quote": "that resulted from Customer's equipment and/or third party equipment, (not within the primary control of Google)",
+      "source": "https://workspace.google.com/terms/sla/"
+    },
+    {
+      "who": "Problems caused by abuse or other behaviour that breaks the agreement: not covered.",
+      "quote": "that resulted from Customer’s or its End Users’ abuses or other behaviors that violate the Agreement",
+      "source": "https://workspace.google.com/terms/sla/"
+    }
+  ],
+  "notes": [
+    "Downtime is defined for a domain and measured based on server side error rate. The visitor cannot measure it, so the count on this page is the visitor's own and Google's figure may differ.",
+    "The agreement names no time zone for the calendar month.",
+    "The aggregate maximum is fifteen days of Service per covered service per calendar month; that is the top tier."
+  ]
+}

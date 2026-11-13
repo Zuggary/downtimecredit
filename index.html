@@ -53,7 +53,7 @@
   .lede { margin: 4px 0 0; font-size: 15px; line-height: 1.4; max-width: 34em; }
   .indep { margin: 6px 0 0; font-size: 14px; line-height: 1.35; font-weight: 600; }
   .indep span { font-weight: 400; color: var(--ink-2); }
-  .pick { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 12px 0 0; }
+  .pick { display: grid; grid-template-columns: repeat(3, 1fr); border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; margin: 12px 0 0; }
   .pick button { font: 600 14px/1.25 var(--text); padding: 6px 10px; text-align: left; color: var(--ink); background: var(--sheet); border: 0; cursor: pointer; display: flex; align-items: center; min-height: 44px; }
   .pick button + button { border-left: 2px solid var(--ink); }
   .pick [aria-pressed="true"] { background: var(--ink); color: #fff; }
@@ -206,6 +206,11 @@
     .f input { padding: 6px 9px; }
     .result { padding-top: 6px; }
   }
+  @media (max-width: 559px) {
+    .pick { grid-template-columns: 1fr; }
+    .pick button { min-height: 40px; }
+    .pick button + button { border-left: 0; border-top: 2px solid var(--ink); }
+  }
   @media (max-width: 479px) {
     .tier { grid-template-columns: 1fr 1fr; } .tier .xbtn { grid-column: 1 / -1; justify-self: start; }
     #own-form .fields { grid-template-columns: 1fr; }
@@ -265,20 +270,22 @@
 <header class="top">
   <div class="in"><a class="brand" href="./">Downtime Credit</a>
     <nav aria-label="Sections"><a href="#incidents">Your incidents</a> <a href="#who-runs">Who runs this</a></nav></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to Microsoft or any vendor. Nothing you type leaves your browser. A credit is not cash.</p></div>
+  <div class="trustbar"><p id="trust">Not legal advice. Not run by or linked to Microsoft or any vendor. Nothing you type leaves your browser. A credit is not cash.</p></div>
 </header>
 
 <main>
 <div class="in hero">
   <div class="intro">
-    <h1>An outage can mean a credit on your next bill.</h1>
-    <p class="lede">Work out what your company may be owed, get the request written and keep track of the deadline; you send it.</p>
+    <h1 id="h1-t">An outage can mean a credit on your next bill.</h1>
+    <p class="lede" id="lede-t">Work out what your company may be owed, get the request written and keep track of the deadline; you send it.</p>
     <p class="need" id="need">You need four numbers: users on your plan, how many lost email, for how long, and what you paid for November.</p>
     <div class="pick" role="group" aria-label="Which outage">
       <button type="button" id="mode-ms" aria-pressed="true">Microsoft 365 outage, 12&nbsp;Nov</button>
+      <button type="button" id="mode-g" aria-pressed="false">Google Workspace</button>
       <button type="button" id="mode-own" aria-pressed="false">Another vendor or my own contract</button>
     </div>
     <p class="cue" id="cue"><b>Does this apply to us?</b> Probably, if your company buys a paid Microsoft 365 business plan from Microsoft itself, not through a reseller. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
+    <p class="cue" id="cue-g" hidden><b>Does this apply to us?</b> This agreement is for organisations with a Google Workspace agreement. Some editions and causes are left out. Check your edition: Essentials Starter is not covered. <a href="#who-g">See who cannot claim</a>.</p>
     <ul class="outline" aria-label="The three steps">
       <li><a href="#statement">Work it out</a><span id="ol-work">Four numbers give the credit the agreement allows.</span></li>
       <li><a href="#write">Write it</a><span>The request, with the details the agreement asks for.</span></li>
@@ -359,6 +366,25 @@
     </div>
     <div id="own-res" aria-live="polite"></div>
   </form>
+  <form class="sheet" id="g-form" novalidate aria-labelledby="g-title" hidden>
+    <div class="sh"><h2 id="g-title">Credit statement</h2><button type="button" class="exbtn" id="g-ex" aria-pressed="false">Example</button></div>
+    <p class="sub">Google Workspace, uptime counted over the calendar month</p>
+    <p class="exflag">Example numbers: Harbor &amp; Pine Dental (made up).</p>
+    <div class="fields">
+      <div class="f span2"><label for="g-svc">Which service was down?</label><select id="g-svc"></select></div>
+      <div class="f span2"><label for="g-start">Day the first downtime of the month started</label><input id="g-start" type="date" aria-describedby="g-start-w"><small id="g-start-w" class="echo"></small></div>
+      <div class="f span2"><span id="g-time">How long was the service down for your domain?</span>
+        <div class="hm" role="group" aria-labelledby="g-time">
+          <span class="u"><input id="g-h" inputmode="numeric" autocomplete="off" placeholder="e.g. 5" aria-label="Hours the service was down"><span aria-hidden="true">hours</span></span>
+          <span class="u"><input id="g-m" inputmode="numeric" autocomplete="off" placeholder="e.g. 30" aria-label="Minutes the service was down"><span aria-hidden="true">minutes</span></span>
+        </div>
+        <small class="hint" id="g-time-h">Add up the whole calendar month, for this one service. If there were several outages this month, the safest reading is to use the first one and add up all the minutes. Google measures downtime by its own server-side error rate. This is your own count; Google's figure may differ.</small></div>
+      <fieldset class="opt span2"><legend>Where did you buy Google Workspace?</legend>
+        <label><input type="radio" name="g-buy" value="google" checked><span>Bought from Google</span></label>
+        <label><input type="radio" name="g-buy" value="reseller"><span>Bought from a reseller</span></label></fieldset>
+    </div>
+    <div id="g-out" aria-live="polite"></div>
+  </form>
   </div>
 </div>
 
@@ -367,15 +393,15 @@
   <p class="lead">Fill in what you know. Anything left out stays as a highlighted blank in the request, for you to complete before you send it.</p>
   <div class="wgrid">
     <div class="wfields" id="claim-fields">
-      <p class="span2 small" style="margin:0">Fields marked <b>asked for</b> are items the agreement lists; leave any blank and fill it in later in the letter.</p>
-      <div class="f span2"><label for="c-id">Incident ID <small>(helps, not required)</small></label><small id="c-id-help"></small><input id="c-id" autocomplete="off" placeholder="e.g. EX0000000"></div>
-      <div class="f"><label for="c-start">Started (date, time, time zone) <small class="ask">asked for</small></label><input id="c-start" autocomplete="off" placeholder="e.g. 12 Nov 2026, 8:15 am Pacific"></div>
-      <div class="f"><label for="c-end">Ended, or "still down" <small class="ask">asked for</small></label><input id="c-end" autocomplete="off" placeholder="e.g. 13 Nov 2026, 9:00 am Pacific"></div>
-      <div class="f span2"><label for="c-desc">What happened, in your words <small class="ask">asked for</small></label><textarea id="c-desc" placeholder="e.g. Nobody in the office could send or receive email."></textarea></div>
-      <div class="f span2"><label for="c-res"><span id="c-res-l">Your email domain and the affected mailboxes</span> <small class="ask">asked for</small></label><input id="c-res" autocomplete="off" placeholder="e.g. harborpine.example, all mailboxes"></div>
-      <div class="f"><label for="c-loc">Where your users are <small class="ask">asked for</small></label><input id="c-loc" autocomplete="off" placeholder="e.g. Portland, USA"></div>
-      <div class="f"><label for="c-err">Error messages people saw <small class="ask">asked for</small></label><input id="c-err" autocomplete="off" placeholder="word for word"></div>
-      <p class="span2" id="reseller-link"><b>Bought through a reseller?</b> Your provider files the request. <a href="#who">See who cannot claim</a>.</p>
+      <p data-nog class="span2 small" style="margin:0">Fields marked <b>asked for</b> are items the agreement lists; leave any blank and fill it in later in the letter.</p>
+      <div data-nog class="f span2"><label for="c-id">Incident ID <small>(helps, not required)</small></label><small id="c-id-help"></small><input id="c-id" autocomplete="off" placeholder="e.g. EX0000000"></div>
+      <div data-nog class="f"><label for="c-start">Started (date, time, time zone) <small class="ask">asked for</small></label><input id="c-start" autocomplete="off" placeholder="e.g. 12 Nov 2026, 8:15 am Pacific"></div>
+      <div data-nog class="f"><label for="c-end">Ended, or "still down" <small class="ask">asked for</small></label><input id="c-end" autocomplete="off" placeholder="e.g. 13 Nov 2026, 9:00 am Pacific"></div>
+      <div data-nog class="f span2"><label for="c-desc">What happened, in your words <small class="ask">asked for</small></label><textarea id="c-desc" placeholder="e.g. Nobody in the office could send or receive email."></textarea></div>
+      <div class="f span2"><label for="c-res"><span id="c-res-l">Your email domain and the affected mailboxes</span> <small class="ask" id="c-res-ask">asked for</small></label><input id="c-res" autocomplete="off" placeholder="e.g. harborpine.example, all mailboxes"></div>
+      <div data-nog class="f"><label for="c-loc">Where your users are <small class="ask">asked for</small></label><input id="c-loc" autocomplete="off" placeholder="e.g. Portland, USA"></div>
+      <div data-nog class="f"><label for="c-err">Error messages people saw <small class="ask">asked for</small></label><input id="c-err" autocomplete="off" placeholder="word for word"></div>
+      <p class="span2" id="reseller-link" data-nog><b>Bought through a reseller?</b> Your provider files the request. <a href="#who">See who cannot claim</a>.</p>
     </div>
     <div class="sticky">
       <div class="letter" id="letter"><pre class="claim" id="claim" tabindex="0" aria-label="Your request text"></pre></div>
@@ -396,6 +422,7 @@
   <p class="fine">One all-day event on the deadline, with reminders 14 days and 3 days before.</p>
   <p id="sooner"><b>Sooner is safer.</b> <span id="sooner-why">The agreement names no time zone, and the claim must arrive with all the information it asks for.</span></p>
   <details class="more" id="dl-words"><summary>See the agreement's text</summary><div id="deadline-quote"></div></details>
+  <details class="more" id="dl-words-g" hidden><summary>See the agreement's text</summary><div id="g-deadline-quote"></div></details>
 </div></section>
 
 <section class="step after-tint" id="rules" aria-labelledby="h-rules"><div class="in">
@@ -420,12 +447,34 @@
   </div>
   <details class="more"><summary>See the agreement's text</summary><div id="who-quotes"></div><div id="downtime-def"></div><div id="reseller-quote"></div></details>
   </div>
+  <div id="rules-g" hidden>
+    <p class="lead">Check these before you send: who the agreement leaves out, and what it counts as down.</p>
+    <p id="g-scope"></p>
+    <h3 id="who-g">Who cannot claim here</h3>
+    <dl class="who" id="g-who-list"></dl>
+    <div class="rules">
+      <div>
+        <h3>What counts as down</h3>
+        <p>Google's definition: downtime is, for a domain, a period when the user web interface of the service has more than a five percent user error rate, and it is measured based on server side error rate. You cannot measure that yourself. What you type is your own count of how long the service was down; Google's figure may differ.</p>
+        <h3 style="margin-top:18px">The month</h3>
+        <p>The month is the calendar month the downtime started in, counted as its days &times; 1,440 minutes. The agreement names no time zone. In a month with a clock change the month may be 60 minutes longer or shorter, so near a credit level's edge the statement shows both readings. If the downtime ran past the end of the month, type only the minutes in the month it started in. Minutes in the next month count toward that month, as a separate request.</p>
+      </div>
+      <div>
+        <h3>Bought from a reseller?</h3>
+        <p>You can still claim. You notify your reseller, your reseller must notify Google, and you get the credit from your reseller. Choose &ldquo;Bought from a reseller&rdquo; in the statement and the request is addressed to them.</p>
+        <h3 style="margin-top:18px">No fee to type</h3>
+        <p>The credit is days of service, so there is no fee and no user count to enter. The agreement gives at most 15 days of service for one service in one calendar month, and 15 days is already its top level.</p>
+      </div>
+    </div>
+    <details class="more"><summary>See the agreement's text</summary><div id="g-quotes"></div></details>
+  </div>
   <p id="rules-own" hidden>These rules are Microsoft's. For your own contract, check who can claim and what counts as down in your agreement.</p>
 </div></section>
 
 <section class="step" id="incidents" aria-labelledby="h-inc"><div class="in">
   <h2 class="sec" id="h-inc">Your incidents</h2>
   <p class="lead">Keep each outage here with its credit and deadline, nearest deadline first. The list stays in this browser only.</p>
+  <p class="note" id="bad-note" hidden></p>
   <p class="note" id="store-note" hidden>This browser is not saving: your list lasts for this visit only. Use Export to keep a copy.</p>
   <div class="savebar">
     <div class="f"><label for="inc-title">Name for this incident</label><input id="inc-title" autocomplete="off" placeholder="e.g. Email outage, November"></div>
@@ -447,7 +496,7 @@
 <footer><div class="in"><div>
   <section>
     <h2 id="who-runs">Who runs this</h2>
-    <p>An independent, free tool. Not a vendor, a reseller or a law firm. No ads at present. It is not run by or linked to Microsoft or any vendor, it is not legal advice, and it files nothing for you. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p id="who-runs-p">An independent, free tool. Not a vendor, a reseller or a law firm. No ads at present. It is not run by or linked to <span id="who-vendor">Microsoft</span> or any vendor, it is not legal advice, and it files nothing for you. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p>The outage tracker: <a href="https://isit364yet.com">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
   </section>
   <section>

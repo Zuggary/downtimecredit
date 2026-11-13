@@ -312,6 +312,140 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   var oi = { periodDays: 31, month: 10, downMinutes: 446, clockCheck: true }, orr = E.compute(ov, oi), ot = E.claimText(ov, { inputs: oi, result: orr });
   ok(orr.uncertain && orr.tier === 0 && ot.indexOf("0 days") < 0 && ot.indexOf("gives no credit") > 0 && ot.indexOf("We ask for the 3 days level.") > 0, "R3: a zero plain reading is never written as a credit", "zone"); })();
 
+// ---------- Google Workspace (vendors/google-workspace.json) ----------
+(function () {
+  var GWV = loaded.vendors.filter(function (v) { return v.id === "google-workspace"; })[0];
+  ok(!!GWV, "Google vendor loads and passes the schema", "google");
+  ok(E.validateVendor(JSON.parse(texts["google-workspace.json"])).ok, "schema check passes for the Google file", "google");
+  ok(E.validateVendor(JSON.parse(texts["microsoft-365-exchange.json"])).ok, "schema check still passes for the Microsoft file", "google");
+  ok(GWV.featured === undefined, "Google has no featured incident", "google");
+  eq(GWV.document.date, "2026-08-31", "Google SLA date", "google"); eq(GWV.document.lastChecked, "2026-11-13", "Google last checked", "google");
+  function gwithout(path) { var v = JSON.parse(texts["google-workspace.json"]), o = v, p = path.split("."); for (var i = 0; i < p.length - 1; i++) o = o[p[i]]; delete o[p[p.length - 1]]; return v; }
+  ["tiers.0.quote", "tiers.2.quote", "deadline.quote", "downtimeClause.quote", "creditClause.quote", "formulaClause.quote", "cannotClaim.0.quote", "resellerClause.quote", "servicesClause.quote"].forEach(function (p) { ok(!E.validateVendor(gwithout(p)).ok, "schema rejects Google file missing " + p, "google"); });
+  ["deadline.from", "letterStyle"].forEach(function (p) { ok(E.validateVendor(gwithout(p)).ok || p === "letterStyle", "Google file without " + p + " is checked", "google"); });
+  (function () { var v = JSON.parse(texts["google-workspace.json"]); v.deadline.from = "middle"; ok(!E.validateVendor(v).ok, "schema rejects from: middle", "google");
+    v = JSON.parse(texts["microsoft-365-exchange.json"]); v.deadline.from = "start"; ok(!E.validateVendor(v).ok, "schema rejects from on end-of-next-month", "google");
+    v = JSON.parse(texts["microsoft-365-exchange.json"]); v.featured = { start: "nope" }; ok(!E.validateVendor(v).ok, "schema rejects a bad featured block", "google"); })();
+  // the source file: every quote must be in it, character for character (a missing file fails)
+  var src = ""; try { src = readFile(SITE + "/../../research/TF2-google-sla-source.txt"); } catch (e) { src = ""; }
+  ok(src.length > 1000, "Google SLA source text is present", "google");
+  var quotes = [];
+  (function walk(o) { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === "object") Object.keys(o).forEach(function (k) { if (k === "quote" && typeof o[k] === "string") quotes.push(o[k]); else if (k === "also" && Array.isArray(o[k])) o[k].forEach(function (a) { quotes.push(a); }); else walk(o[k]); }); })(JSON.parse(texts["google-workspace.json"]));
+  ok(quotes.length >= 14, "Google file carries its quotes (" + quotes.length + ")", "google");
+  quotes.forEach(function (q, i) { ok(src.indexOf(q) >= 0, "Google quote " + i + " is in the source: " + q.slice(0, 50), "google"); });
+  // 61 credit cases and 7 deadline cases
+  var gc = null; try { gc = JSON.parse(readFile(SITE + "/../../research/TF2-google-cases.json")); } catch (e) { gc = null; }
+  ok(gc !== null, "Google reference cases are present", "google");
+  if (gc) {
+    eq(gc.cases.length, 61, "61 Google cases present", "google"); eq(gc.deadline_cases.length, 7, "7 Google deadline cases present", "google");
+    gc.cases.forEach(function (c) {
+      var i = c.inputs, x = c.expected, r = E.compute(GWV, { periodDays: i.days_in_month, month: i.month, downMinutes: i.down_minutes });
+      if (x.error) { eq(r.error, x.error, "Google case " + c.id + " error", "google"); return; }
+      eq(r.periodMinutes, x.month_minutes, "Google case " + c.id + " month minutes", "google");
+      eq(r.uptimePct, x.uptime_pct, "Google case " + c.id + " uptime", "google"); eq(r.creditDays, x.credit_days, "Google case " + c.id + " days", "google");
+      eq(r.uncertain, x.flagged, "Google case " + c.id + " flagged", "google");
+      eq(J(r.periodChecks.map(function (k) { return { month_minutes: k.periodMinutes, days: k.tier }; })), J(x.variants), "Google case " + c.id + " variants", "google");
+      ok(r.creditCents === undefined && r.creditUnit === "service-days", "Google case " + c.id + " has no money", "google");
+    });
+    gc.deadline_cases.forEach(function (c) {
+      var d = E.deadline(GWV.deadline, { start: c.start, end: E.addDays(c.start, 3) });
+      eq(d.date, c.expected_last_day, "Google deadline " + c.start + " last day", "google"); eq(d.sendBy, c.expected_send_by, "Google deadline " + c.start + " send by", "google");
+    });
+  }
+  // the from rule, and the default unchanged
+  eq(E.deadline({ rule: "days-after", days: 30, from: "start" }, { start: "2026-11-12", end: "2026-11-20" }).date, "2026-12-12", "from start counts from the start date", "google");
+  eq(E.deadline({ rule: "days-after", days: 30, from: "end" }, { start: "2026-11-12", end: "2026-11-20" }).date, "2026-12-20", "from end counts from the end date", "google");
+  eq(E.deadline({ rule: "days-after", days: 30 }, { start: "2026-11-12", end: "2026-11-20" }).date, "2026-12-20", "default days-after still counts from the end date", "google");
+  eq(E.deadline({ rule: "days-after", days: 30 }, { start: "2026-11-12" }).date, "2026-12-12", "default days-after with no end uses the start", "google");
+  eq(E.deadline({ rule: "days-after", days: 30, from: "start", sendByDaysBefore: 1 }, { start: "2026-11-12" }).sendBy, "2026-12-11", "send by is the day before", "google");
+  // the letter: no money, names the service, the domain, the date; reseller changes the addressee
+  var gi = { periodDays: 30, month: 11, downMinutes: 300, service: "Gmail", reseller: false }, gr = E.compute(GWV, gi);
+  var gt = E.claimText(GWV, { inputs: gi, result: gr, fields: { resources: "harborpine.example" }, start: "2026-11-03", deadline: "2026-12-03" });
+  ["harborpine.example", "Gmail", "3 November 2026", "300 of 43,200 minutes", "99.3055%", "up to 3 days of service, if Google accepts the claim", "Google Workspace Service Level Agreement", "server side"].forEach(function (w) { ok(gt.indexOf(w) >= 0, "Google letter shows " + w, "google"); });
+  ok(gt.indexOf("$") < 0 && gt.indexOf("Microsoft") < 0 && gt.indexOf("users") < 0, "Google letter: no dollar, no Microsoft, no user count", "google");
+  var gtr = E.claimText(GWV, { inputs: Object.assign({}, gi, { reseller: true }), result: gr, fields: {}, start: "2026-11-03", deadline: "2026-12-03" });
+  ok(gtr.indexOf("Hello [your reseller's name],") === 0 || gtr.indexOf("Hello [your reseller's name],") > 0, "reseller letter is addressed to the reseller", "google");
+  ok(gtr.indexOf("Thursday 3 December 2026") >= 0 && gtr.indexOf("[your Google Workspace domain") >= 0, "reseller letter carries the date and a blank domain", "google");
+  var gfl = E.compute(GWV, { periodDays: 30, month: 11, downMinutes: 2161 }), gtf = E.claimText(GWV, { inputs: { downMinutes: 2161, service: "Gmail" }, result: gfl, start: "2026-11-03" });
+  ok(gtf.indexOf("43,200 minutes gives 15 days") >= 0 && gtf.indexOf("43,260 minutes gives 7 days") >= 0, "flagged Google letter names both readings", "google");
+  var gie = E.icsFor({ deadline: "2026-12-03", uid: "g1", vendor: "Google", title: "Google Workspace Gmail", supportCase: true, sendBy: "2026-12-02", rule: "x" });
+  ok(gie.indexOf("DTSTART;VALUE=DATE:20261203") > 0 && gie.indexOf("$") < 0 && gie.indexOf("support case") > 0, "Google calendar file: date, no money", "google");
+  // the store keeps a Google incident
+  var gRules = { "google-workspace": { services: GWV.services } }, gCheck = function (x) { var v = x.own ? E.ownVendor(x.own) : (x.vendorId === "google-workspace" ? GWV : MS); return !!v && !v.error && !E.deadline(v.deadline, x).error; };
+  var gs = S.createStore({ storage: null, knownVendors: ["microsoft-365-exchange", "google-workspace"], rules: gRules, check: gCheck });
+  ok(!gs.add({ vendorId: "google-workspace", title: "G", start: "2026-11-03", inputs: { downMinutes: 300, service: "Gmail", reseller: true }, fields: { resources: "harborpine.example" } }).error, "store accepts a Google incident", "google");
+  eq(JSON.stringify(gs.all()[0].inputs), JSON.stringify({ downMinutes: 300, service: "Gmail", reseller: true }), "store keeps service and reseller", "google");
+  ok(gs.add({ vendorId: "google-workspace", start: "2026-11-03", inputs: { service: 5 } }).error !== undefined && gs.add({ vendorId: "google-workspace", start: "2026-11-03", inputs: { reseller: "yes" } }).error !== undefined, "store rejects a bad service or reseller", "google");
+
+  // ---- fix round 1 ----
+  ok(gt.indexOf("governs") < 0 && gt.indexOf("decides") < 0 && gt.indexOf("measures Downtime on the server side, as an error rate for our domain.") > 0, "fix 2: the letter claims no governing measurement", "google");
+  ok(gtr.indexOf("The Google Workspace SLA asks for a support case within thirty days from when we became eligible. Counting from the day the downtime started, that is Thursday 3 December 2026. Please open it before then") > 0, "fix 4: reseller letter uses the SLA's sentence", "google");
+  ok(gtr.indexOf("at the latest") < 0 && gtr.indexOf("must open") < 0 && gtr.indexOf("you must notify Google") > 0, "fix 4: no at-the-latest, reseller notifies Google", "google");
+  var gie2 = E.icsFor({ deadline: "2026-12-03", uid: "g1", vendor: "Google", product: "Google Workspace", service: "Gmail", supportCase: true, sendBy: "2026-12-02", rule: "x" }).replace(/\r\n /g, "");
+  ok(gie2.indexOf("SUMMARY:Google Workspace service credit: 30 days end (Gmail)") > 0 && gie2.split("Gmail").length === 3 && gie2.indexOf("Counting from the day the downtime started") > 0 && gie2.indexOf("open the support case") > 0 && gie2.indexOf("send the credit claim") < 0, "fix 6/13: calendar file carries the hedge and the support-case reminder", "google");
+  ok(!!E.deadline(GWV.deadline, { start: "2999-12-01" }).date && !E.deadline(GWV.deadline, { start: "2999-12-01" }).error, "D1: 2999-12-01 still has a deadline", "google");
+  ["2999-12-02", "2999-12-15", "2999-12-31"].forEach(function (d) {
+    ok(E.deadline(GWV.deadline, { start: d }).error !== undefined && E.deadline(GWV.deadline, { start: d }).date === undefined, "D1: " + d + " has no deadline, an error", "google");
+    ok(E.deadline({ rule: "end-of-next-month" }, { start: d }).error !== undefined, "D1: end-of-next-month " + d + " is an error", "google");
+    ok(gs.add({ vendorId: "google-workspace", start: d, inputs: { downMinutes: 300, service: "Gmail" } }).error !== undefined, "D1: the store refuses a Google incident on " + d, "google");
+    ok(S.parseFile(JSON.stringify({ format: "downtimecredit-incidents", version: 1, incidents: [{ id: "x-1", vendorId: "google-workspace", start: d, inputs: { downMinutes: 300, service: "Gmail" } }] }), { known: ["google-workspace"], rules: gRules, check: gCheck }).error !== undefined, "D1: an import with a Google incident on " + d + " is refused", "google");
+  });
+  // a saved list keeps working: the bad incident is skipped and counted
+  (function () {
+    var f = JSON.stringify({ format: "downtimecredit-incidents", version: 1, incidents: [{ id: "bad-1", vendorId: "google-workspace", start: "2999-12-15", inputs: { downMinutes: 300, service: "Gmail" } }, { id: "good-1", vendorId: "google-workspace", start: "2026-11-03", inputs: { downMinutes: 300, service: "Gmail" } }] });
+    var m = f, st = S.createStore({ storage: { get: function () { return m; }, set: function (t) { m = t; return true; } }, knownVendors: ["google-workspace"], rules: gRules, check: gCheck });
+    eq(st.all().length, 1, "D1: a saved list with one bad incident loads the good one", "google"); eq(st.skipped(), 1, "D1: and counts the one left out", "google");
+  })();
+  // D9: per-vendor input keys
+  function gadd(inp, vid) { return gs.add({ vendorId: vid || "google-workspace", start: "2026-11-03", inputs: inp, own: vid === "own-contract" ? { service: "x", tiers: [{ below: "99", credit: 3 }], window: { rule: "end-of-next-month" } } : undefined }); }
+  ok(gadd({ downMinutes: 5, service: "Google Ads" }).error !== undefined, "D9: a service not on the SLA list is refused", "google");
+  ok(gadd({ downMinutes: 5 }).error !== undefined, "D9: a Google incident needs a service", "google");
+  ["feeCents", "allUsers", "periodDays"].forEach(function (k) { var i = { downMinutes: 5, service: "Gmail" }; i[k] = 5; ok(gadd(i).error !== undefined, "D9: a Google incident with " + k + " is refused", "google"); });
+  ok(gadd({ downMinutes: 5, service: "Gmail", groups: [{ affectedUsers: 1, downMinutes: 1 }] }).error !== undefined, "D9: a Google incident with groups is refused", "google");
+  ok(gadd({ downMinutes: 5, service: "Gmail", feeCents: 1 }, "microsoft-365-exchange").error !== undefined, "D9: a Microsoft incident with service is refused", "google");
+  ok(gadd({ downMinutes: 5, reseller: true }, "microsoft-365-exchange").error !== undefined, "D9: a Microsoft incident with reseller is refused", "google");
+  ok(gadd({ downMinutes: 5, service: "Gmail" }, "own-contract").error !== undefined, "D9: an own incident with service is refused", "google");
+  ok(!gadd({ downMinutes: 5, service: "Gmail", reseller: false }).error, "D9: a clean Google incident is accepted", "google");
+
+  // ---- fix round 2 ----
+  ok(gtr.indexOf("Please open it before then") > 0 && gtr.indexOf("have ended") < 0, "R4: an open date says 'before then'", "google");
+  var gtp = E.claimText(GWV, { inputs: Object.assign({}, gi, { reseller: true }), result: gr, fields: {}, start: "2026-11-03", deadline: "2026-12-03", passed: true });
+  ok(gtp.indexOf("By that count the 30 days have ended; the agreement does not say when we became eligible, so please open it now") > 0 && gtp.indexOf("before then") < 0, "R4: a passed date says the 30 days have ended", "google");
+  // R2: a stored list never loses good incidents to a bad one
+  function memU() { var t = null, u = null; return { get: function () { return t; }, set: function (x) { t = x; return true; }, getU: function () { return u; }, setU: function (x) { u = x; return true; }, seed: function (x) { t = x; }, unread: function () { return u; } }; }
+  var good = function (id, d) { return { id: id, vendorId: "google-workspace", title: id, start: d || "2026-11-03", inputs: { downMinutes: 300, service: "Gmail" } }; };
+  var kinds = { "date out of range": { id: "bad", vendorId: "google-workspace", start: "2999-12-15", inputs: { downMinutes: 5, service: "Gmail" } },
+    "garbage date": { id: "bad", vendorId: "google-workspace", start: "garbage", inputs: { downMinutes: 5, service: "Gmail" } },
+    "wrong types": { id: "bad", vendorId: "google-workspace", start: "2026-11-03", inputs: { downMinutes: "x", service: "Gmail" } },
+    "extra field": { id: "bad", vendorId: "google-workspace", start: "2026-11-03", inputs: { downMinutes: 5, service: "Gmail" }, onload: "x" },
+    "Google with a fee": { id: "bad", vendorId: "google-workspace", start: "2026-11-03", inputs: { downMinutes: 5, service: "Gmail", feeCents: 5 } },
+    "Microsoft with a service": { id: "bad", vendorId: "microsoft-365-exchange", start: "2026-11-12", inputs: { service: "Gmail" } },
+    "duplicate id": good("g-1") };
+  Object.keys(kinds).forEach(function (k) {
+    var m = memU(); m.seed(JSON.stringify({ format: "downtimecredit-incidents", version: 1, incidents: [good("g-1"), kinds[k], good("g-2", "2026-11-05")] }));
+    var opts = function () { return { storage: m, knownVendors: ["microsoft-365-exchange", "google-workspace"], rules: gRules, check: gCheck }; };
+    var st = S.createStore(opts());
+    eq(st.all().length, 2, "R2 (" + k + "): 2 good incidents load", "google"); eq(st.skipped(), 1, "R2 (" + k + "): the note counts 1", "google");
+    ok(!st.add(good("g-3", "2026-11-07")).error, "R2 (" + k + "): a new one saves", "google");
+    var st2 = S.createStore(opts());
+    eq(st2.all().length, 3, "R2 (" + k + "): after reload 3 good ones", "google");
+    ok(m.unread() !== null && JSON.parse(m.unread()).length === 1, "R2 (" + k + "): the bad one is kept in the unreadable key", "google");
+    ok(k === "duplicate id" || m.unread().indexOf(kinds[k].start) > 0, "R2 (" + k + "): untouched", "google");
+  });
+  (function () {   // a stored service that left the list is not bad
+    var m = memU(); m.seed(JSON.stringify({ format: "downtimecredit-incidents", version: 1, incidents: [{ id: "old-1", vendorId: "google-workspace", start: "2026-11-03", inputs: { downMinutes: 5, service: "Google Wave" } }] }));
+    var st = S.createStore({ storage: m, knownVendors: ["google-workspace"], rules: gRules, check: gCheck });
+    eq(st.all().length, 1, "R2: a stored service no longer on the list still loads", "google"); eq(st.skipped(), 0, "R2: and is not counted bad", "google");
+    ok(S.parseFile(m.get(), { known: ["google-workspace"], rules: gRules, check: gCheck }).error !== undefined, "R2: but an import of it is refused", "google");
+  })();
+  (function () {   // storage that is not a list at all is moved aside, not overwritten
+    var m = memU(); m.seed('{"format":"downtimecredit-incidents","version":1,"incidents":"nope"}');
+    var st = S.createStore({ storage: m, knownVendors: ["google-workspace"], rules: gRules, check: gCheck });
+    eq(st.all().length, 0, "R2: a non-list loads as empty", "google"); eq(st.skipped(), 1, "R2: and says so", "google"); ok(m.unread() !== null && m.unread().indexOf("nope") > 0, "R2: the raw value is kept under the unreadable key", "google");
+    st.add(good("n-1")); ok(m.unread().indexOf("nope") > 0, "R2: a save leaves it there", "google");
+  })();
+})();
+
 // ---------- report ----------
 print("reference cases: " + caseOk + "/60 exact; reference deadline cases: " + dlOk + "/6");
 Object.keys(groups).forEach(function (g) { print("  " + g + ": " + groups[g][0] + " passed, " + groups[g][1] + " failed"); });

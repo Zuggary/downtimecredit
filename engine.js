@@ -64,7 +64,8 @@ var DTC = (function () {
   }
 
   // ---------- deadline rules ----------
-  // end-of-next-month: from the month the incident occurred (start date). days-after: N calendar days after the incident's end date.
+  // end-of-next-month: from the month the incident occurred (start date). days-after: N calendar days after the incident's end date,
+  // or after its start date when the rule says from: "start" (the default is "end").
   function deadline(rule, incident) {
     if (!rule) return { error: "no deadline rule" };
     if (rule.rule === "end-of-next-month") {
@@ -73,16 +74,18 @@ var DTC = (function () {
       var y = s.m === 12 ? s.y + 1 : s.y, m = s.m === 12 ? 1 : s.m + 1;
       var e1 = parseISO(incident.end), res = withSendBy(rule, { date: iso({ y: y, m: m, d: daysInMonth(y, m) }) });
       if (e1 && (e1.y !== s.y || e1.m !== s.m)) { res.crossesMonth = true; res.crossNote = "This incident crosses a month end. The agreement's text does not cover that case; this uses the month it started, the earlier deadline."; }
-      return res;
+      return inRange(res);
     }
     if (rule.rule === "days-after") {
       if (!isWhole(rule.days) || rule.days < 1 || rule.days > 3660) return { error: "bad day count" };
-      var e = parseISO(incident && (incident.end || incident.start));
+      var e = parseISO(incident && (rule.from === "start" ? incident.start : (incident.end || incident.start)));
       if (!e) return { error: "end date needed" };
-      return withSendBy(rule, { date: addDays(iso(e), rule.days) });
+      return inRange(withSendBy(rule, { date: addDays(iso(e), rule.days) }));
     }
     return { error: "unknown deadline rule" };
   }
+  // a deadline the calendar here cannot hold (past the year 2999) is an error, never a half result
+  function inRange(r) { return r.date && parseISO(r.date) && (!r.sendBy || parseISO(r.sendBy)) ? r : { error: "deadline is outside the dates this page can work with" }; }
   // optional advice: send N days before the receive-by date (for a deadline with no stated time zone)
   function withSendBy(rule, r) { if (isWhole(rule.sendByDaysBefore) && rule.sendByDaysBefore > 0) r.sendBy = addDays(r.date, -rule.sendByDaysBefore); return r; }
   // Microsoft-style shortcut used by the reference tests: incident in year/month -> last day of the next month
@@ -119,6 +122,7 @@ var DTC = (function () {
     else if (v.period.type === "days" && (!isWhole(v.period.days) || v.period.days < 1 || v.period.days > 366)) errs.push("period: days 1 to 366");
     if (!v.deadline || RULES.indexOf(v.deadline.rule) < 0) errs.push("deadline: unknown rule");
     else if (v.deadline.rule === "days-after" && (!isWhole(v.deadline.days) || v.deadline.days < 1 || v.deadline.days > 3660)) errs.push("deadline: days 1 to 3660");
+    if (v.deadline && v.deadline.from !== undefined && (v.deadline.rule !== "days-after" || (v.deadline.from !== "start" && v.deadline.from !== "end"))) errs.push("deadline: from is start or end, and only for days-after");
     if (!Array.isArray(v.tiers) || v.tiers.length < 1 || v.tiers.length > 5) errs.push("tiers: 1 to 5");
     else v.tiers.forEach(function (t, i) {
       if (!t || !parseLimit(t.below)) errs.push("tiers[" + i + "]: bad limit");
@@ -149,11 +153,19 @@ var DTC = (function () {
       if (c && c.unverified === true && c.quote === undefined) { if (!str(c.finding)) errs.push("cannotClaim[" + i + "]: unverified row needs a finding"); if (!str(c.source) || !/^https:\/\//.test(c.source)) errs.push("cannotClaim[" + i + "]: no source address"); }
       else sourced(c, "cannotClaim[" + i + "]", errs);
     });
-    if (!Array.isArray(v.claimItems) || v.claimItems.length < 1) errs.push("claimItems: list needed");
+    if (v.claimItems === undefined && v.letterStyle === "support-case") { /* a support-case vendor has no claim-item list */ }
+    else if (!Array.isArray(v.claimItems) || v.claimItems.length < 1) errs.push("claimItems: list needed");
     else {
       sourced(v.claimItemsClause, "claimItemsClause", errs);
       v.claimItems.forEach(function (c, i) { if (!str(c && c.label) || FILLS.indexOf(c && c.fill) < 0) errs.push("claimItems[" + i + "]: label and fill"); });
     }
+    // optional parts of a support-case vendor (Google Workspace): each fact sourced
+    if (v.letterStyle !== undefined && v.letterStyle !== "support-case") errs.push("letterStyle: unknown");
+    if (v.letterStyle === "support-case") {
+      sourced(v.resellerClause, "resellerClause", errs); sourced(v.servicesClause, "servicesClause", errs);
+      if (!Array.isArray(v.services) || v.services.length < 1 || v.services.length > 40 || v.services.some(function (x) { return !str(x) || x.length > 60; })) errs.push("services: list needed");
+    }
+    if (v.featured !== undefined && (!v.featured || !parseISO(v.featured.start) || !str(v.featured.title))) errs.push("featured: title and start date, or leave it out");
     return { ok: errs.length === 0, errors: errs };
   }
   // vendors/index.json + the text of each listed file -> validated vendors (JSON.parse only; nothing is executed)
@@ -298,10 +310,12 @@ var DTC = (function () {
     var ds = o.deadline.replace(/-/g, ""), de = addDays(o.deadline, 1).replace(/-/g, "");
     var uid = (str(o.uid) ? o.uid.replace(/[^A-Za-z0-9-]/g, "") : "claim-" + ds) + "@downtimecredit.com";
     var vendor = str(o.vendor) ? o.vendor : "the provider";
-    var summary = "Credit claim must be received by " + vendor + " today" + (str(o.title) ? ": " + o.title : "");
-    var desc = "The claim" + (str(o.title) ? " for " + o.title : "") + " must be received by " + vendor + " by " + fullDate(o.deadline) + ". " +
+    var summary = o.supportCase ? (str(o.product) ? o.product : vendor) + " service credit: 30 days end" + (str(o.service) ? " (" + o.service + ")" : "") : "Credit claim must be received by " + vendor + " today" + (str(o.title) ? ": " + o.title : "");
+    var desc = o.supportCase ? "The " + (str(o.product) ? o.product : vendor) + " SLA asks for a support case within thirty days from when you become eligible. It does not say when that is. Counting from the day the downtime started" + (str(o.service) ? " (" + o.service + ")" : "") + ", the 30 days end on " + fullDate(o.deadline) + ". " +
+      (parseISO(o.sendBy) ? "Send it by " + fullDate(o.sendBy) + " or sooner. " : "") + (str(o.rule) ? o.rule + " " : "") + "Sooner is safer."
+      : "The claim" + (str(o.title) ? " for " + o.title : "") + " must be received by " + vendor + " by " + fullDate(o.deadline) + ". " +
       (parseISO(o.sendBy) ? "Send it by " + fullDate(o.sendBy) + " or sooner. " : "") + (str(o.rule) ? o.rule + " " : "") + (o.noTimeZone ? "No time zone is stated. " : "") + "Sooner is safer.";
-    function alarm(n) { return ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-P" + n + "D", "DESCRIPTION:" + icsEscape(n + " days left to send the credit claim"), "END:VALARM"]; }
+    function alarm(n) { return ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-P" + n + "D", "DESCRIPTION:" + icsEscape(n + (o.supportCase ? " days left to open the support case" : " days left to send the credit claim")), "END:VALARM"]; }
     var lines = [].concat(
       ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Downtime Credit//downtimecredit.com//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
        "BEGIN:VEVENT", "UID:" + uid, "DTSTAMP:" + (/^\d{8}T\d{6}Z$/.test(o.stamp || "") ? o.stamp : "20261112T000000Z"),
@@ -331,8 +345,47 @@ var DTC = (function () {
     var other = (r.periodChecks || []).filter(function (c) { return c.tier !== r.tier; })[0];
     return other ? ", possibly " + (other.tier === 0 ? "no credit" : centsText(other.credit)) + " if the month is counted with the clock change" : "";
   }
+  // A support-case request (Google Workspace): domain, service, start date, minutes down, uptime, days asked for. No money, no user count.
+  // inc: {fields:{resources: the domain}, inputs:{downMinutes, service, reseller}, result, start, deadline, example}
+  function claimTextSupportCase(v, inc) {
+    var f = inc.fields || {}, inp = inc.inputs || {}, r = inc.result && !inc.result.error ? inc.result : null, reseller = inp.reseller === true;
+    var domain = has(f.resources) ? String(f.resources).trim().slice(0, 2000) : "[your Google Workspace domain, such as yourcompany.com]";
+    var service = str(inp.service) ? inp.service : "[the Google service, such as Gmail]";
+    var started = parseISO(inc.start) ? fullDate(inc.start).replace(/^\w+ /, "") : "[the date the downtime started]";
+    var agreement = "the " + v.document.title + " (last modified " + fullDate(v.document.date).replace(/^\w+ /, "") + ")";
+    var cs = [];
+    cs.push("Subject: Service Credit request, " + v.service + ", " + service + ", downtime from " + started, "");
+    cs.push(reseller ? "Hello [your reseller's name]," : "Hello " + v.service + " support,", "");
+    cs.push(reseller
+      ? "We bought " + v.service + " through you, our Reseller. We ask for a Service Credit under " + agreement + ", and we ask you to notify " + v.vendor + ". Our details:"
+      : "We ask for a Service Credit under " + agreement + ". Our details:", "");
+    cs.push("Domain: " + domain, "Service: " + service, "Date the downtime started: " + started);
+    var days = function (n) { return n + (n === 1 ? " day" : " days"); };
+    if (r) {
+      cs.push("Total minutes of downtime in that calendar month: " + groupText(r.downtimeMinutes) + " of " + groupText(r.periodMinutes) + " minutes", "Uptime as we count it: " + r.uptimePct + "%");
+      if (r.uncertain) {
+        var hi = Math.max.apply(null, r.tiersSeen);
+        cs.push("Service Credit asked for: up to " + days(hi) + " of service, if " + v.vendor + " accepts the claim", "");
+        cs.push("Our count sits at the line between two credit levels: " + r.periodChecks.map(function (c, i) { return (i === 0 ? "the plain month of " : "a month of ") + groupText(c.periodMinutes) + " minutes gives " + (c.tier === 0 ? "no credit" : days(c.tier)); }).join(", ") +
+          ". The agreement names no time zone, and this month held a clock change. We ask for the highest level.");
+      } else if (r.tier === 0) cs.push("Service Credit asked for: none at this uptime");
+      else cs.push("Service Credit asked for: up to " + days(r.creditDays) + " of service, if " + v.vendor + " accepts the claim");
+    } else cs.push("Total minutes of downtime in that calendar month: [minutes] of [minutes in the month] minutes", "Uptime as we count it: [uptime %]", "Service Credit asked for: up to [days] of service, if " + v.vendor + " accepts the claim");
+    cs.push("");
+    cs.push("The downtime count is our own. We understand that " + v.vendor + " measures Downtime on the server side, as an error rate for our domain.");
+    var sla = v.document.label || "SLA";
+    if (reseller) {
+      cs.push("", "Under the " + sla + " we notify you, our Reseller, and you must notify " + v.vendor + " by creating a support case. The " + sla + " asks for a support case within thirty days from when we became eligible." +
+        (parseISO(inc.deadline) ? " Counting from the day the downtime started, that is " + fullDate(inc.deadline) + ". " + (inc.passed ? "By that count the 30 days have ended; the agreement does not say when we became eligible, so please open it now, and tell us when you have." : "Please open it before then, and tell us when you have.") : " Please open it as soon as you can, and tell us when you have."));
+      cs.push("", "The " + sla + " says we receive the Service Credit from you, on behalf of " + v.vendor + ", if it is accepted.");
+    }
+    cs.push("", "Please confirm you have received this request.");
+    cs.push("", "[your name], [your company], [the email address you use for this account]");
+    return cs.join("\n");
+  }
   function claimText(v, inc) {
     inc = inc || {};
+    if (v.letterStyle === "support-case") return claimTextSupportCase(v, inc);
     var f = inc.fields || {}, inp = inc.inputs || {}, r = inc.result && !inc.result.error ? inc.result : null;
     var blanks = Object.assign({}, BLANKS, v.blanks || {});
     function val(k) { return has(f[k]) ? String(f[k]).trim().slice(0, 2000) : blanks[k]; }

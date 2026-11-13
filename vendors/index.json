@@ -1,5 +1,8 @@
 {
   "format": "downtimecredit-vendors",
   "version": 1,
-  "vendors": ["microsoft-365-exchange.json"]
+  "vendors": [
+    "microsoft-365-exchange.json",
+    "google-workspace.json"
+  ]
 }
