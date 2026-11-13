@@ -12,8 +12,8 @@
   var EXAMPLE = { all: "50", g0u: "50", g0h: "24", g0m: "0", fee: "625.00" };
   var ZONE = "Your downtime sits right at the line between two credit levels. The agreement does not say which time zone counts the month, so either can apply.";
   var ZONE_OWN = "Your downtime sits right at the line between two credit levels, because of the clock change you ticked, so either can apply.";
-  var LATE = "The date the agreement set has gone by. The agreement gives no right to a late claim. You can still ask your vendor.";
-  var LASTDAY = "Send it now. In the vendor's time zone this day may already be over.";
+  var LATE = E.TEXT.LATE;
+  var LASTDAY = E.TEXT.LASTDAY;
   var GDAYS = "What the days mean, from the agreement: customers billed offline get the days added to the end of the term. Customers billed online get a monetary credit equal to the value of the days, on a future invoice. The Essentials edition gets a monetary credit (bought from a reseller, Google issues it to the reseller). The agreement does not say how Google values a day, so this page gives no dollar figure.";
   var GOWN = "Google measures downtime by its own server-side error rate. This is your own count; Google's figure may differ.";
   var STORECTX = null, GBAD = false, OWNBAD = false, gSnap = null;
@@ -26,7 +26,7 @@
   // address to a fixed step path and straight back, in one synchronous block. Only the names in STEPS exist; every call below passes one as a
   // string literal. Nothing the visitor types or picks is ever part of a path. Off the live host this does nothing at all.
   var LIVE = /(^|\.)downtimecredit\.com$/.test(location.hostname);
-  var STEPS = { "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1 };
+  var STEPS = { "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1, "summary-copied": 1, "mail-it": 1, "mail-self": 1, "record": 1 };
   var counted = Object.create(null), actor = false;     // actor: the event being handled right now is a real visitor action
   function countStep(name) {
     if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) return;   // live host only, fixed names only, once per page load
@@ -85,24 +85,13 @@
   // fills a result line element; returns nothing
   function resultInto(line, res, vendorName, noFee, own) {
     clear(line); line.className = "r-line";
-    var lv = levels(res), lo = lv[0], hi = lv[lv.length - 1], unc = res.uncertain;
-    var accept = ", if " + vendorName + " accepts the claim.";
-    function put(pre, amt, post) { line.appendChild(document.createTextNode(pre)); line.appendChild(el("span", { class: "amt", id: (own ? "o-" : "") + "r-amt", text: amt })); line.appendChild(document.createTextNode(post)); }
-    if (!unc && res.tier === 0) { line.textContent = own ? "No credit: the uptime stayed inside the target in the terms you typed." : "No credit: email worked 99.9% of the month or more, so no credit level applies."; return; }
-    if (res.creditUnit === "service-days") {
-      if (unc && lo.tier === 0) put("Up to ", hi.tier + " days", " of service credit, or none" + accept);
-      else if (unc) put("Up to ", lo.tier + " days", " of service credit, possibly " + hi.tier + " days" + accept);
-      else put("Up to ", res.tier + " days", " of service credit" + accept);
-      return;
-    }
-    if (noFee) { line.textContent = "Type what you paid to see the amount."; line.className = "r-line r-empty"; return; }
-    if (unc) {
-      line.appendChild(document.createTextNode("Up to about "));
-      line.appendChild(el("span", { class: "nw" }, [el("span", { class: "amt", id: (own ? "o-" : "") + "r-amt", text: money(lo.tier === 0 ? hi.credit : lo.credit) }), " credit,"]));
-      line.appendChild(document.createTextNode(" "));   // keeps "credit, possibly" readable when copied
-      line.appendChild(el("span", { class: "rest", text: (lo.tier === 0 ? "or none" : "possibly " + money(hi.credit)) + accept }));
-    }
-    else put("Up to about ", money(res.creditCents), " credit" + accept);
+    var p = E.resultParts(res, vendorName, { noFee: noFee, own: own }), id = (own ? "o-" : "") + "r-amt";
+    if (p.kind === "plain") { line.textContent = p.text; if (p.empty) line.className = "r-line r-empty"; return; }
+    if (p.kind === "amt") { line.appendChild(document.createTextNode(p.pre)); line.appendChild(el("span", { class: "amt", id: id, text: p.amt })); line.appendChild(document.createTextNode(p.post)); return; }
+    line.appendChild(document.createTextNode("Up to about "));
+    line.appendChild(el("span", { class: "nw" }, [el("span", { class: "amt", id: id, text: p.amt }), " credit,"]));
+    line.appendChild(document.createTextNode(" "));   // keeps "credit, possibly" readable when copied
+    line.appendChild(el("span", { class: "rest", text: p.rest }));
   }
   function sumLine(res) {
     var lv = res.uncertain ? levels(res).map(function (c) { return c.tier; }) : [res.tier];
@@ -118,16 +107,7 @@
   }
   // one sentence, the same everywhere
   function msReseller() { return radio("m-buy") === "reseller"; }
-  function deadlineSentence(name, d, cd, reseller) {
-    if (reseller) {      // bought through a provider: this page's reading of the partner rule, never Microsoft's stated date
-      if (cd.state === "passed") return "By this page's count the provider's month has ended. Ask them today; they can tell you if a request is still possible.";
-      var lateR = cd.state === "today" || (d.sendBy && TODAY >= d.sendBy);
-      return "Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as " + E.fullDate(d.date) + (lateR ? "; ask them today." : "; ask them by " + E.fullDate(d.sendBy) + ".");
-    }
-    if (cd.state === "passed") return name + " had to receive it by " + E.fullDate(d.date) + ". That date has passed.";
-    var late = cd.state === "today" || (d.sendBy && TODAY >= d.sendBy);
-    return name + " must receive it by " + E.fullDate(d.date) + (d.sendBy && !late ? ", so send it by " + E.fullDate(d.sendBy).replace(/ \d{4}$/, "") + "." : ".");
-  }
+  function deadlineSentence(name, d, cd, reseller) { return E.deadlineLine(name, d, cd, reseller, TODAY); }
   function deadlineTile(prefix, d, vendorName, reseller) {      // the one countdown, under the lede: text only (the tile belongs to "Send it before")
     var cd = E.countdown(TODAY, d.date), dt = $(prefix + "-date"), left = $(prefix + "-left"), pd = E.parseISO(d.date);
     if ($(prefix + "-cal-m")) { $(prefix + "-cal-m").textContent = MON[pd.m - 1] + " " + pd.y; $(prefix + "-cal-d").textContent = String(pd.d); }
@@ -172,7 +152,7 @@
     function field(id, label, ph, v) {
       var i = el("input", { id: id, inputmode: "numeric", autocomplete: "off", placeholder: ph });
       if (v != null) i.value = v;
-      i.addEventListener("input", recalc); i.addEventListener("focus", leaveExample);
+      i.addEventListener("input", recalc); i.addEventListener("change", recalc); i.addEventListener("focus", leaveExample);
       return el("div", { class: "f" }, [el("label", { for: id, text: label }), i]);
     }
     var rm = el("button", { type: "button", class: "xbtn", text: "Remove", "aria-label": "Remove group " + (groupN + 1) });
@@ -327,26 +307,16 @@
   function gCite() { return GW.document.title + ", last modified " + dayMonthYear(GW.document.date) + ". Last checked " + dayMonthYear(GW.document.lastChecked) + "."; }
   function gResultInto(line, res, idp) {
     clear(line); line.className = "r-line";
-    var unc = res.uncertain, plain = res.tier;
-    function put(pre, amt, post) { line.appendChild(document.createTextNode(pre)); line.appendChild(el("span", { class: "amt", id: idp + "r-amt", text: amt })); line.appendChild(document.createTextNode(post)); }
-    if (!unc && plain === 0) { line.textContent = "No credit: the service stayed up at least 99.9% of the month, so no credit level applies."; return; }
-    var others = [], seen = {}; res.periodChecks.forEach(function (c) { if (c.tier !== plain && !seen[c.tier]) { seen[c.tier] = 1; others.push(c.tier); } });
-    others.sort(function (a, b) { return b - a; });
-    if (!unc) put("Up to ", gDays(plain), " of service, if Google accepts the claim.");
-    else if (plain === 0) put("No credit on the plain month, or up to ", gDays(others[0]), " of service with a clock-change month, if Google accepts the claim.");
-    else put("Up to ", gDays(plain), " of service (" + others.map(function (t) { return t === 0 ? "no credit" : gDays(t); }).join(" or ") + " with a clock-change month), if Google accepts the claim.");
+    var p = E.googleResultParts(res);
+    if (p.kind === "plain") { line.textContent = p.text; return; }
+    line.appendChild(document.createTextNode(p.pre)); line.appendChild(el("span", { class: "amt", id: idp + "r-amt", text: p.amt })); line.appendChild(document.createTextNode(p.post));
   }
   function gSum(res) {
     if (!res.uncertain) return res.tier === 0 ? "Credit level: none." : "Credit level: " + gDays(res.tier) + " of service.";
     return "Credit level: " + res.periodChecks.map(function (c, i) { return (c.tier === 0 ? "none" : gDays(c.tier)) + (i === 0 ? " on the plain month" : " with the month " + Math.abs(c.offset) + " minutes " + (c.offset > 0 ? "longer" : "shorter")); }).join("; ") + ".";
   }
   // the one sentence for the Google date: the site's count, full dates with the year
-  function gSentence(d, cd, reseller) {
-    var base = "Counting from the day it started, the 30 days " + (cd.state === "passed" ? "ended on " : "end on ") + E.fullDate(d.date) + ".";
-    if (cd.state === "passed") return base + " That date has passed.";
-    var late = cd.state === "today" || (d.sendBy && TODAY >= d.sendBy);
-    return base + (d.sendBy && !late ? " " + (reseller ? "Tell your reseller by " : "Send it by ") + E.fullDate(d.sendBy) + "." + (reseller ? " They notify Google." : "") : "");
-  }
+  function gSentence(d, cd, reseller) { return E.googleDateLine(d, cd, reseller, TODAY); }
   function gTail(d, cd) {
     return cd.state === "passed" ? "The agreement does not say when you become eligible, so the real last day may be later. You can still ask Google, or your reseller." : (cd.state === "today" || (d.sendBy && TODAY >= d.sendBy)) ? LASTDAY : GW.deadline.ownWords;
   }
@@ -426,6 +396,37 @@
     return { v: MS, inputs: last ? last.inc.inputs : { reseller: msReseller() }, res: last ? last.res : null, d: d, name: "Microsoft", noRes: !last };
   }
   function claimFields() { return { incidentId: $("c-id").value, startTime: $("c-start").value, endTime: $("c-end").value, description: $("c-desc").value, resources: $("c-res").value, locations: $("c-loc").value, errors: $("c-err").value }; }
+  // ---------- the hand-off pack: built from the same objects as the letter on the page (never a second calculation) ----------
+  var pack = null;
+  function packFor(c, letter) {
+    if (!c || !c.res || c.res.error) return null;
+    var k = mode, ex = (k === "ms" && example) || (k === "g" && gExample);
+    return { c: c, letter: letter, o: { today: TODAY, example: ex, start: k === "ms" ? MS.featured.start : c.x.start, end: k === "own" && c.x ? c.x.end : null, noFee: (k === "ms" && !!last && last.noFee) || (k === "own" && !!ownLast && ownLast.noFee), fields: claimFields() } };
+  }
+  function packSummary(extra) { return E.summaryText(pack.c.v, pack.c.inputs, pack.c.res, pack.c.d, Object.assign({}, pack.o, extra || {})); }
+  function packSubject(nameMax) {
+    var c = pack.c, v = c.v, o = pack.o, cl = function (x) { return nameMax && String(x).length > nameMax ? String(x).slice(0, nameMax) + "..." : x; };
+    if (mode === "g") return cl(c.inputs.service) + " downtime from " + dayMonthYear(o.start);
+    return "Service credit: " + (mode === "own" ? cl(v.vendor) : v.vendor) + " outage of " + dayMonthYear(o.start);
+  }
+  // a mailto: link, empty recipient, under 1,800 characters: drop the reason line, then the numbers, then shorten typed names; never the result, the date or the hedges
+  function mailHref(kind) {
+    var steps = [{}, { drop: ["why"], shortened: true }, { drop: ["why", "numbers"], shortened: true }, { drop: ["why", "numbers"], shortened: true, nameMax: 20 }, { drop: ["why", "numbers"], shortened: true, nameMax: 8 }, { drop: ["why", "numbers"], shortened: true, nameMax: 3 }], href = "";
+    var rs = pack.c.inputs.reseller === true;
+    for (var i = 0; i < steps.length; i++) {
+      var sum = packSummary(steps[i]), body = kind === "it"
+        ? "Hello,\nPlease check the numbers below, then " + (rs ? "ask our provider to request" : "file") + " the service credit" + (rs ? "." : " request.") + "\nIf anything looks wrong, tell me before you send anything.\n\n" + sum
+        : sum + "\n\nThe full request text is on the page: copy it there, or download the record.";
+      href = "mailto:?subject=" + encodeURIComponent(packSubject(steps[i].nameMax)) + "&body=" + encodeURIComponent(body.replace(/\n/g, "\r\n"));
+      if (href.length < 1800) break;
+    }
+    return href;
+  }
+  function refreshPack() {
+    $("passon").hidden = !pack;
+    if (!pack) return;
+    $("mail-it").setAttribute("href", mailHref("it")); $("mail-self").setAttribute("href", mailHref("self"));
+  }
   function refreshShared() {
     if (!MS) return;
     var c = current();
@@ -435,6 +436,7 @@
     var text = c ? E.claimText(c.v, { fields: claimFields(), inputs: c.inputs, result: c.res, start: c.x && c.x.start, deadline: c.d && c.d.date, passed: !!(c.d && c.d.date && E.countdown(TODAY, c.d.date).state === "passed") }) : "Fill in the credit statement above first: the request is built from it.";
     if ((example && mode === "ms") || (gExample && mode === "g" && c)) text = "EXAMPLE ONLY: Harbor & Pine Dental is a made-up company.\n\n" + text;
     fillClaim($("claim"), text);
+    pack = packFor(c, text); refreshPack();
     // send it before
     if (c && c.d && c.d.date) {
       var p = E.parseISO(c.d.date), cd = E.countdown(TODAY, c.d.date);
@@ -645,7 +647,7 @@
     window.addEventListener("focus", tick);
     (function atMidnight() { var n = new Date(), next = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1, 0, 0, 1); setTimeout(function () { tick(); atMidnight(); }, Math.max(1000, next - n)); })();
     vendorText();
-    ["all", "g0u", "g0h", "g0m", "fee"].forEach(function (id) { $(id).addEventListener("input", recalc); $(id).addEventListener("focus", leaveExample); });
+    ["all", "g0u", "g0h", "g0m", "fee"].forEach(function (id) { $(id).addEventListener("change", recalc); $(id).addEventListener("input", recalc); $(id).addEventListener("focus", leaveExample); });
     ["c-id", "c-start", "c-end", "c-desc", "c-res", "c-loc", "c-err"].forEach(function (id) { $(id).addEventListener("input", refreshShared); });
     Array.prototype.forEach.call(document.querySelectorAll('input[name="m-buy"]'), function (r) { r.addEventListener("change", recalc); });      // the route changes; the example numbers stay and are worked out again for it
     $("ex-toggle").addEventListener("click", function () { if (actor) countStep("example"); setExample(!example); });
@@ -673,6 +675,20 @@
       function done() { if (human) countStep("copied"); b.textContent = "Copied"; $("copy-state").textContent = "The request is on your clipboard."; setTimeout(function () { b.textContent = "Copy request"; $("copy-state").textContent = ""; }, 2500); }
       function fallback() { selectLetter(); $("copy-state").textContent = "Selected: press Ctrl+C or Cmd+C (or long-press on a phone) to copy."; }
       try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fallback); else fallback(); } catch (e) { fallback(); }
+    });
+    $("sum-copy").addEventListener("click", function () {
+      if (!pack) return;
+      var human = actor, t = packSummary();
+      function done() { if (human) countStep("summary-copied"); $("sum-state").textContent = "The summary is on your clipboard."; $("sum-fallback").hidden = true; }
+      function fallback() { var f = $("sum-fallback"); f.hidden = false; f.value = t; f.focus(); f.select(); $("sum-state").textContent = "Selected: press Ctrl+C or Cmd+C (or long-press on a phone) to copy."; }
+      try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fallback); else fallback(); } catch (e) { fallback(); }
+    });
+    $("mail-it").addEventListener("click", function (ev) { if (ev.isTrusted) countStep("mail-it"); });       // counts the click only; the address and text never go anywhere from here
+    $("mail-self").addEventListener("click", function (ev) { if (ev.isTrusted) countStep("mail-self"); });
+    $("rec-dl").addEventListener("click", function (ev) {
+      if (!pack) return;
+      if (ev.isTrusted) countStep("record");
+      download("service-credit-record.html", "text/html", E.recordHtml(pack.c.v, pack.c.inputs, pack.c.res, pack.c.d, Object.assign({}, pack.o, { letter: pack.letter })));
     });
     $("ics-btn").addEventListener("click", function () {
       var c = current(); if (!c || !c.d || !c.d.date) return;
@@ -713,6 +729,7 @@
     // test states, local only
     var demo = LOCAL ? Q.get("demo") : null;
     if (demo === "example") setExample(true);
+    else if (demo === "reseller") { $("all").value = "50"; $("g0u").value = "30"; $("g0h").value = "24"; $("g0m").value = "0"; $("fee").value = "625.00"; document.querySelector('input[name="m-buy"][value="reseller"]').checked = true; }
     else if (demo === "flagged") { $("all").value = "50"; $("g0u").value = "50"; $("g0h").value = "36"; $("g0m").value = "1"; $("fee").value = "1,800.00"; }
     else if (demo === "own") {
       $("o-vendor").value = "Harbor Fiber"; $("o-service").value = "Internet"; $("o-start").value = "2026-11-20"; $("o-end").value = "2026-11-21"; $("o-h").value = "9"; $("o-m").value = "30"; $("o-fee").value = "199.00";

@@ -492,6 +492,59 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   ok(!old.error && old.incidents[0].inputs.reseller === undefined, "an old Microsoft incident loads, with no buyer choice (direct)", "reseller");
 })();
 
+// ---------- the hand-off pack ----------
+(function () {
+  var GWV = loaded.vendors.filter(function (v) { return v.id === "google-workspace"; })[0], gc = JSON.parse(readFile(SITE + "/../../research/TF2-google-cases.json")), longest = 0, n = 0, bad = 0;
+  function sane(t, label) { n++; if (/undefined|NaN|\[object/.test(t)) { bad++; fails.push("summary has undefined/NaN: " + label); } longest = Math.max(longest, t.length); return t; }
+  var dMS = E.deadline(MS.deadline, { start: "2026-11-12" }), dRS = E.resellerDeadline(MS.resellerDeadline, { start: "2026-11-12" }, dMS.date);
+  data.cases.forEach(function (c) {
+    if (c.expected.error) return;
+    var i = c.inputs, inp = { periodDays: i.days_in_month, allUsers: i.all_users, feeCents: i.fee_cents, groups: i.groups.map(function (g) { return { affectedUsers: g.affected_users, downMinutes: g.down_minutes }; }) }, r = E.compute(MS, inp);
+    [["2026-11-13", false], ["2027-01-05", false], ["2026-11-13", true], ["2027-01-05", true]].forEach(function (z) {
+      var ii = Object.assign({ reseller: z[1] }, inp), d = z[1] ? dRS : dMS, t = sane(E.summaryText(MS, ii, r, d, { today: z[0], start: "2026-11-12" }), "MS case " + c.id);
+      var none = !r.uncertain && r.tier === 0, res = E.partsText(E.resultParts(r, "Microsoft", {}));
+      ok(t.indexOf("Result: " + res) >= 0, "MS case " + c.id + ": the page's result sentence", "pack");
+      ok(t.length <= 950, "MS case " + c.id + " " + z.join("/") + ": about 900 characters (" + t.length + ")", "pack");
+      if (!none) { ok(t.indexOf("Date: " + E.countdownText("ms", d, { today: z[0], reseller: z[1], name: "Microsoft" })) >= 0, "MS case " + c.id + ": the page's date line", "pack");
+        ok(z[1] ? t.indexOf("Your provider, or the partner they buy from, requests it from Microsoft.") >= 0 && t.indexOf("send the request to Microsoft") < 0 : t.indexOf("You send the request to Microsoft support.") >= 0, "MS case " + c.id + ": who asks", "pack"); }
+      else ok(t.indexOf("Date:") < 0 && t.indexOf("Nothing to send") >= 0, "MS case " + c.id + ": no credit, no date line", "pack");
+      ok(t.indexOf("Microsoft decides.") > 0 && t.indexOf("Open downtimecredit.com, enter the same numbers, and copy the request.") > 0, "MS case " + c.id + ": next step and closing line", "pack");
+    });
+  });
+  var dG = E.deadline(GWV.deadline, { start: "2026-11-03" });
+  gc.cases.forEach(function (c) {
+    if (c.expected.error) return;
+    var r = E.compute(GWV, { periodDays: c.inputs.days_in_month, month: c.inputs.month, downMinutes: c.inputs.down_minutes });
+    [false, true].forEach(function (rs) {
+      var t = sane(E.summaryText(GWV, { downMinutes: c.inputs.down_minutes, service: "Gmail", reseller: rs }, r, dG, { today: "2026-11-13", start: "2026-11-03" }), "Google case " + c.id);
+      ok(t.indexOf("$") < 0 && t.indexOf("Result: " + E.partsText(E.googleResultParts(r))) >= 0 && t.indexOf("Google decides.") > 0, "Google case " + c.id + ": no dollar, the page's result sentence", "pack");
+      ok(t.length <= 950, "Google case " + c.id + ": about 900 characters (" + t.length + ")", "pack");
+      if (r.tier > 0 || r.uncertain) ok(t.indexOf(rs ? "You tell your reseller, who tells Google" : "You create a support case with Google.") >= 0 && t.indexOf("send the request to Microsoft") < 0, "Google case " + c.id + ": who asks", "pack");
+    });
+  });
+  var ownCases = [[{ vendor: "Harbor Fiber", service: "Internet", periodDays: 30, comparison: "strict-below", tiers: [{ below: "99.9", credit: 10 }, { below: "95", credit: 50 }], window: { rule: "days-after", days: 30 } }, 2160, 20000],
+    [{ vendor: "Pine Cloud", service: "Backups", creditUnit: "service-days", tiers: [{ below: "99", credit: 7 }], window: { rule: "end-of-next-month" } }, 500, 0],
+    [{ vendor: "A", service: "B", periodDays: 30, tiers: [{ below: "99.9", credit: 10 }], window: { rule: "end-of-next-month" } }, 10, 9900], [{ vendor: "A", service: "B", periodDays: 30, tiers: [{ below: "99.9", credit: 10 }], window: { rule: "end-of-next-month" } }, 100, 9900],
+    [{ vendor: "Acme", service: "Link", periodDays: 30, comparison: "at-or-below", tiers: [{ below: "99.9", credit: 10 }, { below: "99", credit: 25 }, { below: "95", credit: 60 }], window: { rule: "days-after", days: 14 } }, 432, 5000],
+    [{ vendor: "Acme", service: "Link", periodDays: 30, tiers: [{ below: "99.9", credit: 10 }], window: { rule: "days-after", days: 14 } }, 0, 5000], [{ vendor: "X", service: "Y", creditUnit: "service-days", periodDays: 30, tiers: [{ below: "99.9", credit: 3 }, { below: "99", credit: 7 }], window: { rule: "days-after", days: 30 } }, 1000, 0],
+    [{ vendor: "Q", service: "R", periodDays: 28, tiers: [{ below: "99.99", credit: 5 }], window: { rule: "days-after", days: 5 } }, 3, 123456], [{ vendor: "Z", service: "W", tiers: [{ below: "98", credit: 15 }], window: { rule: "end-of-next-month" } }, 900, 1000], [{ vendor: "Last", service: "One", periodDays: 31, tiers: [{ below: "99.5", credit: 30 }], window: { rule: "days-after", days: 20 } }, 300, 300000]];
+  ownCases.forEach(function (c, ix) {
+    var ov = E.ownVendor(c[0]), inp = { periodDays: ov.period.type === "days" ? ov.period.days : 30, downMinutes: c[1], feeCents: c[2] }, r = E.compute(ov, inp), dd = E.deadline(ov.deadline, { start: "2026-11-20", end: "2026-11-21" });
+    var t = sane(E.summaryText(ov, inp, r, dd, { today: "2026-11-13", start: "2026-11-20", end: "2026-11-21" }), "own " + ix);
+    ok(t.indexOf("Result: " + E.partsText(E.resultParts(r, ov.vendor, { own: true }))) >= 0 && t.indexOf(ov.vendor + " decides.") > 0 && t.indexOf("contract terms typed on the page") > 0, "own case " + ix + ": the page's result sentence, the closing line", "pack");
+    ok(!(!r.uncertain && r.tier === 0) ? t.indexOf("Date: ") > 0 : t.indexOf("Date:") < 0, "own case " + ix + ": the date line only with a credit", "pack");
+  });
+  eq(bad, 0, "no undefined or NaN in " + n + " summaries (longest " + longest + " characters)", "pack"); print("summary: " + n + " built, longest " + longest + " characters");
+  // hostile text stays plain text in the summary and is escaped in the record
+  var H = "<img src=x onerror=alert(1)></pre><script>alert(2)</script>", hv = E.ownVendor({ vendor: H, service: H, periodDays: 30, tiers: [{ below: "99.9", credit: 10 }], window: { rule: "end-of-next-month" } }), hi = { periodDays: 30, downMinutes: 100, feeCents: 9900 }, hr = E.compute(hv, hi), hd = E.deadline(hv.deadline, { start: "2026-11-20" });
+  var hs = E.summaryText(hv, hi, hr, hd, { today: "2026-11-13", start: "2026-11-20" }), rec = E.recordHtml(hv, hi, hr, hd, { today: "2026-11-13", start: "2026-11-20", letter: H + "\n" + H, fields: { resources: H } });
+  ok(hs.indexOf(H) >= 0, "the summary keeps typed text as plain text", "pack");
+  ok(rec.indexOf("<img") < 0 && rec.indexOf("<script") < 0 && rec.indexOf("</pre><script") < 0 && rec.indexOf("&lt;img src=x onerror=alert(1)&gt;") > 0, "the record escapes every typed value", "pack");
+  ok(!/<script|src="|href="|https?:\/\/[^<\s]*"/.test(rec.replace(/<img[^>]*>/g, "")) || (rec.indexOf("<script") < 0 && !/\ssrc=|\shref=/.test(rec)), "the record has no script, src or href", "pack");
+  var gr0 = E.compute(GWV, { periodDays: 30, month: 11, downMinutes: 300 }), grec = E.recordHtml(GWV, { downMinutes: 300, service: "Gmail", reseller: false }, gr0, dG, { today: "2026-11-13", start: "2026-11-03", letter: "x", example: true, fields: {} });
+  ok(grec.indexOf("EXAMPLE ONLY: Harbor &amp; Pine Dental is a made-up company.") > 0 && grec.indexOf("$") < 0 && grec.indexOf("https://workspace.google.com/terms/sla/") > 0 && grec.indexOf("Made on 13 November 2026 with downtimecredit.com. Not legal advice.") > 0, "the Google record: example mark, no dollar, the agreement address as plain text", "pack");
+})();
+
 // ---------- step counting: static checks ----------
 (function () {
   var app = file("app.js"), html = file("index.html"), m = /var STEPS = \{([^}]*)\}/.exec(app), names = [];

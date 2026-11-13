@@ -164,6 +164,11 @@
   .letter { background: #fff; border: 1px solid var(--rule); border-left: 4px solid var(--ink); padding: 14px; }
   pre.claim { margin: 0; white-space: pre-wrap; overflow-wrap: break-word; font: 400 15.5px/1.55 var(--text); color: var(--ink); }
   pre.claim mark { background: var(--blank); color: var(--ink); padding: 0 2px; border-radius: 2px; }
+  .passon { margin-top: 18px; padding-top: 4px; border-top: 1px solid var(--rule); }
+  .passon h3 { margin: 10px 0 0; }
+  a.second { text-decoration: none; }
+  .sumfb { width: 100%; min-height: 9em; margin-top: 8px; font: 400 14px/1.4 var(--text); color: var(--ink); border: 1.5px solid var(--ink-2); border-radius: 6px; padding: 8px; }
+  @media (max-width: 479px) { .passon .row > * { flex: 1 1 100%; justify-content: center; } }
   .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
   .sendbox { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
   .sendbox .cal { width: 84px; } .sendbox .cal span { font-size: 14px; } .sendbox .cal b { font-size: 40px; }
@@ -416,6 +421,18 @@
       <p class="note" id="no-letter" hidden>No credit level applies at this uptime, so there is no request to send.</p>
       <div class="row" id="copy-row"><button type="button" class="primary" id="copy-claim">Copy request</button><span class="small" id="copy-state" aria-live="polite"></span></div>
       <p id="sel-note">Paste it into a support request to Microsoft. If someone else manages your Microsoft account, send it to them.</p>
+      <div class="passon" id="passon" hidden>
+        <h3 id="passon-h">Pass it on</h3>
+        <div class="row">
+          <button type="button" class="second" id="sum-copy">Copy a summary</button>
+          <a class="second" id="mail-it" href="mailto:">Send this to IT</a>
+          <a class="second" id="mail-self" href="mailto:">Email this to myself</a>
+          <button type="button" class="second" id="rec-dl">Download the record</button>
+        </div>
+        <p class="fine" id="mail-note">Opens your own mail program. This page sends nothing.</p>
+        <p class="small" id="sum-state" aria-live="polite"></p>
+        <textarea id="sum-fallback" class="sumfb" readonly hidden aria-label="The summary, to copy"></textarea>
+      </div>
     </div>
   </div>
 </div></section>

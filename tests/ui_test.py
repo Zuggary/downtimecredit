@@ -98,7 +98,7 @@ with sync_playwright() as pw:
             ok(all(n.rstrip(".,") in allowed or n.rstrip(".,") in {"98.0555%"} for n in nums), f"claim: only typed or computed numbers ({sorted(nums)})")
             ctx.grant_permissions(["clipboard-read", "clipboard-write"]); p.click("#copy-claim"); p.wait_for_function("document.getElementById('copy-claim').textContent === 'Copied'")
             eq(p.evaluate("navigator.clipboard.readText()"), p.text_content("#claim"), "Copy request puts the request on the clipboard")
-            ok(not p.query_selector_all("a[href^='mailto:']:not([href='mailto:privacy@downtimecredit.com'])") and not [t for t in p.eval_on_selector_all("button", "b => b.map(x => x.textContent)") if t.strip().lower().startswith("send")], "no send button and no mail link to a vendor")
+            ok(not p.query_selector_all("a[href^='mailto:']:not([href='mailto:privacy@downtimecredit.com']):not([href^='mailto:?'])") and not [t for t in p.eval_on_selector_all("button", "b => b.map(x => x.textContent)") if t.strip().lower().startswith("send")], "no send button and no mail link to a vendor")
     # H2: sums name the plain month first
     fill_case(p, byid[4]); p.click("#sums > summary")
     ok(p.inner_text("#zone-detail").startswith("With the plain month (43,200 minutes) the credit level is 100%.") and "60 minutes longer (43,260 minutes) the credit level is 50%" in p.inner_text("#zone-detail"), "sums: plain month first, then the longer month")
@@ -588,6 +588,115 @@ with sync_playwright() as pw:
     ok(n.input_value("#all") == "50" and "is-example" in n.get_attribute("#statement", "class") and n.is_checked("input[name=m-buy][value=reseller]"), "F7: the example numbers stay when the route changes")
     ok("Hello [your provider's name]," in n.inner_text("#claim") and "EXAMPLE ONLY" in n.inner_text("#claim"), "F7: and the example is worked out again for that route")
     n.close(); ctxN.close()
+
+    # ---------- the hand-off pack ----------
+    import mimetypes
+    from urllib.parse import unquote
+    from html.parser import HTMLParser
+    HOSTILE = "<img src=x onerror=alert(1)></pre><script>alert(2)</script>"
+    ctxP = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); route(ctxP); ctxP.grant_permissions(["clipboard-read", "clipboard-write"])
+    dialogs = []
+    def popen(q="?today=2026-11-13"):
+        pg = open_page(ctxP, q); pg.on("dialog", lambda d: (dialogs.append(d.message), d.dismiss())); return pg
+    def vis(pg, sel): return re.sub(r"\s+", " ", pg.inner_text(sel)).strip()
+    def mailparts(pg, id_):
+        h = pg.get_attribute(id_, "href"); ok(h.startswith("mailto:?subject="), f"{id_}: empty recipient"); ok(len(h) < 1800, f"{id_}: under 1,800 characters ({len(h)})")
+        sub, body = h[len("mailto:?subject="):].split("&body=", 1); ok("%0D%0A" in body and "%0A" not in body.replace("%0D%0A", ""), f"{id_}: CRLF line breaks")
+        return unquote(sub), unquote(body).replace("\r\n", "\n")
+    def clip(pg):
+        pg.click("#sum-copy"); pg.wait_for_function("document.getElementById('sum-state').textContent.indexOf('clipboard') >= 0"); return pg.evaluate("navigator.clipboard.readText()")
+    def check_pack(pg, label, kind, sub_want, route_words, result_sel):
+        ok(not pg.is_hidden("#passon"), f"{label}: the block shows with a result")
+        t = clip(pg)
+        ok(len(t) <= 950 and "undefined" not in t and "NaN" not in t, f"{label}: summary size and sanity ({len(t)})")
+        ok("Result: " + vis(pg, result_sel) in re.sub(r"\s+", " ", t), f"{label}: the summary holds the visible result sentence")
+        cdv = re.sub(r"^[A-Z][a-z]{2} \d{4} \d{1,2} ", "", vis(pg, "#cd")).replace(" For the outage reported on 12 November 2026.", "").split(" If there were several outages")[0]
+        if "No credit" not in vis(pg, result_sel): ok("Date: " + cdv in re.sub(r"\s+", " ", t), f"{label}: the summary holds the visible countdown: {cdv[:60]}")
+        ok(route_words in t, f"{label}: who asks ({route_words})")
+        sub, bi = mailparts(pg, "#mail-it"); sub2, bs = mailparts(pg, "#mail-self")
+        eq(sub, sub_want, f"{label}: the mail subject"); eq(sub2, sub_want, f"{label}: the second subject")
+        ok(t in bi and bi.startswith("Hello,\nPlease check the numbers below") and t in bs and bs.endswith("The full request text is on the page: copy it there, or download the record."), f"{label}: the two mail bodies hold the summary")
+        ok("Opens your own mail program. This page sends nothing." in vis(pg, "#passon"), f"{label}: the mail note")
+        return t
+    # Microsoft, direct
+    m = popen(); ok(m.is_hidden("#passon"), "pack: hidden with no result")
+    for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", "24"), ("#g0m", "0"), ("#fee", "625")]: m.fill(sel, v)
+    t = check_pack(m, "pack MS direct", "ms", "Service credit: Microsoft outage of 12 November 2026", "You send the request to Microsoft support.", "#r-line")
+    ok("Up to about $312.50 credit, if Microsoft accepts the claim." in t and "Microsoft decides." in t and "Numbers as typed: Users on the plan 50; Users without email 50 for 24 h; Paid for November $625.00; Bought from Microsoft." in t, "pack MS direct: the example words")
+    h0 = m.get_attribute("#mail-it", "href"); m.evaluate("() => { const e = document.getElementById('g0h'); e.value = '10'; e.dispatchEvent(new Event('change', {bubbles: true})); }")
+    ok(m.get_attribute("#mail-it", "href") != h0 and "10 h" in unquote(m.get_attribute("#mail-self", "href")), "pack MS: a change-only event updates the mail links")
+    m.fill("#g0h", "24")
+    # Microsoft, reseller; passed
+    m.check("input[name=m-buy][value=reseller]"); t = check_pack(m, "pack MS reseller", "ms", "Service credit: Microsoft outage of 12 November 2026", "Your provider, or the partner they buy from, requests it from Microsoft.", "#r-line")
+    ok("send the request to Microsoft" not in t.lower() and "Microsoft's partner rules give them one month" in t, "pack MS reseller: the provider asks, with the reading wording")
+    mp = popen("?today=2027-01-05"); [mp.fill(a, b) for a, b in [("#all", "50"), ("#g0u", "50"), ("#g0h", "24"), ("#g0m", "0"), ("#fee", "625")]]
+    t = check_pack(mp, "pack MS passed", "ms", "Service credit: Microsoft outage of 12 November 2026", "You send the request to Microsoft support.", "#r-line"); ok("That date has passed." in t, "pack MS passed: the passed wording"); mp.close()
+    # no credit
+    m.fill("#g0h", "0"); m.fill("#g0m", "43"); ok(not m.is_hidden("#passon") and "No credit" in m.inner_text("#r-line"), "pack: shown with a no-credit result"); tt = clip(m); ok("Nothing to send at this uptime." in tt and "Date:" not in tt, "pack: the no-credit summary has no date line")
+    # example
+    m.fill("#g0h", "24"); m.fill("#g0m", "0"); m.click("#ex-toggle"); te = clip(m); ok(te.startswith("EXAMPLE ONLY: Harbor & Pine Dental is a made-up company."), "pack: the example summary is marked")
+    ok(mailparts(m, "#mail-it")[1].count("EXAMPLE ONLY") == 1 and mailparts(m, "#mail-self")[1].startswith("EXAMPLE ONLY"), "pack: the example mails are marked")
+    with m.expect_download() as d: m.click("#rec-dl")
+    rec = open(d.value.path(), encoding="utf-8").read(); eq(d.value.suggested_filename, "service-credit-record.html", "pack: the record's file name"); ok("EXAMPLE ONLY: Harbor &amp; Pine Dental is a made-up company." in rec, "pack: the example record is marked")
+    m.click("#ex-toggle")
+    # the record: parse, no script, no outside address, letter and numbers inside, hostile text escaped
+    for sel in ["#c-id", "#c-start", "#c-end", "#c-desc", "#c-res", "#c-loc", "#c-err"]: m.fill(sel, HOSTILE)
+    for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", "24"), ("#g0m", "0"), ("#fee", "625")]: m.fill(sel, v)
+    with m.expect_download() as d: m.click("#rec-dl")
+    raw = open(d.value.path(), encoding="utf-8").read()
+    class P(HTMLParser):
+        def __init__(self): super().__init__(); self.tags = []; self.attrs = []
+        def handle_starttag(self, t, a): self.tags.append(t); self.attrs += [k for k, _ in a]
+    ps = P(); ps.feed(raw)
+    ok("script" not in ps.tags and "img" not in ps.tags and "src" not in ps.attrs and "href" not in ps.attrs and not any(a.startswith("on") for a in ps.attrs), "pack: the record has no script, no image, no src, href or handler")
+    ok("&lt;img src=x onerror=alert(1)&gt;" in raw and "<img" not in raw and "</pre><script>" not in raw, "pack: hostile text is escaped in the record")
+    ok("Service credit record" in raw and "How this was worked out" in raw and "Users on the plan" in raw and "(i) Description of the Incident" in raw and "Service Level Agreement for Microsoft Online Services, dated 1 November 2026. https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services" in raw and "Made on 13 November 2026 with downtimecredit.com. Not legal advice." in raw and "@media print" in raw, "pack: the record holds the summary, numbers, workings, letter, agreement and print rule")
+    ok("96.6666%" in raw and re.search(r"2,160,000", raw) is not None, "pack: the record's workings match the page")
+    ok(not dialogs, "pack: no script ran from typed text"); m.close()
+    # Google: direct, reseller, example
+    g = popen(); g.click("#mode-g"); ok(g.is_hidden("#passon"), "pack Google: hidden with no result")
+    gfill(g, "Google Drive", "2026-11-03", 0, 44)
+    t = check_pack(g, "pack Google", "g", "Google Drive downtime from 3 November 2026", "You create a support case with Google.", "#g-r-line"); ok("$" not in t and "Up to 3 days of service, if Google accepts the claim." in t, "pack Google: days only, no dollar")
+    g.check("input[name=g-buy][value=reseller]"); t = check_pack(g, "pack Google reseller", "g", "Google Drive downtime from 3 November 2026", "You tell your reseller, who tells Google by creating a support case.", "#g-r-line")
+    g.evaluate("() => { const e = document.getElementById('g-m'); e.value = '500'; e.dispatchEvent(new Event('change', {bubbles: true})); }")
+    ok("7 days" in unquote(g.get_attribute("#mail-it", "href")), "pack Google: a change-only event updates the mail links")
+    g.fill("#c-res", HOSTILE)
+    with g.expect_download() as d: g.click("#rec-dl")
+    raw = open(d.value.path(), encoding="utf-8").read(); ok("<img" not in raw and "<script" not in raw and "$" not in raw and "&lt;img" in raw, "pack Google: the record is escaped and has no dollar")
+    g.fill("#c-res", ""); g.click("#g-ex"); ok(clip(g).startswith("EXAMPLE ONLY:"), "pack Google: the example is marked"); g.close()
+    # own mode, with the longest values the fields allow
+    o = popen("?today=2026-11-13"); o.click("#mode-own")
+    LONG = "\U0001F600" * 80
+    for sel, v in [("#o-vendor", LONG), ("#o-service", LONG), ("#o-start", "2026-11-20"), ("#o-end", "2026-11-21"), ("#o-t1a", "99.9"), ("#o-t1b", "10"), ("#o-fee", "9999999999999.99"), ("#o-wdays", "30"), ("#o-h", "9"), ("#o-m", "30")]: o.fill(sel, v)
+    ok(not o.is_hidden("#passon"), "pack own: the block shows"); sub, bi = mailparts(o, "#mail-it"); sub2, bs = mailparts(o, "#mail-self")
+    ok("shortened: download the record for the full text" in bi and "Result:" in bi and "Date:" in bi and "decides." in bi, "pack own: the longest names are shortened, never the result, the date or the hedges")
+    o.fill("#o-vendor", HOSTILE); o.fill("#o-service", HOSTILE)
+    t = clip(o); ok(HOSTILE in t and "Result:" in t, "pack own: typed text stays plain text in the summary")
+    with o.expect_download() as d: o.click("#rec-dl")
+    raw = open(d.value.path(), encoding="utf-8").read(); ok("<img" not in raw and "<script" not in raw and "&lt;img" in raw, "pack own: the record escapes typed names")
+    o.fill("#o-vendor", "Harbor Fiber"); o.fill("#o-service", "Internet")
+    check_pack(o, "pack own", "own", "Service credit: Harbor Fiber outage of 20 November 2026", "You send the request to Harbor Fiber, as your agreement says.", "#o-r-line")
+    ok(not dialogs, "pack: no script ran in any mode"); o.close(); ctxP.close()
+    # the four steps on the routed live host: once each, never a typed value
+    ctxS2 = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); ctxS2.grant_permissions(["clipboard-read", "clipboard-write"], origin="https://www.downtimecredit.com")
+    ctxS2.add_init_script("""(function () { var o = history.replaceState; window.__rs = []; history.replaceState = function (s, t, u) { window.__rs.push(String(u)); return o.apply(this, arguments); }; })();""")
+    def rl2(rt):
+        u = rt.request.url
+        if u == COUNTER: rt.fulfill(status=200, content_type="text/javascript", body="")
+        elif u.startswith("https://www.downtimecredit.com/"):
+            path = u[len("https://www.downtimecredit.com"):].split("?")[0].split("#")[0]; path = "/index.html" if path == "/" else path; f = os.path.join(SITE, path.lstrip("/"))
+            rt.fulfill(status=200, path=f, content_type=mimetypes.guess_type(f)[0] or "application/octet-stream") if os.path.isfile(f) else rt.fulfill(status=404, body="")
+        else: rt.abort()
+    ctxS2.route("**/*", rl2); ls = ctxS2.new_page(); ls.goto("https://www.downtimecredit.com/index.html"); ls.wait_for_selector("#statement[data-ready]", state="attached"); ls.wait_for_function("window.__rs.length >= 2")
+    ls.evaluate("document.addEventListener('click', e => { if (e.target.closest('a[href^=\"mailto:\"]')) e.preventDefault(); })")
+    [ls.fill(a, b2) for a, b2 in [("#all", "7777"), ("#g0u", "3000"), ("#g0h", "5"), ("#g0m", "0"), ("#fee", "4321.09"), ("#c-res", "zzqx.example")]]
+    ls.click("#sum-copy"); ls.wait_for_timeout(300); ls.click("#mail-it"); ls.click("#mail-self")
+    with ls.expect_download() as dd: ls.click("#rec-dl")
+    ls.click("#sum-copy"); ls.click("#mail-it"); ls.click("#rec-dl")
+    stepsl = [u[len("/step/"):] for u in ls.evaluate("window.__rs") if u.startswith("/step/")]
+    ok(all(n2 in stepsl for n2 in ["summary-copied", "mail-it", "mail-self", "record"]) and all(stepsl.count(n2) == 1 for n2 in stepsl), f"pack steps: the four fire once each ({stepsl})")
+    ok(not any(w in json.dumps(ls.evaluate("window.__rs")) for w in ["7777", "4321", "zzqx", "mailto", "Service credit"]), "pack steps: no typed value, address or text in any path")
+    ctxS2.close()
 
     # ---------- anonymous step counting ----------
     import mimetypes

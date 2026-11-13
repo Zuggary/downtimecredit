@@ -9,6 +9,7 @@ After an outage, a business customer may be owed a service credit under the prov
 - Vendor terms live in `vendors/*.json`. Each fact carries the quoted clause, the source address, the document date and a last-checked date. `engine.js` reads them; a new vendor needs a data file, not code.
 - Vendors now: Microsoft 365 and Google Workspace.
 - The visit counter also totals anonymous step counts (opened, started, result, example, request, copied, calendar, saved, exported, ad name) by swapping the address to a fixed `/step/<name>` path and straight back with `history.replaceState`, on the live host only; names are the `STEPS` whitelist in `app.js`, never anything typed.
+- "Pass it on": copy a summary, open a mail (to IT or to yourself) in your own mail program with the text filled in, or download a record file. All made in the browser; nothing is sent by the site.
 - Own-contract mode runs the same sum on terms the visitor types.
 
 ## Files
