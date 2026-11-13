@@ -8,6 +8,7 @@ After an outage, a business customer may be owed a service credit under the prov
 - Not legal advice. Not run by or linked to any vendor. A credit lowers a later bill; it is not cash.
 - Vendor terms live in `vendors/*.json`. Each fact carries the quoted clause, the source address, the document date and a last-checked date. `engine.js` reads them; a new vendor needs a data file, not code.
 - Vendors now: Microsoft 365 and Google Workspace.
+- The visit counter also totals anonymous step counts (opened, started, result, example, request, copied, calendar, saved, exported, ad name) by swapping the address to a fixed `/step/<name>` path and straight back with `history.replaceState`, on the live host only; names are the `STEPS` whitelist in `app.js`, never anything typed.
 - Own-contract mode runs the same sum on terms the visitor types.
 
 ## Files

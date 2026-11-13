@@ -509,7 +509,7 @@
 <script src="app.js"></script>
 <script data-counter>
   // Cloudflare Web Analytics: counts visits, sets no cookie (see privacy.html). It loads on the live site only, so tests and local copies send nothing.
-  if (/(^|\.)downtimecredit\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "fec45b1ba4b9475991fe78db751e9bbc"}'); document.head.appendChild(s); })(); }
+  if (/(^|\.)downtimecredit\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "fec45b1ba4b9475991fe78db751e9bbc"}'); s.addEventListener("load", function () { if (!window.countStep) return; window.countStep("arrived"); var c = new URLSearchParams(location.search).get("utm_campaign"); if (c === "hook-credit") window.countStep("ad-hook-credit"); else if (c === "m365-nov") window.countStep("ad-m365-nov"); }); document.head.appendChild(s); })(); }
 </script>
 </body>
 </html>

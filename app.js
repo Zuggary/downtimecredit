@@ -21,6 +21,30 @@
   var ownSession = Math.floor(Math.random() * 1e9).toString(36);
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+  // ---------- anonymous step counting (live host only) ----------
+  // Cloudflare Web Analytics counts a page view for a path when the page calls history.replaceState to it. A step is counted by swapping the
+  // address to a fixed step path and straight back, in one synchronous block. Only the names in STEPS exist; every call below passes one as a
+  // string literal. Nothing the visitor types or picks is ever part of a path. Off the live host this does nothing at all.
+  var LIVE = /(^|\.)downtimecredit\.com$/.test(location.hostname);
+  var STEPS = { "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1 };
+  var counted = Object.create(null), actor = false;     // actor: the event being handled right now is a real visitor action
+  function countStep(name) {
+    if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) return;   // live host only, fixed names only, once per page load
+    if (location.pathname.charAt(1) === "/") return;      // an odd address such as //index.html: count nothing rather than risk the restore
+    counted[name] = 1;
+    var back = location.href, st = null;
+    try { st = history.state; history.replaceState(st, "", "/step/" + name); } catch (e) {}
+    finally { try { history.replaceState(st, "", back); } catch (e2) { if (location.href !== back) location.replace(back); } }   // the visitor always ends on the address they came with
+  }
+  window.countStep = countStep;      // the counter loader in index.html calls it once, for "arrived"
+  ["click", "input", "change"].forEach(function (t) { document.addEventListener(t, function (ev) { actor = ev.isTrusted === true; setTimeout(function () { actor = false; }, 0); }, true); });
+  function noteResult(m, res, noFee) {       // a result built from the visitor's own inputs, never the example
+    if (!actor || (m === "ms" && example) || (m === "g" && gExample)) return;
+    if (!res.uncertain && res.tier === 0) { countStep("no-credit"); return; }
+    if (noFee) return;
+    if (m === "ms") countStep("result-microsoft"); else if (m === "g") countStep("result-google"); else countStep("result-own");
+  }
+
   function el(tag, attrs, kids) {
     var n = document.createElement(tag);
     if (attrs) Object.keys(attrs).forEach(function (k) { if (k === "text") n.textContent = attrs[k]; else if (k === "class") n.className = attrs[k]; else n.setAttribute(k, attrs[k]); });
@@ -38,6 +62,7 @@
   function slaCite() { return MS.document.title + ", dated " + dayMonthYear(MS.document.date) + ". Last checked " + dayMonthYear(MS.document.lastChecked) + "."; }
   function partnerCite() { return "Microsoft Partner Center, request a credit, dated " + dayMonthYear(MS.resellerDeadline.documentDate) + ". Last checked " + dayMonthYear(MS.document.lastChecked) + "."; }
   function download(name, type, text) {
+    if (type === "text/calendar" && actor) countStep("calendar");
     var a = el("a", { href: URL.createObjectURL(new Blob([text], { type: type })), download: name });
     document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
   }
@@ -193,6 +218,7 @@
         $("r-sum").hidden = false; $("r-sum").textContent = sumLine(res) + " The agreement gives no credit, 25%, 50% or 100%, depending on how much of the month email worked.";
         if (res.uncertain) { $("r-zone").hidden = false; $("r-zone").textContent = ZONE; }
         noCredit = !res.uncertain && res.tier === 0;
+        noteResult("ms", res, o.noFee);
       }
     }
     zoneDetail($("zone-detail"), last && last.res);
@@ -250,6 +276,7 @@
     if (e.res.error) { said(/exceeds/.test(e.res.error) ? "That is longer than the whole period." : "Check the numbers."); refreshShared(); return; }
     if (e.d.error) { OWNBAD = true; said("That date is too far ahead to work out a deadline. Check the dates."); refreshShared(); return; }
     ownLast = { x: x, v: e.v, res: e.res, d: e.d, inputs: e.inputs, noFee: e.noFee };
+    noteResult("own", e.res, e.noFee);
     var res = e.res, line = el("p", { class: "r-line", id: "o-r-line" });
     resultInto(line, res, v.vendor, e.noFee, true);
     out.appendChild(el("div", { class: "result" }, [line,
@@ -333,6 +360,7 @@
     if (e.d.error) { GBAD = true; said("That start date is too far ahead: the 30 days run past the last date this page can work with. Check the date."); refreshShared(); return; }
     var res = e.res, none = !res.uncertain && res.tier === 0, rs = r.reseller;
     gLast = { x: x, v: GW, res: res, d: e.d, inputs: e.inputs, none: none };
+    noteResult("g", res, false);
     var line = el("p", { class: "r-line", id: "g-r-line" }); gResultInto(line, res, "g-");
     out.appendChild(el("div", { class: "result" }, [line, el("p", { class: "r-sum", id: "g-sum", text: gSum(res) }),
       res.uncertain ? el("p", { class: "zone", id: "g-zone", text: ZONE }) : null,
@@ -434,7 +462,7 @@
     if (GW) sourcesList(g);
     refreshShared();
   }
-  function goWrite() { $("write").scrollIntoView(); $(mode === "g" ? "c-res" : "c-id").focus({ preventScroll: true }); }
+  function goWrite() { if (actor) countStep("request"); $("write").scrollIntoView(); $(mode === "g" ? "c-res" : "c-id").focus({ preventScroll: true }); }
 
   function vendorOf(x) { return x.own ? E.ownVendor(x.own) : VBY[x.vendorId] || MS; }
   function evalInc(x) {
@@ -500,6 +528,7 @@
       var keep = Object.assign({}, last.inc.inputs); delete keep.month;   // the month comes from the start date
       r = store.add({ vendorId: MS.id, title: $("inc-title").value.trim().slice(0, 200) || "Microsoft 365 email, November 2026", start: MS.featured.start, inputs: keep, fields: pickFields(claimFields()) });
     }
+    if (!r.error && actor) countStep("saved");
     $("save-msg").textContent = r.error ? "Could not save: " + r.error + "." : "Saved." + (store.canSave() ? "" : " (For this visit only.)");
     renderIncidents();
   }
@@ -588,14 +617,20 @@
     vendorText();
     ["all", "g0u", "g0h", "g0m", "fee"].forEach(function (id) { $(id).addEventListener("input", recalc); $(id).addEventListener("focus", leaveExample); });
     ["c-id", "c-start", "c-end", "c-desc", "c-res", "c-loc", "c-err"].forEach(function (id) { $(id).addEventListener("input", refreshShared); });
-    $("ex-toggle").addEventListener("click", function () { setExample(!example); });
+    $("ex-toggle").addEventListener("click", function () { if (actor) countStep("example"); setExample(!example); });
     $("add-group").addEventListener("click", function () { leaveExample(); var k = addGroup(); $(k + "u").focus(); });
     $("write-btn").addEventListener("click", goWrite);
     $("mode-ms").addEventListener("click", function () { setMode("ms"); });
     $("mode-own").addEventListener("click", function () { setMode("own"); });
     $("mode-g").addEventListener("click", function () { setMode("g"); });
+    // the visitor's first own edit of a statement field, per mode (a real input or change event only)
+    ["input", "change"].forEach(function (t) {
+      $("statement").addEventListener(t, function (ev) { if (ev.isTrusted) countStep("start-microsoft");  }, true);
+      $("g-form").addEventListener(t, function (ev) { if (ev.isTrusted) countStep("start-google");  }, true);
+      $("own-form").addEventListener(t, function (ev) { if (ev.isTrusted) countStep("start-own");  }, true);
+    });
     if (GW) {
-      $("g-ex").addEventListener("click", function () { gSetExample(!gExample); });
+      $("g-ex").addEventListener("click", function () { if (actor) countStep("example"); gSetExample(!gExample); });
             // every event that can carry a new value (input, change, blur) asks gCalcIf, which does nothing when the fields match the visible result: so a click on a button is never swallowed
       ["g-start", "g-h", "g-m"].forEach(function (id) { ["input", "change", "blur"].forEach(function (ev) { $(id).addEventListener(ev, gCalcIf); }); $(id).addEventListener("focus", gLeaveExample); });
       $("g-svc").addEventListener("change", gCalcIf); $("g-svc").addEventListener("focus", gLeaveExample);
@@ -603,8 +638,8 @@
     }
     function selectLetter() { var r = document.createRange(); r.selectNodeContents($("claim")); var g = getSelection(); g.removeAllRanges(); g.addRange(r); }
     $("copy-claim").addEventListener("click", function () {
-      var b = this, t = $("claim").textContent;
-      function done() { b.textContent = "Copied"; $("copy-state").textContent = "The request is on your clipboard."; setTimeout(function () { b.textContent = "Copy request"; $("copy-state").textContent = ""; }, 2500); }
+      var b = this, t = $("claim").textContent, human = actor;
+      function done() { if (human) countStep("copied"); b.textContent = "Copied"; $("copy-state").textContent = "The request is on your clipboard."; setTimeout(function () { b.textContent = "Copy request"; $("copy-state").textContent = ""; }, 2500); }
       function fallback() { selectLetter(); $("copy-state").textContent = "Selected: press Ctrl+C or Cmd+C (or long-press on a phone) to copy."; }
       try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fallback); else fallback(); } catch (e) { fallback(); }
     });
@@ -615,7 +650,7 @@
         title: mode === "ms" ? "Microsoft 365 email outage, November 2026" : c.v.service, rule: mode === "ms" ? "The SLA's rule: by the end of the month after the month of the incident." : "" }));
     });
     $("save-ms").addEventListener("click", saveCurrent);
-    $("export-btn").addEventListener("click", function () { download("downtime-credit-incidents.json", "application/json", store.exportText()); $("io-msg").textContent = "Exported " + store.all().length + " incidents."; });
+    $("export-btn").addEventListener("click", function () { if (actor) countStep("exported"); download("downtime-credit-incidents.json", "application/json", store.exportText()); $("io-msg").textContent = "Exported " + store.all().length + " incidents."; });
     $("import-file").addEventListener("change", function () {
       var f = this.files && this.files[0]; if (!f) return;
       if (f.size > S.MAX_BYTES) { $("io-msg").textContent = "That file is too large to be a Downtime Credit list."; return; }

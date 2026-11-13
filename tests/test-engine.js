@@ -446,6 +446,26 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   })();
 })();
 
+// ---------- step counting: static checks ----------
+(function () {
+  var app = file("app.js"), html = file("index.html"), m = /var STEPS = \{([^}]*)\}/.exec(app), names = [];
+  ok(!!m, "the STEPS whitelist is in app.js", "steps");
+  if (m) m[1].replace(/"([a-z0-9-]+)": 1/g, function (a, n) { names.push(n); return a; });
+  ok(names.length >= 14, "the whitelist holds its names (" + names.length + ")", "steps");
+  [["app.js", app], ["index.html", html]].forEach(function (f) {
+    var text = f[1].replace(/function countStep\(name\)/, ""), n = 0, i = -1, re = /countStep\(/g, x;
+    while ((x = re.exec(text))) {
+      n++; var rest = text.slice(x.index + x[0].length), lit = /^"([a-z0-9-]+)"\)/.exec(rest);
+      ok(!!lit && names.indexOf(lit[1]) >= 0, f[0] + ": countStep call " + n + " has a whitelisted string literal: " + rest.slice(0, 30), "steps");
+    }
+    ok(n > 0, f[0] + " has countStep calls (" + n + ")", "steps");
+  });
+  ["app.js", "engine.js", "store.js", "index.html"].forEach(function (f) { ok(file(f).indexOf("pushState") < 0, f + " never calls pushState", "steps"); });
+  ok(app.indexOf('"/step/" + name') >= 0 && (app.match(/"\/step\//g) || []).length === 1, "one place builds a step path, from the whitelisted name", "steps");
+  ok(!/countStep\([^")]/.test(app.replace("function countStep(name)", "")) && !/countStep\("[^"]*"\s*\+/.test(app + html), "no concatenation or variable inside a countStep call", "steps");
+  ok(app.indexOf("if (!LIVE ||") > 0 && app.indexOf('/(^|\\.)downtimecredit\\.com$/.test(location.hostname)') > 0, "the live-host gate is in front of every step", "steps");
+})();
+
 // ---------- report ----------
 print("reference cases: " + caseOk + "/60 exact; reference deadline cases: " + dlOk + "/6");
 Object.keys(groups).forEach(function (g) { print("  " + g + ": " + groups[g][0] + " passed, " + groups[g][1] + " failed"); });

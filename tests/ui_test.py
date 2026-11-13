@@ -486,6 +486,101 @@ with sync_playwright() as pw:
     ok("garbage" not in pg.evaluate("localStorage.getItem('downtimecredit.incidents.v1')"), "R2: the main key holds only the good list")
     cx.close()
     ctxG.close()
+
+    # ---------- anonymous step counting ----------
+    import mimetypes
+    def drive(pg, d):
+        """A full flow in each mode with distinctive values. d = directory for downloads."""
+        pg.fill("#all", "7777"); pg.fill("#g0u", "3000"); pg.fill("#g0h", "5"); pg.fill("#g0m", "0"); pg.fill("#fee", "4321.09")
+        pg.fill("#c-desc", "Qwxz Co lost mail"); pg.fill("#c-res", "zzqx.example")
+        pg.click("#write-btn"); pg.click("#copy-claim"); pg.wait_for_timeout(300)
+        with pg.expect_download() as dd: pg.click("#ics-btn")
+        pg.fill("#inc-title", "Qwxz Co"); pg.click("#save-ms")
+        with pg.expect_download() as dd: pg.click("#export-btn")
+        pg.click("#ex-toggle"); pg.click("#ex-toggle")
+        pg.click("#mode-g"); pg.select_option("#g-svc", "Google Drive"); pg.fill("#g-start", "2026-11-03"); pg.fill("#g-m", "44"); pg.fill("#c-res", "zzqx.example")
+        pg.click("#g-write"); pg.click("#g-ex"); pg.click("#g-ex"); pg.fill("#g-start", "2026-11-03"); pg.fill("#g-m", "43")
+        pg.click("#mode-own"); pg.fill("#o-vendor", "Qwxz Co"); pg.fill("#o-service", "Link"); pg.fill("#o-start", "2026-11-20"); pg.fill("#o-end", "2026-11-21")
+        pg.fill("#o-t1a", "99.9"); pg.fill("#o-t1b", "10"); pg.fill("#o-fee", "4321.09"); pg.fill("#o-h", "9"); pg.fill("#o-m", "30")
+        pg.click("#o-write")
+        with pg.expect_download() as dd: pg.click("#ics-btn")
+    # (a) a local copy: the address and the history never change, nothing leaves, no step path is ever seen
+    ctxS = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); route(ctxS); ctxS.grant_permissions(["clipboard-read", "clipboard-write"])
+    ps = ctxS.new_page(); watch(ps); reqs, navs = [], []
+    ps.on("request", lambda r: reqs.append(r.url)); ps.on("framenavigated", lambda f: navs.append(f.url) if f == ps.main_frame else None)
+    ps.goto(BASE + "?today=2026-11-13"); ps.wait_for_selector("#statement[data-ready]", state="attached")
+    href0, hl0 = ps.evaluate("location.href"), ps.evaluate("history.length"); n0 = len(navs)
+    ps.evaluate("window.__rs = 0; const o = history.replaceState; history.replaceState = function () { window.__rs++; return o.apply(this, arguments); }; 0")
+    drive(ps, tmp)
+    eq(ps.evaluate("location.href"), href0, "steps (local): the address is as it was after a full flow in every mode")
+    eq(ps.evaluate("history.length"), hl0, "steps (local): the history length is as it was")
+    eq(ps.evaluate("window.__rs"), 0, "steps (local): history.replaceState is never called off the live host")
+    ok(len(navs) == n0 and not any("/step/" in u for u in navs + reqs), "steps (local): no /step/ address or request, no navigation")
+    ok(all(u.startswith(f"http://127.0.0.1:{PORT}/") or u.startswith("blob:") or u.startswith("data:") for u in reqs), "steps (local): no request leaves the local server")
+    for q in ("?demo=google", "?demo=example", "?demo=own", "?demo=flagged"):
+        pq = ctxS.new_page(); pq.goto(BASE + q); pq.wait_for_selector("#statement[data-ready]", state="attached")
+        eq(pq.evaluate("history.length"), pq.evaluate("history.length"), "steps: demo opens"); pq.close()
+    ps.close(); ctxS.close()
+    # (b) the live host, reached through a route to the local files: exactly the fixed step paths, once each, address restored every time
+    LIVE = "https://www.downtimecredit.com"
+    ctxL = b.new_context(viewport={"width": 375, "height": 812}, accept_downloads=True); ctxL.grant_permissions(["clipboard-read", "clipboard-write"], origin=LIVE)
+    ctxL.add_init_script("""(function () { var o = history.replaceState, p = history.pushState; window.__rs = []; window.__push = 0;
+      history.replaceState = function (s, t, u) { var before = location.pathname + location.search + location.hash; var r = o.apply(this, arguments); window.__rs.push([String(u), before, location.pathname + location.search + location.hash]); return r; };
+      history.pushState = function () { window.__push++; return p.apply(this, arguments); }; })();""")
+    liveReq, liveOut = [], []
+    def rl(rt):
+        u = rt.request.url
+        if u == COUNTER: rt.fulfill(status=200, content_type="text/javascript", body="")
+        elif u.startswith(LIVE + "/"):
+            path = u[len(LIVE):].split("?")[0].split("#")[0]; path = "/index.html" if path == "/" else path; liveReq.append(path)
+            f = os.path.join(SITE, path.lstrip("/"))
+            if os.path.isfile(f) and os.path.realpath(f).startswith(os.path.realpath(SITE)): rt.fulfill(status=200, path=f, content_type=mimetypes.guess_type(f)[0] or "application/octet-stream")
+            else: rt.fulfill(status=404, body="")
+        else: liveOut.append(u); rt.abort()
+    ctxL.route("**/*", rl)
+    pl = ctxL.new_page(); watch(pl); pl.goto(LIVE + "/index.html"); pl.wait_for_selector("#statement[data-ready]", state="attached")
+    pl.wait_for_function("window.__rs.length >= 2")
+    hostn = pl.evaluate("location.hostname"); eq(hostn, "www.downtimecredit.com", "steps (live): the page runs on the live host name")
+    hl1 = pl.evaluate("history.length")
+    drive(pl, tmp)
+    rs = pl.evaluate("window.__rs")
+    names = [c[0][len("/step/"):] for c in rs if c[0].startswith("/step/")]
+    STEP_NAMES = ["arrived", "start-microsoft", "start-google", "start-own", "result-microsoft", "result-google", "result-own", "no-credit", "example", "request", "copied", "calendar", "saved", "exported", "ad-hook-credit", "ad-m365-nov"]
+    WANT = ["arrived", "start-microsoft", "result-microsoft", "request", "copied", "calendar", "saved", "exported", "example", "start-google", "result-google", "no-credit", "start-own", "result-own"]
+    eq(names, WANT, "steps (live): the recorded step paths are the expected fixed names in order")
+    ok(len(set(names)) == len(names), "steps (live): each step at most once")
+    ok(len(rs) == 2 * len(names), "steps (live): only step calls and their restoring calls")
+    for i in range(0, len(rs), 2):
+        a, c = rs[i], rs[i + 1]
+        ok(a[0].startswith("/step/") and c[0].split("downtimecredit.com", 1)[-1] == a[1] and c[2] == a[1], f"steps (live): {a[0]} is restored to {a[1]} at once")
+    ok(all(re.fullmatch(r"/step/[a-z-]+", c[0]) for c in rs[0::2]), "steps (live): every path is /step/ and a fixed lower-case name")
+    allp = json.dumps(rs)
+    ok(not any(w in allp for w in ["7777", "4321", "zzqx", "Qwxz", "3000", "Google Drive", "2026"]), "steps (live): nothing typed or picked is in any path")
+    eq(pl.evaluate("window.__push"), 0, "steps (live): pushState is never called")
+    eq(pl.evaluate("location.href"), LIVE + "/index.html", "steps (live): the visible address is the original after the flows"); eq(pl.evaluate("history.length"), hl1, "steps (live): the history length is unchanged")
+    pl.click("a[href='#incidents']"); ok(pl.url.endswith("/index.html#incidents"), "steps (live): hash anchors work"); pl.go_back(); eq(pl.url, LIVE + "/index.html", "steps (live): Back returns to the page, not to a step path")
+    ok(not any("/step/" in u for u in liveReq) and not liveOut, f"steps (live): no request for a step path and nothing else outside ({liveOut[:3]})")
+    pl.close()
+    # the example flow and a restored incident record no start or result step
+    pe = ctxL.new_page(); pe.goto(LIVE + "/index.html"); pe.wait_for_selector("#statement[data-ready]", state="attached"); pe.wait_for_function("window.__rs.length >= 2")
+    pe.click("#ex-toggle"); pe.click("#mode-g"); pe.click("#g-ex")
+    eq([c[0] for c in pe.evaluate("window.__rs")[0::2]], ["/step/arrived", "/step/example"], "steps (live): the example records only 'example'")
+    pe.close()
+    # ad arrivals: an exact fixed campaign value counts one fixed step; anything else counts nothing and never reaches a path
+    for q, want in [("?utm_campaign=hook-credit", ["arrived", "ad-hook-credit"]), ("?utm_campaign=m365-nov&utm_source=reddit", ["arrived", "ad-m365-nov"]), ("?utm_campaign=hook-364", ["arrived"]),
+                    ("?utm_campaign=hook-credit/../x", ["arrived"]), ("?utm_campaign=HOOK-CREDIT", ["arrived"]), ("?utm_campaign=hook-credit%20", ["arrived"]), ("?utm_campaign=" + "a" * 3000, ["arrived"]), ("?utm_campaign=m365-nov%2Fx", ["arrived"]), ("?utm_campaign=", ["arrived"])]:
+        pa = ctxL.new_page(); pa.goto(LIVE + "/index.html" + q); pa.wait_for_selector("#statement[data-ready]", state="attached"); pa.wait_for_function("window.__rs.length >= 2"); pa.wait_for_timeout(200)
+        rsa = pa.evaluate("window.__rs"); got = [c[0][len("/step/"):] for c in rsa[0::2]]
+        eq(got, want, f"ads: {q[:40]} counts {want}")
+        paths = json.dumps([c[0] for c in rsa[0::2]])
+        ok(len(rsa) == 2 * len(want) and all(c[0].startswith("/step/") and c[0][len("/step/"):] in STEP_NAMES for c in rsa[0::2]), "ads: only fixed paths")
+        ok("aaaa" not in paths and ".." not in paths and "utm" not in paths and "?" not in paths, f"ads: {q[:30]}: the value never reaches a path")
+        eq(pa.evaluate("location.search"), q, f"ads: the visitor's address keeps its query string"); pa.close()
+    ctxR = b.new_context(viewport={"width": 375, "height": 812}); ctxR.route("**/*", rl); ctxR.add_init_script("try { if (!localStorage.getItem('seeded')) { localStorage.setItem('seeded', '1'); localStorage.setItem('downtimecredit.incidents.v1', JSON.stringify({format:'downtimecredit-incidents',version:1,incidents:[{id:'k-1',vendorId:'microsoft-365-exchange',title:'KEEP',start:'2026-11-12',inputs:{allUsers:50,groups:[{affectedUsers:50,downMinutes:840}],feeCents:62500}}]})); } } catch (e) {}")
+    ctxR.add_init_script("window.__rs = []; (function () { var o = history.replaceState; history.replaceState = function (s, t, u) { window.__rs.push(String(u)); return o.apply(this, arguments); }; })();")
+    pr = ctxR.new_page(); pr.goto(LIVE + "/index.html"); pr.wait_for_selector("#statement[data-ready]", state="attached"); pr.wait_for_function("window.__rs.length >= 2")
+    ok("KEEP" in pr.inner_text("#inc-list") and pr.evaluate("window.__rs")[0::2] == ["/step/arrived"], "steps (live): a restored saved incident records no step"); ctxR.close()
+    ctxL.close()
     b.close()
 srv.shutdown()
 ok(not errors, f"0 console errors ({errors[:3]})"); ok(not outside, f"0 outside requests besides the visit counter ({outside[:3]})"); ok(not counter, "the visit counter does not load on a local copy"); src = open(os.path.join(SITE, "index.html")).read(); ok(src.count("https://static.cloudflareinsights.com/beacon.min.js") == 1 and "downtimecredit\\.com$/.test(location.hostname)" in src, "one outside script in the page: the visit counter, on the live host only")
