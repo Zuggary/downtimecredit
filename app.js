@@ -132,7 +132,7 @@
     return d;
   }
   function msTile() {
-    var rs = msReseller(), d = msDeadlineFor({ start: MS.featured.start }, rs), m = E.countdownModel("ms", d, cdOpts("ms", { reseller: rs })), sd = $("st-date");
+    var rs = msReseller(), d = msDeadlineFor({ start: MS.featured.start }, rs), m = E.countdownModel("ms", d, cdOpts("ms", { reseller: rs, noCredit: noCredit })), sd = $("st-date");
     fillBox("dl", m, example);
     sd.textContent = m.state === "passed" ? "" : rs ? "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown above." : "Send by " + E.fullDate(d.sendBy) + ". See the countdown above."; sd.hidden = noCredit || m.state === "passed";
     return E.countdown(TODAY, d.date);
@@ -366,7 +366,7 @@
       var late = cd.state === "passed";
       writeButton(wb, cd, false);
       clear(cdg); cdg.appendChild(buildBox("g-dl")); var gm = E.countdownModel("g", e.d, { today: TODAY, reseller: rs, ownWords: GW.deadline.ownWords }); fillBox("g-dl", gm, gExample);
-      if (gm.state !== "passed") out.appendChild(el("p", { class: "small", id: "g-st-date", text: "Send by " + E.fullDate(e.d.sendBy) + ". See the countdown above." }));
+      if (gm.state !== "passed") out.appendChild(el("p", { class: "small", id: "g-st-date", text: (rs ? "Tell your reseller by " : "Send by ") + E.fullDate(e.d.sendBy) + ". See the countdown above." }));
     } else clear(cdg);
     var dl = el("dl", { class: "work" }, [
       el("dt", null, ["Minutes in the month ", el("small", { text: "(the month's days × 1,440)" })]), el("dd", { id: "g-w-pm", text: num(res.periodMinutes) }),

@@ -394,7 +394,7 @@ var DTC = (function () {
     return base + (d.sendBy && !late ? " " + (reseller ? "Tell your reseller by " : "Send it by ") + fullDate(d.sendBy) + "." + (reseller ? " They notify Google." : "") : "");
   }
   // The countdown, as one model: the page draws it and the hand-off pack quotes it (one source).
-  // kind: "ms" | "g" | "own"; o: {today, reseller, name, product, start (the featured outage), ownWords}
+  // kind: "ms" | "g" | "own"; o: {today, reseller, name, product, start (the featured outage), ownWords, noCredit}
   // The count is to the send-by day (the ask-by day for a reseller buyer); an own contract has no send-by, so it counts to the last day.
   function countdownModel(kind, d, o) {
     var today = o.today, rs = o.reseller === true, last = d.date, ask = d.sendBy || d.date, name = o.name, m = {};
@@ -403,27 +403,39 @@ var DTC = (function () {
     var fd = function (iso) { return fullDate(iso); }, shortSend = fd(ask).replace(/ \d{4}$/, "");
     var about = "For the " + (o.product || "outage") + " outage reported on " + plainDate(o.start) + ".";
     m.state = state;
-    m.lead = state === "passed" ? "The window has closed." : state === "last" ? "Today is the last day." : state === "sendby" ? (rs ? "Ask your provider today." : "Send it today.")
-      : (n === 1 ? "1 day left to " : n + " days left to ") + (rs ? "ask your provider." : "send it.");
     if (kind === "g") {
-      var due = rs ? "tell your reseller by " : "send it by ";
+      m.lead = state === "passed" ? "The window has closed."
+        : state === "last" ? (rs ? "Today is the last day by this page's count." : "Today is the last day.")
+        : state === "sendby" ? (rs ? "Tell your reseller today." : "Send it today.")
+        : (n === 1 ? "1 day left to " : n + " days left to ") + (rs ? "tell your reseller." : "send it.");
       m.sentence = state === "passed" ? "Counting from the day it started, the 30 days ended on " + fd(last) + ". That date has passed. " + TEXT.GPASSED
-        : state === "last" ? "By this page's count, a support case with Google is due today, " + fd(last) + "."
-        : state === "sendby" ? "By this page's count, a support case with Google is due by tomorrow, " + fd(last) + "."
-        : "By this page's count, a support case with Google is due by " + fd(last) + "; " + due + fd(ask) + "." + (rs ? " They notify Google." : "");
-      m.quiet = state === "last" ? TEXT.LASTDAY : "";
+        : state === "last" ? (rs ? "Tell your reseller now; they notify Google." : "By this page's count, a support case with Google is due today, " + fd(last) + ".")
+        : state === "sendby" ? "By this page's count, a support case with Google is due by tomorrow, " + fd(last) + "." + (rs ? " They notify Google." : "")
+        : "By this page's count, a support case with Google is due by " + fd(last) + "; " + (rs ? "tell your reseller by " : "send it by ") + fd(ask) + "." + (rs ? " They notify Google." : "");
+      m.quiet = state === "last" && !rs ? TEXT.LASTDAY : "";
       m.why = state === "passed" ? "" : String(o.ownWords || "");
     } else if (rs) {
+      var between = state === "sendby" && n < 0;
+      m.lead = state === "passed" ? "The window has closed."
+        : state === "last" ? "Today is the last day."
+        : between ? (toLast === 1 ? "1 day left" : toLast + " days left") + " by this page's count."
+        : state === "sendby" ? "Ask your provider today."
+        : (n === 1 ? "1 day left to " : n + " days left to ") + "ask your provider.";
       m.sentence = state === "passed" ? "By this page's count the provider's month has ended. Ask them today; they can tell you if a request is still possible."
+        : between ? "Ask your provider today; Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as " + fd(last) + "."
         : "Microsoft's partner rules give them one month after the billing month of the outage. This page counts that as " + fd(last) + (state === "open" ? "; ask them by " + fd(ask) + "." : "; ask them today.");
       m.quiet = (state === "passed" ? "" : "Sooner is safer. ") + about + (state === "passed" ? "" : " This is this page's reading of the partner rule.");
       m.why = "";
     } else if (kind === "own") {
+      m.lead = state === "passed" ? "The window has closed." : state === "last" ? "Today is the last day." : state === "sendby" ? "Send it today."
+        : (n === 1 ? "1 day left to " : n + " days left to ") + "send it.";
       m.sentence = state === "passed" ? name + " had to receive the request by " + fd(last) + ". The window you typed has closed; you can still ask " + name + "."
         : state === "last" ? "Your request must reach " + name + " today, " + fd(last) + "." : "Your request must reach " + name + " by " + fd(last) + ".";
       m.quiet = state === "last" ? TEXT.LASTDAY : state === "passed" ? "" : "Sooner is safer. This is the window you typed.";
       m.why = "";
     } else {
+      m.lead = state === "passed" ? "The window has closed." : state === "last" ? "Today is the last day." : state === "sendby" ? "Send it today."
+        : (n === 1 ? "1 day left to " : n + " days left to ") + "send it.";
       m.sentence = state === "passed" ? name + " had to receive the request by " + fd(last) + ". The agreement gives no right to a late claim. You can still ask " + name + "."
         : state === "last" ? "Your request must reach " + name + " today, " + fd(last) + "."
         : state === "sendby" ? "Your request must reach " + name + " by tomorrow, " + fd(last) + "."
@@ -432,9 +444,19 @@ var DTC = (function () {
       m.quiet = (state === "last" ? TEXT.LASTDAY + " " : state === "passed" ? "" : "Sooner is safer. ") + about + " " + src;
       m.why = "";
     }
-    var ap = parseISO(ask);
+    if (kind === "ms" && o.noCredit && state !== "passed") {      // a closed window keeps its own words
+      m.lead = "No credit by this count.";
+      // n counts to the act-by day; once that day has come the sentence must not name a day in the past
+      m.sentence = rs ? (n > 0 ? "If your own figures differ, ask your provider by " + fd(ask) + "; this page counts their month as ending " + fd(last) + "."
+          : "If your own figures differ, ask your provider today; this page counts their month as ending " + fd(last) + ".")
+        : state === "last" ? "If your own figures differ, the request must reach " + name + " today, " + fd(last) + "."
+        : n > 0 ? "If your own figures differ, the request must reach " + name + " by " + fd(last) + ", so send it by " + shortSend + "."
+        : "If your own figures differ, the request must reach " + name + " by tomorrow, " + fd(last) + "; send it today.";
+      if (state === "last" || n <= 0) m.quiet = m.quiet.replace(/^Send it now\. /, "");
+    }
+    var showLast = n < 0, tp = parseISO(showLast ? last : ask);
     m.tile = state === "passed" ? { month: "Window", day: "closed", label: "", closed: true }
-      : { month: MONTHS[ap.m - 1].slice(0, 3) + " " + ap.y, day: String(ap.d), label: kind === "own" ? "last day" : rs ? "ask by" : "send by" };
+      : { month: MONTHS[tp.m - 1].slice(0, 3) + " " + tp.y, day: String(tp.d), label: (showLast || kind === "own") ? "last day" : rs ? "ask by" : "send by" };
     m.text = [m.lead, m.sentence, m.quiet, m.why].filter(Boolean).join(" ");
     return m;
   }
