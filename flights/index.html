@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flight cancelled or delayed? What you can ask for · Downtime Credit</title>
+<meta name="description" content="Flight cancelled or delayed? Four taps show what the US refund rule and the EU passenger regulation let you ask for, with a refund request to copy. Free, nothing stored.">
+<link rel="canonical" href="https://www.downtimecredit.com/flights/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.downtimecredit.com/flights/">
+<meta property="og:site_name" content="Downtime Credit">
+<meta property="og:title" content="Flight cancelled or delayed? What you can ask for">
+<meta property="og:description" content="Flight cancelled or delayed? Four taps show what the US refund rule and the EU passenger regulation let you ask for, with a refund request to copy. Free, nothing stored.">
+<meta property="og:image" content="https://www.downtimecredit.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="../fonts/besley-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Besley DC"; src: url("../fonts/besley-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "Hanken DC"; src: url("../fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+  :root {
+    --page: #EEF2F0; --sheet: #FFFFFF; --ink: #0E3A2F; --ink-2: #33524A; --mute: #52685F; --rule: #C5D1CC; --tint: #E1EAE6;
+    --date: #1D4E89; --date-tint: #E6EEF7; --blank: #FCEBC4; --bad: #8F1D1D; --bad-tint: #F6E9E7; --write: #F7F9F8;
+    --head: "Besley DC", Georgia, "Times New Roman", serif; --text: "Hanken DC", Arial, Helvetica, sans-serif;
+    --gut: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--ink); font: 400 16.5px/1.5 var(--text); }
+  a { color: var(--ink); text-underline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--date); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .in { max-width: 1240px; margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut); }
+  small, .small { font-size: 13px; color: var(--mute); font-weight: 400; }
+
+  /* header */
+  .top .in { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; padding-bottom: 8px; }
+  .brand { font: 700 19px/1 var(--head); color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .trustbar { background: var(--ink); color: #DCE7E2; }
+  .trustbar p { margin: 0 auto; max-width: 1240px; padding: 6px var(--gut); font-size: 13.5px; line-height: 1.35; }
+
+  /* hero */
+  .hero { padding-top: 14px; padding-bottom: 20px; }
+  h1 { font: 700 clamp(24px, 6.6vw, 48px)/1.12 var(--head); margin: 0; text-wrap: balance; max-width: 20em; }
+  .lede { margin: 10px 0 0; font-size: 15.5px; line-height: 1.45; max-width: 42em; color: var(--ink-2); }
+
+  /* questions sheet */
+  .sheet { background: var(--sheet); border: 1px solid var(--rule); border-top: 6px solid var(--ink); padding: 14px 14px 18px; box-shadow: 0 18px 40px -26px #0e3a2f66; max-width: 780px; }
+  .q + .q { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .q-label { font: 700 17px/1.25 var(--head); margin: 0 0 10px; }
+  .q-note { margin: 8px 0 0; font-size: 13.5px; line-height: 1.4; color: var(--mute); }
+  .opts { display: grid; gap: 8px; }
+  .opts-2 { grid-template-columns: 1fr 1fr; }
+  .opts-4 { grid-template-columns: 1fr 1fr; }
+  .opts-1 { grid-template-columns: 1fr; }
+  .opt-btn {
+    font: 600 15px/1.3 var(--text); color: var(--ink); background: var(--sheet);
+    border: 2px solid var(--ink); border-radius: 8px; padding: 10px 14px;
+    min-height: 44px; text-align: left; cursor: pointer;
+    display: flex; align-items: center; justify-content: flex-start;
+  }
+  .opt-btn:hover { background: var(--write); }
+  .opt-btn[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .actions { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  .primary { font: 700 17px/1.2 var(--text); color: #fff; background: var(--ink); border: 2px solid var(--ink); border-radius: 8px; padding: 11px 18px; cursor: pointer; min-height: 48px; }
+  .primary:hover { background: #0A2B22; }
+  .second { font: 600 15px/1.2 var(--text); color: var(--ink); background: #fff; border: 2px solid var(--ink); border-radius: 8px; padding: 10px 14px; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; }
+  .second:hover { background: var(--write); }
+
+  /* answers */
+  .step { padding-top: 24px; padding-bottom: 24px; }
+  .step h2 { font: 700 clamp(22px, 5vw, 30px)/1.18 var(--head); margin: 0 0 12px; }
+  .cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .card { background: var(--sheet); border: 1px solid var(--rule); border-top: 4px solid var(--ink-2); padding: 14px 16px 16px; }
+  .card[data-verdict="yes"] { border-top-color: var(--ink); }
+  .card[data-verdict="maybe"] { border-top-color: var(--date); }
+  .card h2 { font: 700 18px/1.25 var(--head); margin: 0 0 6px; }
+  .verdict { font: 700 24px/1.15 var(--head); margin: 0 0 8px; color: var(--ink); }
+  .card[data-verdict="maybe"] .verdict { color: var(--date); }
+  .card[data-verdict="no"] .verdict, .card[data-verdict="na"] .verdict { color: var(--ink-2); }
+  .card p:last-child { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink); }
+
+  .block { margin-top: 26px; max-width: 46em; }
+  .block h2 { font: 700 20px/1.25 var(--head); margin: 0 0 10px; }
+  .clean-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+  .clean-list li { line-height: 1.5; }
+
+  .tinted { background: var(--write); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding-top: 24px; padding-bottom: 26px; }
+  .letter { background: #fff; border: 1px solid var(--rule); border-left: 4px solid var(--ink); padding: 14px; max-width: 46em; }
+  pre.claim { margin: 0; white-space: pre-wrap; overflow-wrap: break-word; font: 400 15.5px/1.55 var(--text); color: var(--ink); }
+  pre.claim mark { background: var(--blank); color: var(--ink); padding: 0 2px; border-radius: 2px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+
+  /* sources */
+  .sources { padding-top: 24px; padding-bottom: 24px; border-top: 1px solid var(--rule); }
+  .sources h2 { font: 700 clamp(22px, 5vw, 30px)/1.18 var(--head); margin: 0 0 14px; }
+  .quotes { display: grid; gap: 12px; max-width: 46em; }
+  blockquote { margin: 0; padding: 4px 0 4px 12px; border-left: 3px solid var(--rule); color: var(--ink-2); }
+  blockquote p { margin: 0; font-size: 15px; line-height: 1.5; }
+  blockquote cite { display: block; font-style: normal; font-size: 13px; color: var(--mute); margin-top: 3px; }
+  .fine { margin: 16px 0 0; font-size: 13.5px; color: var(--mute); max-width: 46em; }
+
+  /* end link & footer */
+  .end-band { padding-top: 18px; padding-bottom: 36px; border-top: 1px solid var(--rule); }
+  .cross-link { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+  .foot-meta { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  @media (max-width: 479px) {
+    .primary { width: 100%; }
+  }
+  @media (min-width: 640px) {
+    .opts-4 { grid-template-columns: repeat(4, 1fr); }
+    .opts-routes { grid-template-columns: 1fr 1fr; }
+    .cards { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  }
+  @media (min-width: 960px) {
+    :root { --gut: 40px; }
+    body { font-size: 17.5px; }
+    .top .in { padding-top: 16px; padding-bottom: 12px; }
+    .brand { font-size: 24px; }
+    .trustbar p { font-size: 14.5px; padding-top: 8px; padding-bottom: 8px; }
+    .hero { padding-top: 28px; padding-bottom: 24px; }
+    .lede { font-size: 18px; }
+    .sheet { padding: 20px 24px 22px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to any airline, card or government. Your answers stay in your browser.</p></div>
+</header>
+
+<main>
+  <div class="in hero">
+    <h1>Flight cancelled or delayed? See what you can ask for.</h1>
+    <p class="lede">Four taps. It covers the US refund rule and the EU passenger regulation, for tickets bought from the airline.</p>
+  </div>
+
+  <div class="in">
+    <form class="sheet" id="flight-form" novalidate aria-label="Four questions about your flight">
+      <div class="q" role="group" aria-labelledby="q1-l">
+        <p class="q-label" id="q1-l">What happened?</p>
+        <div class="opts opts-2">
+          <button type="button" class="opt-btn" data-q="what" data-val="cancelled" aria-pressed="false">Cancelled</button>
+          <button type="button" class="opt-btn" data-q="what" data-val="delayed" aria-pressed="false">Delayed</button>
+        </div>
+      </div>
+
+      <div class="q" id="q-hours" role="group" aria-labelledby="q2-l" hidden>
+        <p class="q-label" id="q2-l">How long is the delay?</p>
+        <div class="opts opts-4">
+          <button type="button" class="opt-btn" data-q="hours" data-val="lt3" aria-pressed="false">Under 3 hours</button>
+          <button type="button" class="opt-btn" data-q="hours" data-val="3to5" aria-pressed="false">3 to under 5 hours</button>
+          <button type="button" class="opt-btn" data-q="hours" data-val="5to6" aria-pressed="false">5 to under 6 hours</button>
+          <button type="button" class="opt-btn" data-q="hours" data-val="ge6" aria-pressed="false">6 hours or more</button>
+        </div>
+        <p class="q-note">For the US rule, count how late you reach your destination. For the EU rule, count how late the flight leaves.</p>
+      </div>
+
+      <div class="q" role="group" aria-labelledby="q3-l">
+        <p class="q-label" id="q3-l">Which flight?</p>
+        <div class="opts opts-1 opts-routes">
+          <button type="button" class="opt-btn" data-q="route" data-val="us-dom" aria-pressed="false">Within the US</button>
+          <button type="button" class="opt-btn" data-q="route" data-val="us-intl" aria-pressed="false">Between the US and another country</button>
+          <button type="button" class="opt-btn" data-q="route" data-val="eu-dep" aria-pressed="false">Leaves from an airport in the EU</button>
+          <button type="button" class="opt-btn" data-q="route" data-val="eu-arr" aria-pressed="false">Flies into the EU on an EU airline</button>
+          <button type="button" class="opt-btn" data-q="route" data-val="other" aria-pressed="false">None of these</button>
+        </div>
+        <p class="q-note">If your flight is between the EU and the US, both rules can apply. Tap the EU choice, read the answer, then tap the US choice to see the other.</p>
+      </div>
+
+      <div class="q" role="group" aria-labelledby="q4-l">
+        <p class="q-label" id="q4-l">Did you pay with a travel credit card?</p>
+        <div class="opts opts-2">
+          <button type="button" class="opt-btn" data-q="card" data-val="yes" aria-pressed="false">Yes</button>
+          <button type="button" class="opt-btn" data-q="card" data-val="no" aria-pressed="false">No or not sure</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="second" id="reset-btn">Start over</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="answers" aria-live="polite" hidden>
+    <section class="step" aria-label="Answers">
+      <div class="in">
+        <div class="cards">
+          <article class="card" id="card-refund">
+            <h2>A refund of the ticket</h2>
+            <p class="verdict" id="v-refund"></p>
+            <p id="t-refund"></p>
+          </article>
+          <article class="card" id="card-care">
+            <h2>Meals and a hotel</h2>
+            <p class="verdict" id="v-care"></p>
+            <p id="t-care"></p>
+          </article>
+          <article class="card" id="card-card">
+            <h2>Your card</h2>
+            <p class="verdict" id="v-card"></p>
+            <p id="t-card"></p>
+          </article>
+        </div>
+
+        <div class="block" id="extra-wrap">
+          <h2>Good to know</h2>
+          <ul class="clean-list" id="extra-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="step tinted" id="letter-wrap" aria-labelledby="h-letter" hidden>
+      <div class="in">
+        <h2 id="h-letter">Refund request</h2>
+        <div class="letter"><pre class="claim" id="claim" tabindex="0" aria-label="Your request text"></pre></div>
+        <div class="row">
+          <button type="button" class="primary" id="copy-btn">Copy request</button>
+          <span class="small" id="copy-state" aria-live="polite"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="h-keep">
+      <div class="in">
+        <div class="block" style="margin-top: 0;">
+          <h2 id="h-keep">What to keep</h2>
+          <ul class="clean-list">
+            <li>The cancellation or delay notice (screenshot the app or the email).</li>
+            <li>Your booking confirmation and ticket number.</li>
+            <li>Receipts for meals, hotel and transport.</li>
+            <li>The times: scheduled and actual departure and arrival.</li>
+            <li>Any offer of rebooking or a voucher, and what you answered.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="sources" id="sources" aria-labelledby="h-sources">
+    <div class="in">
+      <h2 id="h-sources">The rules' own words</h2>
+      <div class="quotes">
+        <blockquote>
+          <p>“A covered carrier that is the merchant of record must provide a full and prompt refund of the airfare, including any taxes and ancillary fees, as set forth in paragraph (a)(2) of this section to a consumer that holds a nonrefundable ticket on a scheduled flight to, from, or within the United States for any cancelled flight or significantly delayed or changed flight where the consumer chooses not to:”</p>
+          <cite>14 CFR 260.6(a)(1)</cite>
+        </blockquote>
+        <blockquote>
+          <p>“The consumer is scheduled to arrive at the destination airport three or more hours for domestic itineraries or six or more hours for international itineraries after the original scheduled arrival time;”</p>
+          <cite>14 CFR 260.2</cite>
+        </blockquote>
+        <blockquote>
+          <p>“the refund must be issued promptly in the original form of payment”</p>
+          <cite>14 CFR 260.10</cite>
+        </blockquote>
+        <blockquote>
+          <p>“to passengers departing from an airport located in the territory of a Member State to which the Treaty applies;”</p>
+          <cite>Regulation (EC) No 261/2004, Article 3(1)</cite>
+        </blockquote>
+        <blockquote>
+          <p>“reimbursement within seven days, by the means provided for in Article 7(3), of the full cost of the ticket at the price at which it was bought, for the part or parts of the journey not made”</p>
+          <cite>Article 8(1)</cite>
+        </blockquote>
+        <blockquote>
+          <p>“when the delay is at least five hours, the assistance specified in Article 8(1)(a).”</p>
+          <cite>Article 6(1)</cite>
+        </blockquote>
+        <blockquote>
+          <p>“meals and refreshments in a reasonable relation to the waiting time;”</p>
+          <cite>Article 9(1)</cite>
+        </blockquote>
+        <blockquote>
+          <p>“An operating air carrier shall not be obliged to pay compensation in accordance with Article 7, if it can prove that the cancellation is caused by extraordinary circumstances which could not have been avoided even if all reasonable measures had been taken.”</p>
+          <cite>Article 5(3)</cite>
+        </blockquote>
+        <blockquote>
+          <p>“Extraordinary circumstances should be deemed to exist where the impact of an air traffic management decision in relation to a particular aircraft on a particular day gives rise to a long delay, an overnight delay, or the cancellation of one or more flights by that aircraft, even though all reasonable measures had been taken by the air carrier concerned to avoid the delays or cancellations.”</p>
+          <cite>Recital 15</cite>
+        </blockquote>
+      </div>
+      <p class="fine">US rule: 14 CFR part 260, text of 1 November 2026, at ecfr.gov. EU regulation: Regulation (EC) No 261/2004 as adopted. Read on 13 November 2026. Where this page says more than a quote, it is this page's reading. The EU has been working on a revision of this regulation; this page quotes the 2004 text and has not confirmed whether a new text is in force.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="end-band">
+  <div class="in">
+    <p class="cross-link"><a href="../">Software outage at work? Work out a service credit</a></p>
+    <p class="foot-meta"><a href="../privacy.html">Privacy</a> &middot; <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a></p>
+  </div>
+</footer>
+
+<script src="flights.js"></script>
+<script data-counter>
+  // Cloudflare Web Analytics: counts visits, sets no cookie (see ../privacy.html). It loads on the live site only, so tests and local copies send nothing.
+  if (/(^|\.)downtimecredit\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "fec45b1ba4b9475991fe78db751e9bbc"}'); s.addEventListener("load", function () { if (!window.countStep) return; window.countStep("flights-arrived"); if (new URLSearchParams(location.search).get("utm_campaign") === "ground-stop") window.countStep("ad-ground-stop"); }); document.head.appendChild(s); })(); }
+</script>
+</body>
+</html>
