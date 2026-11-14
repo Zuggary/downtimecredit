@@ -19,7 +19,7 @@ import subprocess, tempfile
 _js = tempfile.NamedTemporaryFile("w", suffix=".js", delete=False); _js.write('load("%s"); print(JSON.stringify({a: FLIGHTS.AIRLINES, q: FLIGHTS.QUOTES, k: FLIGHTS.AIRLINE_KEYS}));' % os.path.join(ROOT, "flights", "flights.js")); _js.close()
 FL = json.loads(subprocess.run(["/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc", _js.name], capture_output=True, text=True).stdout); os.unlink(_js.name)
 import glob as _g
-for _f in _g.glob(os.path.join(ROOT, "refs", "tf6", "*.txt")):
+for _f in _g.glob(os.path.join(ROOT, "refs", "tf6", "*.txt")) + _g.glob(os.path.join(ROOT, "refs", "tf7", "*.txt")):
     pool.append(norm(open(_f, encoding="utf-8").read()))
 walk(vendors); walk(FL["q"]); walk([a.get("plan") for a in FL["a"].values() if a.get("plan")]); blob = "\n".join(pool)
 pages = []

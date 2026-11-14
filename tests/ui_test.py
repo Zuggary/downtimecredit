@@ -590,6 +590,13 @@ with sync_playwright() as pw:
     ap.select_option("#a-state", "other"); ap.click("#a-go"); ok("I understand that" not in ap.input_value("#a-text"), "TF6: no state sentence for an unchecked state")
     ok(len(reqs2) == m0, f"TF6: the letter builder made no network request ({len(reqs2) - m0})")
     ap.close()
+    # TF7-A: the unclaimed property picker goes to the state and says plainly when a state is unchecked
+    up = ctxM.new_page(); up.goto(BASE.replace("index.html", "") + "guides/unclaimed-property-by-state/"); up.wait_for_selector("#u-pick")
+    up.select_option("#u-pick", "u-ohio") if False else up.select_option("#u-pick", "u-oh")
+    ok("Ohio" in up.inner_text("#u-msg") and up.evaluate("document.activeElement.id") == "u-oh", "TF7: the picker goes to the Ohio section")
+    up.select_option("#u-pick", "other"); ok("not checked your state yet" in up.inner_text("#u-msg"), "TF7: the picker says an unchecked state is unchecked")
+    ok("cannot look up" in up.inner_text("main").lower(), "TF7: the page says it cannot look up a person's property")
+    up.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
