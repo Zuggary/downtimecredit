@@ -881,6 +881,58 @@ with sync_playwright() as pw:
     pr = ctxR.new_page(); pr.goto(LIVE + "/index.html"); pr.wait_for_selector("#statement[data-ready]", state="attached"); pr.wait_for_function("window.__rs.length >= 2")
     ok("KEEP" in pr.inner_text("#inc-list") and pr.evaluate("window.__rs")[0::2] == ["/step/arrived"], "steps (live): a restored saved incident records no step"); ctxR.close()
     ctxL.close()
+
+    # ---------- two-door strip ----------
+    ctxD = b.new_context(viewport={"width": 375, "height": 812}); route(ctxD)
+    pd = open_page(ctxD, "?today=2026-11-13")
+    doors = pd.locator("nav.doors[aria-label='What happened'] a")
+    eq(doors.count(), 2, "doors: two links on the front page")
+    eq(doors.nth(0).get_attribute("href"), "./", "doors: first link points to ./")
+    eq(doors.nth(1).get_attribute("href"), "flights/", "doors: second link points to flights/")
+    eq(doors.nth(0).get_attribute("aria-current"), "page", "doors: aria-current on the first link")
+    ok(doors.nth(1).get_attribute("aria-current") is None, "doors: no aria-current on the second link")
+    eq(pd.evaluate("document.documentElement.scrollWidth - innerWidth"), 0, "doors: no horizontal scroll at 375")
+    dboxes = pd.evaluate("[...document.querySelectorAll('nav.doors a')].map(a => { const r = a.getBoundingClientRect(); return { top: r.top, left: r.left, right: r.right, height: r.height }; })")
+    ok(dboxes[0]["height"] >= 44 and dboxes[1]["height"] >= 44 and dboxes[1]["left"] >= dboxes[0]["right"] and abs(dboxes[0]["top"] - dboxes[1]["top"]) < 2, f"doors: side by side and >= 44 px at 375 ({dboxes})")
+    pd.set_viewport_size({"width": 1024, "height": 768})
+    cd_top = pd.evaluate("document.getElementById('cd').getBoundingClientRect().top")
+    ok(cd_top < 384, f"doors: #cd top under 384 at 1024x768 ({cd_top:.0f})")
+    pd.set_viewport_size({"width": 1440, "height": 900})
+    eq(pd.evaluate("document.documentElement.scrollWidth - innerWidth"), 0, "doors: no horizontal scroll at 1440")
+    pd.close(); ctxD.close()
+
+    ctxDL = b.new_context(viewport={"width": 1440, "height": 900})
+    ctxDL.add_init_script("""(function () {
+      var o = history.replaceState;
+      history.replaceState = function (s, t, u) {
+        try {
+          var all = JSON.parse(sessionStorage.getItem('__rs_all') || '[]');
+          all.push(String(u));
+          sessionStorage.setItem('__rs_all', JSON.stringify(all));
+        } catch (e) {}
+        return o.apply(this, arguments);
+      };
+    })();""")
+    def rl_doors(rt):
+        u = rt.request.url
+        if u == COUNTER: rt.fulfill(status=200, content_type="text/javascript", body="")
+        elif u.startswith(LIVE + "/"):
+            path = u[len(LIVE):].split("?")[0].split("#")[0]
+            if path.endswith("/"): path += "index.html"
+            f = os.path.join(SITE, path.lstrip("/"))
+            if os.path.isfile(f) and os.path.realpath(f).startswith(os.path.realpath(SITE)): rt.fulfill(status=200, path=f, content_type=mimetypes.guess_type(f)[0] or "application/octet-stream")
+            else: rt.fulfill(status=404, body="")
+        else: rt.abort()
+    ctxDL.route("**/*", rl_doors)
+    pdl = ctxDL.new_page(); watch(pdl)
+    pdl.goto(LIVE + "/index.html"); pdl.wait_for_selector("#statement[data-ready]", state="attached")
+    pdl.wait_for_function("JSON.parse(sessionStorage.getItem('__rs_all') || '[]').includes('/step/arrived')")
+    pdl.click("nav.doors a[href='flights/']")
+    pdl.wait_for_url(LIVE + "/flights/")
+    rs_all = pdl.evaluate("JSON.parse(sessionStorage.getItem('__rs_all') || '[]')")
+    eq(rs_all.count("/step/to-flights"), 1, f"doors (live): real click on flights tab records /step/to-flights once ({rs_all})")
+    pdl.close(); ctxDL.close()
+
     b.close()
 srv.shutdown()
 ok(not errors, f"0 console errors ({errors[:3]})"); ok(not outside, f"0 outside requests besides the visit counter ({outside[:3]})"); ok(not counter, "the visit counter does not load on a local copy"); src = open(os.path.join(SITE, "index.html")).read(); ok(src.count("https://static.cloudflareinsights.com/beacon.min.js") == 1 and "downtimecredit\\.com$/.test(location.hostname)" in src, "one outside script in the page: the visit counter, on the live host only")

@@ -275,7 +275,8 @@
       "flights-airline": 1,
       "flights-copied": 1,
       "airlines-arrived": 1,
-      "ad-ground-stop": 1
+      "ad-ground-stop": 1,
+      "to-outage": 1
     }, counted = Object.create(null);
     function countStep(name) {
       if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) return;
@@ -499,6 +500,12 @@
     }
 
     function init() {
+      var toOutage = document.querySelector('.doors a:not([aria-current="page"])');
+      if (toOutage) {
+        toOutage.addEventListener("click", function (ev) {
+          if (ev.isTrusted) countStep("to-outage");
+        });
+      }
       if (!$("flight-form")) return;
 
       document.addEventListener("click", function (ev) {

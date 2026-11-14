@@ -655,6 +655,7 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   ok(!!m, "the STEPS whitelist is in app.js", "steps");
   if (m) m[1].replace(/"([a-z0-9-]+)": 1/g, function (a, n) { names.push(n); return a; });
   ok(names.length >= 14, "the whitelist holds its names (" + names.length + ")", "steps");
+  ok(names.indexOf("to-flights") >= 0, "the whitelist includes to-flights", "steps");
   [["app.js", app], ["index.html", html]].forEach(function (f) {
     var text = f[1].replace(/function countStep\(name\)/, ""), n = 0, i = -1, re = /countStep\(/g, x;
     while ((x = re.exec(text))) {

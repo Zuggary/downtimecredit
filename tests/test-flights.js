@@ -353,7 +353,8 @@
       "flights-airline": 1,
       "flights-copied": 1,
       "airlines-arrived": 1,
-      "ad-ground-stop": 1
+      "ad-ground-stop": 1,
+      "to-outage": 1
     };
     [
       { name: "flights/flights.js", src: jsText },

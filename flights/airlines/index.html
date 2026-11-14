@@ -40,6 +40,20 @@
   .trustbar { background: var(--ink); color: #DCE7E2; }
   .trustbar p { margin: 0 auto; max-width: 1240px; padding: 6px var(--gut); font-size: 13.5px; line-height: 1.35; }
 
+  /* two-door strip */
+  .doors { padding-top: 8px; }
+  .doors .in { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .doors a { min-width: 0; min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 6px 10px; border: 2px solid var(--ink); border-radius: 8px; background: var(--page); color: var(--ink); text-decoration: none; font: 400 14.5px/1.25 var(--text); }
+  .doors a b { font-weight: 700; display: block; }
+  .doors a span { display: block; font-size: 12px; line-height: 1.25; color: var(--ink-2); }
+  .doors a[aria-current="page"] { background: var(--ink); color: var(--page); }
+  .doors a[aria-current="page"] span { color: var(--tint); }
+  .doors a:not([aria-current="page"]):hover { background: var(--write); }
+  @media (max-width: 559px) {
+    .doors a { font-size: 14px; padding: 6px 8px; }
+    .doors a span { display: none; }
+  }
+
   /* hero */
   .hero { padding-top: 14px; padding-bottom: 20px; }
   h1 { font: 700 clamp(24px, 6.6vw, 48px)/1.12 var(--head); margin: 0; text-wrap: balance; max-width: 22em; }
@@ -104,6 +118,12 @@
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice. Not run by or linked to any airline, card or government. Your answers stay in your browser.</p></div>
 </header>
+<nav class="doors" aria-label="What happened">
+  <div class="in">
+    <a href="../../"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace or your own contract</span></a>
+    <a href="../" aria-current="page"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
+  </div>
+</nav>
 
 <main>
   <div class="in hero">
