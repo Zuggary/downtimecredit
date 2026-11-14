@@ -618,6 +618,16 @@ with sync_playwright() as pw:
     pp.select_option("#p-state", "other"); pp.click("#p-go"); ok("I understand that" not in pp.input_value("#p-text"), "TF7: no state sentence for an unchecked state")
     ok(len(reqs4) == z0, f"TF7: the pay letter builder made no network request ({len(reqs4) - z0})")
     pp.close()
+    # TF7-D: the IRS date calculator does the two-date arithmetic in the browser, makes no request
+    reqs5 = []
+    ip = ctxM.new_page(); ip.on("request", lambda r: reqs5.append(r.url))
+    ip.goto(BASE.replace("index.html", "") + "guides/federal-tax-refund-deadline/"); ip.wait_for_selector("#c-go"); y0 = len(reqs5)
+    ip.fill("#c-filed", "2024-04-15"); ip.fill("#c-paid", "2024-04-15"); ip.click("#c-go")
+    ct = ip.inner_text("#c-out")
+    ok("April 15, 2027" in ct and "April 15, 2026" in ct and "The later of these is April 15, 2027" in ct, "TF7: the IRS calculator picks the later of the two dates")
+    ip.fill("#c-filed", ""); ip.fill("#c-paid", "2025-06-01"); ip.click("#c-go"); ok("June 1, 2027" in ip.inner_text("#c-out"), "TF7: the calculator works with one date")
+    ok(len(reqs5) == y0, f"TF7: the IRS calculator made no network request ({len(reqs5) - y0})")
+    ip.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
