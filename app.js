@@ -159,7 +159,7 @@
   function msTile() {
     var s = msStart(), rs = msReseller(), d = msDeadlineFor({ start: s }, rs), m = E.countdownModel("ms", d, cdOpts("ms", { reseller: rs, noCredit: noCredit })), sd = $("st-date");
     fillBox("dl", m, example);
-    sd.textContent = m.state === "passed" ? "" : rs ? "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown above." : "Send by " + E.fullDate(d.sendBy) + ". See the countdown above."; sd.hidden = noCredit || m.state === "passed";
+    sd.textContent = m.state === "passed" ? "" : rs ? "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown." : "Send by " + E.fullDate(d.sendBy) + ". See the countdown."; sd.hidden = noCredit || m.state === "passed";
     return E.countdown(TODAY, d.date);
   }
   function writeButton(btn, cd, none) {
@@ -441,9 +441,9 @@
       var gm = E.countdownModel(isGW ? "g" : "sc", e.d, { today: TODAY, name: v.vendor, reseller: rs, ownWords: v.deadline.ownWords, channel: E.scChannel(v), slaLabel: v.document && v.document.label });
       fillBox("g-dl", gm, st.example);
       if (gm.state !== "passed" && e.d.sendBy) {
-        var stDateText = isGW ? (rs ? "Tell your reseller by " : "Send by ") + E.fullDate(e.d.sendBy) + ". See the countdown above."
-          : v.id === "github-enterprise-cloud" ? (rs ? "Send it by " + E.fullDate(e.d.sendBy) + " as a Microsoft support ticket. See the countdown above." : "Send a written request to GitHub Support by " + E.fullDate(e.d.sendBy) + ". See the countdown above.")
-          : "Submit the ticket by " + E.fullDate(e.d.sendBy) + ". See the countdown above.";
+        var stDateText = isGW ? (rs ? "Tell your reseller by " : "Send by ") + E.fullDate(e.d.sendBy) + ". See the countdown."
+          : v.id === "github-enterprise-cloud" ? (rs ? "Send it by " + E.fullDate(e.d.sendBy) + " as a Microsoft support ticket. See the countdown." : "Send a written request to GitHub Support by " + E.fullDate(e.d.sendBy) + ". See the countdown.")
+          : "Submit the ticket by " + E.fullDate(e.d.sendBy) + ". See the countdown.";
         out.appendChild(el("p", { class: "small", id: "g-st-date", text: stDateText }));
       }
     } else clear(cdg);

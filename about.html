@@ -74,7 +74,9 @@
   .sheet .table-wrap { border: 0; }
   main h2 { max-width: 46em; }
   .table-wrap.keep table { width: 100%; min-width: 0; table-layout: auto; }
-  .table-wrap.keep td, .table-wrap.keep th { white-space: normal; overflow-wrap: anywhere; }
+  .table-wrap.keep td, .table-wrap.keep th { white-space: normal; overflow-wrap: break-word; hyphens: none; }
+  .table-wrap.keep td { overflow-wrap: break-word; }
+  .table-wrap.keep td:not(:first-child), .table-wrap.keep tbody td { min-width: 6.5em; }
   .table-wrap.keep thead th:last-child { white-space: nowrap; overflow-wrap: normal; }
   .yes { font-weight: 700; color: #14532d; background: #eaf5ee; border: 1px solid #86efac; padding: 1px 8px; }
   .no { font-weight: 500; color: var(--graphite); }
