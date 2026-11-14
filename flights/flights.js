@@ -31,8 +31,134 @@
     eu_delay5: "when the delay is at least five hours, the assistance specified in Article 8(1)(a).",
     eu_care: "meals and refreshments in a reasonable relation to the waiting time;",
     eu_extra: "An operating air carrier shall not be obliged to pay compensation in accordance with Article 7, if it can prove that the cancellation is caused by extraordinary circumstances which could not have been avoided even if all reasonable measures had been taken.",
-    eu_atm: "Extraordinary circumstances should be deemed to exist where the impact of an air traffic management decision in relation to a particular aircraft on a particular day gives rise to a long delay, an overnight delay, or the cancellation of one or more flights by that aircraft, even though all reasonable measures had been taken by the air carrier concerned to avoid the delays or cancellations."
+    eu_atm: "Extraordinary circumstances should be deemed to exist where the impact of an air traffic management decision in relation to a particular aircraft on a particular day gives rise to a long delay, an overnight delay, or the cancellation of one or more flights by that aircraft, even though all reasonable measures had been taken by the air carrier concerned to avoid the delays or cancellations.",
+    dot_control: "A controllable flight cancellation or delay is essentially a delay or cancellation caused by the airline. Examples include: maintenance or crew problems; cabin cleaning; baggage loading; and fueling.",
+    dot_ask: "If your flight is experiencing a long delay or is cancelled, ask airline staff if they will pay for meals or a hotel room or compensate you for your time. While some airlines offer these amenities to passengers, others may not provide amenities to stranded passengers.",
+    dot_refund: "If an airline cancels a passenger\u2019s flight or makes a significant change in the flight, regardless of the reason, airlines are required to provide a prompt refund to a ticketed passenger, including those with non-refundable tickets, should the passenger choose not to accept the alternative offered, such as rebooking on another flight."
   };
+
+  var DASH_URL = "https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard";
+  var DASH_UPDATED = "11 September 2025";
+  var DASH_READ = "13 November 2026";
+
+  var AIRLINE_KEYS = [
+    { key: "rebook_same", label: "Rebook you on the same airline at no additional cost" },
+    { key: "rebook_other", label: "Rebook you on a partner airline, or another airline it has an agreement with, at no additional cost" },
+    { key: "meal", label: "A meal or meal voucher when you wait 3 hours or more" },
+    { key: "hotel", label: "A hotel for an overnight cancellation or delay" },
+    { key: "transport", label: "Ground transport to and from the hotel" },
+    { key: "cash", label: "Cash compensation when you wait 3 hours or more" },
+    { key: "voucher", label: "A credit or travel voucher when you wait 3 hours or more" },
+    { key: "miles", label: "Frequent flyer miles when you wait 3 hours or more" }
+  ];
+
+  function airlineValues(bits) {
+    var out = {};
+    for (var i = 0; i < AIRLINE_KEYS.length; i++) {
+      out[AIRLINE_KEYS[i].key] = bits.charAt(i) === "y";
+    }
+    return out;
+  }
+
+  var AIRLINES = {
+    alaska: {
+      id: "alaska",
+      name: "Alaska Airlines",
+      short: "Alaska",
+      link: "https://www.alaskaair.com/content/about-us/customer-commitment/customer-commitment-overview",
+      values: airlineValues("yyyyynyy")
+    },
+    allegiant: {
+      id: "allegiant",
+      name: "Allegiant Air",
+      short: "Allegiant",
+      link: "https://www.allegiantair.com/customer-service-plan",
+      values: airlineValues("ynyyynnn")
+    },
+    american: {
+      id: "american",
+      name: "American Airlines",
+      short: "American",
+      link: "https://www.aa.com/i18n/customer-service/support/customer-service-plan.jsp",
+      values: airlineValues("yyyyynnn")
+    },
+    delta: {
+      id: "delta",
+      name: "Delta Air Lines",
+      short: "Delta",
+      link: "https://www.delta.com/us/en/legal/customer-commitment",
+      values: airlineValues("yyyyynnn")
+    },
+    frontier: {
+      id: "frontier",
+      name: "Frontier Airlines",
+      short: "Frontier",
+      link: "https://www.flyfrontier.com/legal/customer-service-plan",
+      values: airlineValues("ynynnnnn")
+    },
+    hawaiian: {
+      id: "hawaiian",
+      name: "Hawaiian Airlines",
+      short: "Hawaiian",
+      link: "https://www.hawaiianairlines.com/about-us/customer-service-plan",
+      values: airlineValues("yyyyynyy")
+    },
+    jetblue: {
+      id: "jetblue",
+      name: "JetBlue Airways",
+      short: "JetBlue",
+      link: "https://www.jetblue.com/legal/customer-service-plan",
+      values: airlineValues("yyyyynyn")
+    },
+    southwest: {
+      id: "southwest",
+      name: "Southwest Airlines",
+      short: "Southwest",
+      link: "https://www.southwest.com/assets/pdfs/corporate-commitments/customer-service-plan.pdf",
+      values: airlineValues("ynyyynyn")
+    },
+    spirit: {
+      id: "spirit",
+      name: "Spirit Airlines",
+      short: "Spirit",
+      link: "https://content.spirit.com/Shared/en-us/Documents/Contract_of_Carriage.pdf",
+      values: null
+    },
+    united: {
+      id: "united",
+      name: "United Airlines",
+      short: "United",
+      link: "https://www.united.com/ual/en/us/fly/customer-commitment.html",
+      values: airlineValues("yyyyynnn")
+    }
+  };
+
+  function airlineAnswer(id) {
+    if (typeof id !== "string" || !Object.prototype.hasOwnProperty.call(AIRLINES, id)) {
+      return null;
+    }
+    var airline = AIRLINES[id];
+    var yes = [];
+    var no = [];
+    var hasData = airline.values !== null;
+    if (hasData) {
+      for (var i = 0; i < AIRLINE_KEYS.length; i++) {
+        var item = AIRLINE_KEYS[i];
+        if (airline.values[item.key]) {
+          yes.push(item.label);
+        } else {
+          no.push(item.label);
+        }
+      }
+    }
+    return {
+      name: airline.name,
+      yes: yes,
+      no: no,
+      link: airline.link,
+      hasData: hasData
+    };
+  }
 
   function flightAnswer(input) {
     var o = input || {};
@@ -129,15 +255,28 @@
 
   root.FLIGHTS = {
     flightAnswer: flightAnswer,
+    airlineAnswer: airlineAnswer,
     letterText: letterText,
-    QUOTES: QUOTES
+    QUOTES: QUOTES,
+    AIRLINES: AIRLINES,
+    AIRLINE_KEYS: AIRLINE_KEYS,
+    DASH_URL: DASH_URL,
+    DASH_UPDATED: DASH_UPDATED,
+    DASH_READ: DASH_READ
   };
 
   if (typeof document !== "undefined") {
     var $ = function (id) { return document.getElementById(id); };
 
     var LIVE = /(^|\.)downtimecredit\.com$/.test(location.hostname);
-    var STEPS = { "flights-arrived": 1, "flights-answer": 1, "flights-copied": 1, "ad-ground-stop": 1 }, counted = Object.create(null);
+    var STEPS = {
+      "flights-arrived": 1,
+      "flights-answer": 1,
+      "flights-airline": 1,
+      "flights-copied": 1,
+      "airlines-arrived": 1,
+      "ad-ground-stop": 1
+    }, counted = Object.create(null);
     function countStep(name) {
       if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) return;
       counted[name] = 1;
@@ -147,11 +286,83 @@
     }
     window.countStep = countStep;
 
-    var state = { what: null, hours: null, route: null, card: null };
+    var state = { what: null, hours: null, route: null, airline: null, card: null };
     var actor = false;
 
     function clearEl(node) {
       while (node.firstChild) node.removeChild(node.firstChild);
+    }
+
+    function extLink(href, text) {
+      var a = document.createElement("a");
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = text;
+      return a;
+    }
+
+    function appendSourcePara(container) {
+      var p = document.createElement("p");
+      p.className = "fine";
+      p.appendChild(document.createTextNode("Source: US Department of Transportation, "));
+      p.appendChild(extLink(DASH_URL, "Airline Cancellation and Delay Dashboard"));
+      p.appendChild(document.createTextNode(", last updated " + DASH_UPDATED + ", read by this page on " + DASH_READ + "."));
+      container.appendChild(p);
+    }
+
+    function appendPlanPara(container, href, linkText) {
+      var p = document.createElement("p");
+      p.className = "fine";
+      p.appendChild(extLink(href, linkText));
+      p.appendChild(document.createTextNode(" (this page has not read it)"));
+      container.appendChild(p);
+    }
+
+    function appendLabelList(container, labels) {
+      var ul = document.createElement("ul");
+      ul.className = "clean-list";
+      labels.forEach(function (label) {
+        var li = document.createElement("li");
+        li.textContent = label;
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
+
+    function fillAirlineCard(container, airlineId) {
+      clearEl(container);
+      if (airlineId === "other") {
+        var pOther = document.createElement("p");
+        pOther.textContent = "The dashboard's table covers 9 US airlines. For another airline, ask at the desk and read its customer service plan.";
+        container.appendChild(pOther);
+        return;
+      }
+      var info = airlineAnswer(airlineId);
+      if (!info) return;
+      if (!info.hasData) {
+        var pNoData = document.createElement("p");
+        pNoData.textContent = "The dashboard's table has no column for Spirit Airlines, so this page has nothing to show for it.";
+        container.appendChild(pNoData);
+        appendSourcePara(container);
+        appendPlanPara(container, info.link, "Spirit Airlines' contract of carriage");
+        return;
+      }
+      var pIntro = document.createElement("p");
+      pIntro.textContent = "When " + info.name + " causes the cancellation or delay, the US Department of Transportation's dashboard shows it has committed to:";
+      container.appendChild(pIntro);
+      appendLabelList(container, info.yes);
+      if (info.no.length > 0) {
+        var pNo = document.createElement("p");
+        pNo.textContent = "The dashboard shows no commitment from " + info.name + " to:";
+        container.appendChild(pNo);
+        appendLabelList(container, info.no);
+      }
+      var pFixed = document.createElement("p");
+      pFixed.textContent = "These commitments are for cancellations and delays the airline caused, such as maintenance or crew problems. The dashboard does not say what an airline gives when the cause is weather or air traffic control. Ask the airline anyway. An airline with no commitment may still help.";
+      container.appendChild(pFixed);
+      appendSourcePara(container);
+      appendPlanPara(container, info.link, "The customer service plan of " + info.name);
     }
 
     function fillClaim(pre, text) {
@@ -184,6 +395,10 @@
       return cardVal === "yes" ? "Check" : "Not sure?";
     }
 
+    function isUSRoute(route) {
+      return route === "us-dom" || route === "us-intl";
+    }
+
     function syncButtons() {
       var btns = document.querySelectorAll("[data-q][data-val]");
       Array.prototype.forEach.call(btns, function (btn) {
@@ -192,6 +407,16 @@
         btn.setAttribute("aria-pressed", state[q] === v ? "true" : "false");
       });
       $("q-hours").hidden = state.what !== "delayed";
+      var usRoute = isUSRoute(state.route);
+      var qAirline = $("q-airline");
+      var sel = $("airline-select");
+      if (qAirline) {
+        qAirline.hidden = !usRoute;
+        if (!usRoute) {
+          state.airline = null;
+          if (sel) sel.value = "";
+        }
+      }
     }
 
     function isComplete() {
@@ -208,6 +433,7 @@
         return;
       }
 
+      var usRoute = isUSRoute(state.route);
       var ans = flightAnswer(state);
       $("v-refund").textContent = refundVerdictLabel(ans.refund.verdict);
       $("t-refund").textContent = ans.refund.text;
@@ -216,10 +442,24 @@
       $("v-care").textContent = careVerdictLabel(ans.care);
       $("t-care").textContent = ans.care.text;
       $("card-care").setAttribute("data-verdict", ans.care.verdict);
+      var careQuotes = $("care-quotes");
+      if (careQuotes) careQuotes.hidden = !usRoute;
 
       $("v-card").textContent = cardVerdictLabel(state.card);
       $("t-card").textContent = ans.card.text;
       $("card-card").setAttribute("data-verdict", state.card === "yes" ? "maybe" : "no");
+
+      var airlineCard = $("card-airline");
+      var airlineBody = $("t-airline");
+      if (airlineCard && airlineBody) {
+        if (usRoute && state.airline) {
+          fillAirlineCard(airlineBody, state.airline);
+          airlineCard.hidden = false;
+        } else {
+          clearEl(airlineBody);
+          airlineCard.hidden = true;
+        }
+      }
 
       var extraWrap = $("extra-wrap");
       var extraList = $("extra-list");
@@ -259,6 +499,8 @@
     }
 
     function init() {
+      if (!$("flight-form")) return;
+
       document.addEventListener("click", function (ev) {
         actor = ev.isTrusted === true;
         setTimeout(function () { actor = false; }, 0);
@@ -275,11 +517,26 @@
         });
       });
 
+      var sel = $("airline-select");
+      if (sel) {
+        sel.addEventListener("change", function (ev) {
+          var v = sel.value;
+          state.airline = v || null;
+          var info = airlineAnswer(v);
+          if (ev.isTrusted === true && info && info.hasData) {
+            countStep("flights-airline");
+          }
+          render(ev.isTrusted === true);
+        });
+      }
+
       $("reset-btn").addEventListener("click", function () {
         state.what = null;
         state.hours = null;
         state.route = null;
+        state.airline = null;
         state.card = null;
+        if (sel) sel.value = "";
         $("copy-state").textContent = "";
         render(false);
       });

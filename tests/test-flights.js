@@ -214,7 +214,7 @@
   });
   eq(F.letterText(null, "cancelled"), "", "letterText(null, cancelled) returns empty string");
 
-  // QUOTES tests: 9 keys, exact text
+  // QUOTES tests: 12 keys, exact text
   var EXPECTED_QUOTES = {
     us_duty: "A covered carrier that is the merchant of record must provide a full and prompt refund of the airfare, including any taxes and ancillary fees, as set forth in paragraph (a)(2) of this section to a consumer that holds a nonrefundable ticket on a scheduled flight to, from, or within the United States for any cancelled flight or significantly delayed or changed flight where the consumer chooses not to:",
     us_delay: "The consumer is scheduled to arrive at the destination airport three or more hours for domestic itineraries or six or more hours for international itineraries after the original scheduled arrival time;",
@@ -224,28 +224,122 @@
     eu_delay5: "when the delay is at least five hours, the assistance specified in Article 8(1)(a).",
     eu_care: "meals and refreshments in a reasonable relation to the waiting time;",
     eu_extra: "An operating air carrier shall not be obliged to pay compensation in accordance with Article 7, if it can prove that the cancellation is caused by extraordinary circumstances which could not have been avoided even if all reasonable measures had been taken.",
-    eu_atm: "Extraordinary circumstances should be deemed to exist where the impact of an air traffic management decision in relation to a particular aircraft on a particular day gives rise to a long delay, an overnight delay, or the cancellation of one or more flights by that aircraft, even though all reasonable measures had been taken by the air carrier concerned to avoid the delays or cancellations."
+    eu_atm: "Extraordinary circumstances should be deemed to exist where the impact of an air traffic management decision in relation to a particular aircraft on a particular day gives rise to a long delay, an overnight delay, or the cancellation of one or more flights by that aircraft, even though all reasonable measures had been taken by the air carrier concerned to avoid the delays or cancellations.",
+    dot_control: "A controllable flight cancellation or delay is essentially a delay or cancellation caused by the airline. Examples include: maintenance or crew problems; cabin cleaning; baggage loading; and fueling.",
+    dot_ask: "If your flight is experiencing a long delay or is cancelled, ask airline staff if they will pay for meals or a hotel room or compensate you for your time. While some airlines offer these amenities to passengers, others may not provide amenities to stranded passengers.",
+    dot_refund: "If an airline cancels a passenger\u2019s flight or makes a significant change in the flight, regardless of the reason, airlines are required to provide a prompt refund to a ticketed passenger, including those with non-refundable tickets, should the passenger choose not to accept the alternative offered, such as rebooking on another flight."
   };
 
   var qKeys = Object.keys(EXPECTED_QUOTES);
-  eq(Object.keys(F.QUOTES).length, 9, "QUOTES has 9 keys");
+  eq(Object.keys(F.QUOTES).length, 12, "QUOTES has 12 keys");
   qKeys.forEach(function (k) {
     eq(F.QUOTES[k], EXPECTED_QUOTES[k], "QUOTES." + k + " exact match");
+  });
+
+  // AIRLINES and airlineAnswer tests
+  eq(typeof F.airlineAnswer, "function", "FLIGHTS.airlineAnswer is a function");
+  ok(!!F.AIRLINES && typeof F.AIRLINES === "object", "FLIGHTS.AIRLINES is an object");
+  eq(F.DASH_URL, "https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard", "DASH_URL exact match");
+  eq(F.DASH_UPDATED, "11 September 2025", "DASH_UPDATED exact match");
+  eq(F.DASH_READ, "13 November 2026", "DASH_READ exact match");
+
+  var EXPECTED_KEYS = [
+    "rebook_same",
+    "rebook_other",
+    "meal",
+    "hotel",
+    "transport",
+    "cash",
+    "voucher",
+    "miles"
+  ];
+  var EXPECTED_LABELS = [
+    "Rebook you on the same airline at no additional cost",
+    "Rebook you on a partner airline, or another airline it has an agreement with, at no additional cost",
+    "A meal or meal voucher when you wait 3 hours or more",
+    "A hotel for an overnight cancellation or delay",
+    "Ground transport to and from the hotel",
+    "Cash compensation when you wait 3 hours or more",
+    "A credit or travel voucher when you wait 3 hours or more",
+    "Frequent flyer miles when you wait 3 hours or more"
+  ];
+
+  var EXPECTED_BITS = {
+    alaska: "yyyyynyy",
+    allegiant: "ynyyynnn",
+    american: "yyyyynnn",
+    delta: "yyyyynnn",
+    frontier: "ynynnnnn",
+    hawaiian: "yyyyynyy",
+    jetblue: "yyyyynyn",
+    southwest: "ynyyynyn",
+    united: "yyyyynnn"
+  };
+
+  var EXPECTED_IDS = ["alaska", "allegiant", "american", "delta", "frontier", "hawaiian", "jetblue", "southwest", "spirit", "united"];
+  var actualIds = Object.keys(F.AIRLINES).sort();
+  eq(actualIds.length, 10, "AIRLINES has exactly 10 ids");
+  eq(actualIds.join(","), EXPECTED_IDS.join(","), "AIRLINES ids match expected 10");
+
+  eq(F.AIRLINES.spirit.values, null, "spirit has values null");
+  var spiritAns = F.airlineAnswer("spirit");
+  ok(!!spiritAns, "airlineAnswer('spirit') returns object");
+  eq(spiritAns.name, "Spirit Airlines", "spirit name");
+  eq(spiritAns.hasData, false, "spirit hasData is false");
+  eq(spiritAns.yes.length, 0, "spirit yes list empty");
+  eq(spiritAns.no.length, 0, "spirit no list empty");
+  eq(spiritAns.link, F.AIRLINES.spirit.link, "spirit link");
+
+  Object.keys(EXPECTED_BITS).forEach(function (id) {
+    var bits = EXPECTED_BITS[id];
+    var entry = F.AIRLINES[id];
+    ok(!!entry && !!entry.values, id + " has values object");
+    eq(Object.keys(entry.values).length, 8, id + " has 8 value keys");
+    eq(entry.values.cash, false, id + " has cash = false");
+
+    var expectedYes = [];
+    var expectedNo = [];
+    for (var i = 0; i < EXPECTED_KEYS.length; i++) {
+      var want = bits.charAt(i) === "y";
+      eq(entry.values[EXPECTED_KEYS[i]], want, id + "." + EXPECTED_KEYS[i]);
+      if (want) {
+        expectedYes.push(EXPECTED_LABELS[i]);
+      } else {
+        expectedNo.push(EXPECTED_LABELS[i]);
+      }
+    }
+
+    var ans = F.airlineAnswer(id);
+    ok(!!ans, "airlineAnswer(" + id + ") returns object");
+    eq(ans.name, entry.name, "airlineAnswer(" + id + ").name");
+    eq(ans.link, entry.link, "airlineAnswer(" + id + ").link");
+    eq(ans.hasData, true, "airlineAnswer(" + id + ").hasData");
+    eq(ans.yes.length, expectedYes.length, "airlineAnswer(" + id + ").yes.length");
+    eq(ans.no.length, expectedNo.length, "airlineAnswer(" + id + ").no.length");
+    eq(ans.yes.join("|"), expectedYes.join("|"), "airlineAnswer(" + id + ").yes labels");
+    eq(ans.no.join("|"), expectedNo.join("|"), "airlineAnswer(" + id + ").no labels");
+  });
+
+  ["", "other", "unknown", "toString", null, undefined].forEach(function (badId) {
+    eq(F.airlineAnswer(badId), null, "airlineAnswer(" + JSON.stringify(badId) + ") returns null");
   });
 
   // Static hygiene checks when readFile is available (jsc)
   if (typeof readFile === "function") {
     var jsText = readFile("flights/flights.js");
     var htmlText = readFile("flights/index.html");
+    var airlinesHtmlText = readFile("flights/airlines/index.html");
     var testText = readFile("tests/test-flights.js");
 
     ok(jsText.indexOf("\u2014") < 0, "flights/flights.js has no em dash");
     ok(htmlText.indexOf("\u2014") < 0, "flights/index.html has no em dash");
+    ok(airlinesHtmlText.indexOf("\u2014") < 0, "flights/airlines/index.html has no em dash");
     ok(testText.indexOf("\u2014") < 0, "tests/test-flights.js has no em dash");
 
     ["pushState", "localStorage", "sessionStorage", "document.cookie", "fetch(", "XMLHttpRequest", "innerHTML", "eval(", "new Function"].forEach(function (tok) {
       ok(jsText.indexOf(tok) < 0, "flights/flights.js does not contain " + tok);
       ok(htmlText.indexOf(tok) < 0, "flights/index.html does not contain " + tok);
+      ok(airlinesHtmlText.indexOf(tok) < 0, "flights/airlines/index.html does not contain " + tok);
     });
     ok(jsText.indexOf("cookie") < 0, "flights/flights.js does not contain cookie");
 
@@ -253,18 +347,28 @@
       ok(htmlText.indexOf(EXPECTED_QUOTES[k]) >= 0, "flights/index.html includes quote " + k);
     });
 
-    var allowedSteps = { "flights-arrived": 1, "flights-answer": 1, "flights-copied": 1, "ad-ground-stop": 1 };
-    [jsText, htmlText].forEach(function (src, idx) {
-      var name = idx === 0 ? "flights/flights.js" : "flights/index.html";
-      var cleaned = src.replace(/function countStep\(name\)/, "");
+    var allowedSteps = {
+      "flights-arrived": 1,
+      "flights-answer": 1,
+      "flights-airline": 1,
+      "flights-copied": 1,
+      "airlines-arrived": 1,
+      "ad-ground-stop": 1
+    };
+    [
+      { name: "flights/flights.js", src: jsText },
+      { name: "flights/index.html", src: htmlText },
+      { name: "flights/airlines/index.html", src: airlinesHtmlText }
+    ].forEach(function (item) {
+      var cleaned = item.src.replace(/function countStep\(name\)/, "");
       var re = /countStep\(/g, m, n = 0;
       while ((m = re.exec(cleaned))) {
         n++;
         var rest = cleaned.slice(m.index + m[0].length);
         var lit = /^"([a-z0-9-]+)"\)/.exec(rest);
-        ok(!!lit && allowedSteps[lit[1]] === 1, name + " countStep call #" + n + " uses whitelisted literal");
+        ok(!!lit && allowedSteps[lit[1]] === 1, item.name + " countStep call #" + n + " uses whitelisted literal");
       }
-      ok(n > 0, name + " has countStep calls");
+      ok(n > 0, item.name + " has countStep calls");
     });
   }
 

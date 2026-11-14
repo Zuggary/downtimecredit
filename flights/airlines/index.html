@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What 9 US airlines have promised for cancellations and delays · Downtime Credit</title>
+<meta name="description" content="Side-by-side table of what 9 US airlines have promised for airline-caused cancellations and delays, from the US Department of Transportation dashboard.">
+<link rel="canonical" href="https://www.downtimecredit.com/flights/airlines/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.downtimecredit.com/flights/airlines/">
+<meta property="og:site_name" content="Downtime Credit">
+<meta property="og:title" content="What 9 US airlines have promised for cancellations and delays">
+<meta property="og:description" content="Side-by-side table of what 9 US airlines have promised for airline-caused cancellations and delays, from the US Department of Transportation dashboard.">
+<meta property="og:image" content="https://www.downtimecredit.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="../../fonts/besley-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Besley DC"; src: url("../../fonts/besley-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "Hanken DC"; src: url("../../fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+  :root {
+    --page: #EEF2F0; --sheet: #FFFFFF; --ink: #0E3A2F; --ink-2: #33524A; --mute: #52685F; --rule: #C5D1CC; --tint: #E1EAE6;
+    --date: #1D4E89; --write: #F7F9F8;
+    --head: "Besley DC", Georgia, "Times New Roman", serif; --text: "Hanken DC", Arial, Helvetica, sans-serif;
+    --gut: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--ink); font: 400 16.5px/1.5 var(--text); overflow-x: clip; }
+  a { color: var(--ink); text-underline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--date); outline-offset: 2px; }
+  .in { max-width: 1240px; margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut); }
+
+  /* header */
+  .top .in { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; padding-bottom: 8px; }
+  .brand { font: 700 19px/1 var(--head); color: var(--ink); text-decoration: none; white-space: nowrap; }
+  .trustbar { background: var(--ink); color: #DCE7E2; }
+  .trustbar p { margin: 0 auto; max-width: 1240px; padding: 6px var(--gut); font-size: 13.5px; line-height: 1.35; }
+
+  /* hero */
+  .hero { padding-top: 14px; padding-bottom: 20px; }
+  h1 { font: 700 clamp(24px, 6.6vw, 48px)/1.12 var(--head); margin: 0; text-wrap: balance; max-width: 22em; }
+  .lede { margin: 10px 0 0; font-size: 15.5px; line-height: 1.45; max-width: 46em; color: var(--ink-2); }
+
+  /* table */
+  .table-band { padding-bottom: 24px; }
+  .table-wrap {
+    width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    background: var(--sheet); border: 1px solid var(--rule); border-top: 6px solid var(--ink);
+    box-shadow: 0 18px 40px -26px #0e3a2f66;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14.5px; line-height: 1.35; }
+  thead th {
+    background: var(--write); font: 700 14.5px/1.25 var(--head); color: var(--ink);
+    padding: 11px 8px; border-bottom: 2px solid var(--ink); text-align: center; vertical-align: bottom;
+  }
+  tbody th {
+    font-weight: 600; color: var(--ink); padding: 10px 12px; border-bottom: 1px solid var(--rule);
+    text-align: left; vertical-align: top;
+  }
+  tbody td {
+    padding: 10px 8px; border-bottom: 1px solid var(--rule); text-align: center; vertical-align: middle;
+  }
+  th:first-child, td:first-child {
+    position: sticky; left: 0; background: var(--sheet); z-index: 1;
+    min-width: 190px; max-width: 280px; border-right: 1px solid var(--rule); text-align: left;
+  }
+  thead th:first-child { z-index: 2; background: var(--write); }
+  td.val-yes { background: var(--tint); color: var(--ink); font-weight: 700; }
+  td.val-no { color: var(--mute); }
+  .noscript-note { padding: 14px 16px; margin: 0; font-size: 15.5px; }
+
+  /* notes & links */
+  .notes { padding-bottom: 28px; }
+  .notes p { max-width: 46em; margin: 14px 0 0; }
+  .notes h2 { font: 700 20px/1.25 var(--head); margin: 24px 0 10px; }
+  .clean-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 46em; }
+  .clean-list li { line-height: 1.5; }
+  .fine { font-size: 13.5px; color: var(--mute); }
+  .back-link { margin-top: 22px; font-size: 16.5px; font-weight: 700; }
+
+  /* footer */
+  .end-band { padding-top: 18px; padding-bottom: 36px; border-top: 1px solid var(--rule); }
+  .cross-link { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+  .foot-meta { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  @media (min-width: 960px) {
+    :root { --gut: 40px; }
+    body { font-size: 17.5px; }
+    .top .in { padding-top: 16px; padding-bottom: 12px; }
+    .brand { font-size: 24px; }
+    .trustbar p { font-size: 14.5px; padding-top: 8px; padding-bottom: 8px; }
+    .hero { padding-top: 28px; padding-bottom: 24px; }
+    .lede { font-size: 18px; }
+    table { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to any airline, card or government. Your answers stay in your browser.</p></div>
+</header>
+
+<main>
+  <div class="in hero">
+    <h1>What US airlines have promised when they cause a cancellation or delay</h1>
+    <p class="lede">From the US Department of Transportation's dashboard, last updated 11 September 2025. Read on 13 November 2026.</p>
+  </div>
+
+  <section class="table-band" aria-label="Airline commitments">
+    <div class="in">
+      <p class="fine" style="margin:0 0 6px">9 airlines: scroll the table sideways to see them all.</p>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Airline commitments table">
+        <div id="airline-table"></div>
+        <noscript><p class="noscript-note">Turn on JavaScript to see the table, or open <a href="https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard" target="_blank" rel="noopener noreferrer">the dashboard itself</a>.</p></noscript>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes" aria-label="Notes and airline plans">
+    <div class="in">
+      <p>These commitments are for cancellations and delays the airline caused, such as maintenance or crew problems. The dashboard does not say what an airline gives when the cause is weather or air traffic control. Ask the airline anyway. An airline with no commitment may still help.</p>
+      <p class="fine">Source: US Department of Transportation, <a href="https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard" target="_blank" rel="noopener noreferrer">Airline Cancellation and Delay Dashboard</a>, last updated 11 September 2025, read by this page on 13 November 2026.</p>
+
+      <h2>Each airline's own customer service plan (this page has not read them)</h2>
+      <ul class="clean-list">
+        <li><a href="https://www.alaskaair.com/content/about-us/customer-commitment/customer-commitment-overview" target="_blank" rel="noopener noreferrer">Alaska Airlines</a></li>
+        <li><a href="https://www.allegiantair.com/customer-service-plan" target="_blank" rel="noopener noreferrer">Allegiant Air</a></li>
+        <li><a href="https://www.aa.com/i18n/customer-service/support/customer-service-plan.jsp" target="_blank" rel="noopener noreferrer">American Airlines</a></li>
+        <li><a href="https://www.delta.com/us/en/legal/customer-commitment" target="_blank" rel="noopener noreferrer">Delta Air Lines</a></li>
+        <li><a href="https://www.flyfrontier.com/legal/customer-service-plan" target="_blank" rel="noopener noreferrer">Frontier Airlines</a></li>
+        <li><a href="https://www.hawaiianairlines.com/about-us/customer-service-plan" target="_blank" rel="noopener noreferrer">Hawaiian Airlines</a></li>
+        <li><a href="https://www.jetblue.com/legal/customer-service-plan" target="_blank" rel="noopener noreferrer">JetBlue Airways</a></li>
+        <li><a href="https://www.southwest.com/assets/pdfs/corporate-commitments/customer-service-plan.pdf" target="_blank" rel="noopener noreferrer">Southwest Airlines</a></li>
+        <li><a href="https://content.spirit.com/Shared/en-us/Documents/Contract_of_Carriage.pdf" target="_blank" rel="noopener noreferrer">Spirit Airlines</a></li>
+        <li><a href="https://www.united.com/ual/en/us/fly/customer-commitment.html" target="_blank" rel="noopener noreferrer">United Airlines</a></li>
+      </ul>
+      <p>Spirit Airlines is in the dashboard's list of plans but has no column in its table.</p>
+      <p class="back-link"><a href="../">Check your own flight</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="end-band">
+  <div class="in">
+    <p class="cross-link"><a href="../../">Software outage at work? Work out a service credit</a></p>
+    <p class="foot-meta"><a href="../../privacy.html">Privacy</a> &middot; <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a></p>
+  </div>
+</footer>
+
+<script src="../flights.js"></script>
+<script>
+(function () {
+  "use strict";
+  var F = window.FLIGHTS;
+  var mount = document.getElementById("airline-table");
+  if (!F || !mount) return;
+
+  var airlines = Object.keys(F.AIRLINES).map(function (id) {
+    return F.AIRLINES[id];
+  }).filter(function (a) {
+    return a.values !== null;
+  });
+
+  var table = document.createElement("table");
+  var thead = document.createElement("thead");
+  var headRow = document.createElement("tr");
+
+  var corner = document.createElement("th");
+  corner.scope = "col";
+  corner.textContent = "Commitment";
+  headRow.appendChild(corner);
+
+  airlines.forEach(function (a) {
+    var th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = a.short;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  var tbody = document.createElement("tbody");
+  F.AIRLINE_KEYS.forEach(function (item) {
+    var tr = document.createElement("tr");
+    var rowHead = document.createElement("th");
+    rowHead.scope = "row";
+    rowHead.textContent = item.label;
+    tr.appendChild(rowHead);
+
+    airlines.forEach(function (a) {
+      var td = document.createElement("td");
+      var yes = a.values[item.key] === true;
+      td.className = yes ? "val-yes" : "val-no";
+      td.textContent = yes ? "Yes" : "No";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  mount.appendChild(table);
+})();
+</script>
+<script data-counter>
+  // Cloudflare Web Analytics: counts visits, sets no cookie (see ../../privacy.html). It loads on the live site only, so tests and local copies send nothing.
+  if (/(^|\.)downtimecredit\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "fec45b1ba4b9475991fe78db751e9bbc"}'); s.addEventListener("load", function () { if (!window.countStep) return; window.countStep("airlines-arrived"); }); document.head.appendChild(s); })(); }
+</script>
+</body>
+</html>
