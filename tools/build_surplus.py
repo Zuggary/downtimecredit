@@ -25,7 +25,7 @@ MI_URL = "https://www.legislature.mi.gov/documents/mcl/pdf/mcl-257-252g.pdf"
 NV_URL = "https://www.leg.state.nv.us/nrs/nrs-108.html"
 PA_URL = "https://www.palegis.us/statutes/consolidated/view-statute?iFrame=true&txtType=HTM&ttl=75&div=0&chpt=73&sctn=8&subsctn=0"
 ARTICLE = "https://valleywidenewspaper.com/the-dmv-makes-millions-from-auctioned-cars-doesnt-tell-owners/"
-TRUST = 'Not legal advice. Not affiliated with any agency named here. This site cannot look up your car or file a claim. The agency decides every claim.'
+TRUST = 'Not legal advice. Not affiliated with any agency named here. This site cannot look up your car or file a claim. Whoever holds the money decides every claim.'
 
 
 def q(text, cite_html):
@@ -312,11 +312,12 @@ def page_california():
                  body)
 
 
-S_FL = q("The proceeds of the sale, after payment of reasonable towing and storage charges, and costs of the sale, in that order of priority, must be deposited with the clerk of the circuit court for the county if the owner or lienholder is absent, and the clerk must hold such proceeds subject to the claim of the owner or lienholder legally entitled thereto.", C_FL)
+S_FL = q("The proceeds of the sale, after payment of reasonable towing and storage charges, and costs of the sale, in that order of priority, must be deposited with the clerk of the circuit court for the county if the owner or lienholder is absent, and the clerk must hold such proceeds subject to the claim of the owner or lienholder legally entitled thereto. The clerk is entitled to receive 5 percent of such proceeds for the care and disbursement thereof.", C_FL)
 S_GA1 = q("Then, the business must remit the remaining proceeds of the sale to the Department of Revenue (the \u201cDepartment\u201d) no later than 15 business days after the date of the sale.", C_GA)
 S_GA2 = q("Any person claiming a property interest in the vehicle and the excess funds (i.e. vehicle owner, lienholder) may make a claim to the Department within six months of the sale.", C_GA)
+S_GA3 = q("No claim will be authorized after one year from the date the funds were remitted to the Department.", C_GA)
 S_MI = q("Any extra money shall be sent to the department of treasury's unclaimed property division to be disbursed as follows:", C_MI)
-S_NV = q("The balance, if any, of the proceeds must be delivered, on demand, to the person to whom the lien claimant would have been bound to deliver", C_NV)
+S_NV = q("The balance, if any, of the proceeds must be delivered, on demand, to the person to whom the lien claimant would have been bound to deliver, or justified in delivering, the motor vehicle, aircraft, motorcycle, motor or aircraft equipment, aircraft parts, trailer, recreational vehicle, mobile home or manufactured home.", C_NV)
 S_PA = q("The remainder of the proceeds of a sale shall be paid to the department and transmitted to the State Treasurer for deposit in the Motor License Fund.", C_PA)
 
 
@@ -343,17 +344,17 @@ PICKER = r"""  <form class="hform" onsubmit="return false">
 
 def page_states():
     body = f"""
-  <p>When a tow yard sells a towed car to cover unpaid charges, that is a lien sale. Car towed in California? Go straight to the <a href="../car-towed-lien-sale-money-california/">California guide, with the DMV lookup and claim steps</a>.</p>
-  <p>This page lists a state only when this site opened the law or the agency page and read the sentence about leftover money. Each state has several kinds of sales, and a row shows only the kind named under it. The list is short. A state that is missing is not a state with no rule. It means we have not checked it yet.</p>
+  <p>When a tow yard sells a towed car to cover unpaid charges, that is a lien sale. Car towed in California? Go straight to the <a href="../car-towed-lien-sale-money-california/">California guide</a>.</p>
+  <p>This page lists a state only when this site opened the law or the agency page and read the sentence about leftover money. A rule here may cover only one kind of sale, such as the kind named in the row or in the section below it. The list is short. A state that is missing is not a state with no rule. It means we have not checked it yet.</p>
 {PICKER}
   <div id="states-tbl" class="table-wrap" tabindex="0" role="region" aria-label="States and where the leftover money goes">
     <table><thead><tr><th scope="col">State</th><th scope="col">Where the leftover money goes</th><th scope="col">Claim window</th><th scope="col">Source</th></tr></thead><tbody>
-      <tr><th scope="row">California (<a href="../car-towed-lien-sale-money-california/">guide</a>)</th><td>To the DMV, after the lien and a capped processing cost.</td><td>Three years from the date the funds were deposited.</td><td><a href="{CIV3073}" rel="noopener">Civil Code \u00a73073</a></td></tr>
-      <tr><th scope="row">Florida</th><td>To the clerk of the circuit court, if the owner or lienholder is absent. The clerk holds it for the person entitled.</td><td>No time limit found on the statute page.</td><td><a href="{FL_URL}" rel="noopener">Fla. Stat. \u00a7713.78</a></td></tr>
-      <tr><th scope="row">Georgia</th><td>To the Department of Revenue, for sales under a court order.</td><td>Six months from the sale, per the Department's page.</td><td><a href="{GA_URL}" rel="noopener">Dept. of Revenue page</a></td></tr>
-      <tr><th scope="row">Michigan</th><td>To the Treasury's unclaimed property division, for police-run abandoned-vehicle sales. The secured party is paid first, then the owner.</td><td>No time limit found in the section.</td><td><a href="{MI_URL}" rel="noopener">MCL 257.252g</a></td></tr>
-      <tr><th scope="row">Nevada</th><td>Delivered on demand to the person the lien claimant would have had to deliver the vehicle to.</td><td>No time limit found.</td><td><a href="{NV_URL}" rel="noopener">NRS chapter 108</a></td></tr>
-      <tr><th scope="row">Pennsylvania</th><td>To the state department, then the State Treasurer's Motor License Fund, for a salvor's sale of an abandoned vehicle.</td><td>No claim process in that section.</td><td><a href="{PA_URL}" rel="noopener">75 Pa.C.S. \u00a77308</a></td></tr>
+      <tr><th scope="row">California (<a href="../car-towed-lien-sale-money-california/">guide</a>)</th><td>To the DMV, after the lien and a processing cost capped at $70 or $100, unless federal law requires otherwise. A person claiming an interest in the vehicle may claim.</td><td>Three years from the date the funds were deposited.</td><td><a href="{CIV3073}" rel="noopener">Civil Code \u00a73073</a></td></tr>
+      <tr><th scope="row">Florida</th><td>To the clerk of the circuit court, if the owner or lienholder is absent. The clerk holds it for the person entitled and may keep 5 percent.</td><td>This site found no time limit in the text it read.</td><td><a href="{FL_URL}" rel="noopener">Fla. Stat. \u00a7713.78</a></td></tr>
+      <tr><th scope="row">Georgia</th><td>To the Department of Revenue, for sales under a court order.</td><td>The Department's page gives six months from the sale for the first claim period, and says no claim is authorized after one year from the date the funds were remitted.</td><td><a href="{GA_URL}" rel="noopener">Dept. of Revenue page</a></td></tr>
+      <tr><th scope="row">Michigan</th><td>To the Treasury's unclaimed property division, after towing and storage, police or custodian expenses and a $40 fee. The secured party is paid first, then the owner. If the remainder cannot be delivered, it becomes the property of the local government unit.</td><td>This site found no time limit in the section.</td><td><a href="{MI_URL}" rel="noopener">MCL 257.252g</a></td></tr>
+      <tr><th scope="row">Nevada</th><td>Delivered on demand to the person the lien claimant would have had to deliver the property to. The rule covers vehicles and other property under the lien chapter.</td><td>This site found no time limit for vehicle liens in the text it read.</td><td><a href="{NV_URL}" rel="noopener">NRS chapter 108</a></td></tr>
+      <tr><th scope="row">Pennsylvania</th><td>After the salvor's costs, to "the department" (the statute does not name it here) and then the State Treasurer's Motor License Fund, for a salvor's sale of an abandoned vehicle.</td><td>This section describes no claim process.</td><td><a href="{PA_URL}" rel="noopener">75 Pa.C.S. \u00a77308</a></td></tr>
       <tr><th scope="row">Washington</th><td>To the Department of Licensing, for tow truck operator auctions, within thirty days.</td><td>The statute says the money goes to the registered owner of record who makes a valid claim within one year of the auction.</td><td><a href="{WA_RCW}" rel="noopener">RCW 46.55.130</a></td></tr>
     </tbody></table>
   </div>
@@ -362,29 +363,30 @@ def page_states():
   <p>See the full guide: <a href="../car-towed-lien-sale-money-california/">Car towed and sold at a lien sale? Money may be held for you</a>.</p>
 
   <h2 id="s-florida">Florida</h2>
-  <p>Florida's towing and storage lien statute covers vehicles sold for unpaid charges. It says what happens to the money after the charges and costs are paid.</p>
+  <p>This Florida statute is about liens for towing and storing vehicles. The sentence below says what happens to the money after the charges and costs are paid. It names the case where the owner or lienholder is absent. This site read the 2024 edition of the statute.</p>
   {S_FL}
-  <p>This site's reading: the money is held by the court clerk for the owner or lienholder who is entitled to it. The statute page shows no deadline. Ask the clerk of the circuit court in the county where the car was sold.</p>
+  <p>This site's reading: the money is held by the court clerk for the owner or lienholder who is entitled to it. This site found no deadline in the text it read. What happens when the owner is present is not in the sentence quoted. Ask the clerk of the circuit court in the county where the car was sold.</p>
 
   <h2 id="s-georgia">Georgia</h2>
   <p>This is the Department of Revenue's own page about its program, not the statute text. It says it applies to towing and storage firms, repair facilities and salvage dealers that sold an abandoned or unclaimed vehicle at public sale under a court order.</p>
   {S_GA1}
   {S_GA2}
+  {S_GA3}
 
   <h2 id="s-michigan">Michigan</h2>
-  <p>This section covers public sales of vehicles that a police agency determined to be abandoned or had removed under the statute's towing rules. It is not a rule for every lien sale.</p>
+  <p>This section covers public sales of vehicles that were determined to be abandoned or removed under the statute's towing rules. The police agency controls the sale and may name the custodian or a third party to run it. It is not a rule for every lien sale.</p>
   {S_MI}
-  <p>The section goes on to pay the secured party first, then the owner, and says a reasonable attempt shall be made to mail the remainder to the last titled owner. This site found no claim deadline in the section.</p>
+  <p>The section pays accrued towing and storage charges first, then expenses of the police agency or custodian, then a $40 abandoned vehicle fee. It then pays the secured party, then the owner, and says a reasonable attempt shall be made to mail the remainder to the last titled owner. If delivery cannot be made, the remainder becomes the property of the unit of government where the vehicle was towed. This site found no claim deadline in the section.</p>
 
   <h2 id="s-nevada">Nevada</h2>
   <p>Nevada's lien chapter says what the lien claimant does with the balance of a sale.</p>
   {S_NV}
-  <p>This site's reading: the claimant holds the balance for the person entitled to it and hands it over when that person asks. This site found no claim deadline in this chapter, and did not read the other Nevada sections that cover tow sales.</p>
+  <p>This site's reading: the claimant holds the balance for the person entitled to it and hands it over when that person asks. The chapter covers many kinds of liens, not only tows. This site found no claim deadline for vehicle liens in the part it read, and read only this part of the chapter.</p>
 
   <h2 id="s-pennsylvania">Pennsylvania</h2>
   <p>This section covers a salvor's public sale of an abandoned vehicle that has value.</p>
   {S_PA}
-  <p>This site's reading: in this kind of sale the leftover money goes to the state, not to a county clerk or the tow yard. Pennsylvania has other kinds of sales that this site did not read.</p>
+  <p>This site's reading: in this kind of sale the salvor is paid its fee and costs first, and the remainder goes to the state. This site read only this section.</p>
 
   <h2 id="s-washington">Washington</h2>
   <p>Washington's tow truck operator law sends surplus auction money to the state. The statute's word for the agency is "the department".</p>
@@ -392,14 +394,14 @@ def page_states():
   {Q14}
   <p>The statute defines the word.</p>
   {Q15}
-  <p>This site's reading: the Washington window is one year from the auction, much shorter than California's three years. If your car was sold in Washington, act fast and ask the Department of Licensing how to claim. This site did not open the Department of Licensing's claim form or process.</p>
+  <p>The statute names the registered owner of record. It does not say a lienholder may claim. This site's reading: the Washington window is one year from the auction, shorter than California's three years, and the two clocks start from different events. If your car was sold in Washington, act fast and ask the Department of Licensing how to claim. This site did not open the Department of Licensing's claim form or process.</p>
 
   <h2>Other states</h2>
   <p>Rules differ by state and by type of sale. If your car was sold in another state, search that state's motor vehicle agency for lien sale surplus, or ask the tow yard in writing where the leftover money went. We will add a state here after we read its statute.</p>
 
   <h2>What this site cannot do</h2>
   <ul class="clean">
-    <li>It cannot check whether money is held for your car. Only your state agency can.</li>
+    <li>It cannot check whether money is held for your car. Only the holder of the money, such as a state agency or a court clerk, can.</li>
     <li>It does not send forms or claims to any agency. You file directly.</li>
     <li>It cannot promise a payout or say whether a tow or sale broke the law. A lawyer or legal aid office can.</li>
   </ul>
@@ -420,7 +422,7 @@ def page_states():
     return shell("lien-sale-surplus-other-states",
                  "How states handle leftover money from lien sales",
                  "Where the leftover money from a vehicle lien sale goes, and how long a claim can wait, for the states this site has checked: California, Florida, Georgia, Michigan, Nevada, Pennsylvania and Washington.",
-                 "Towed car sold at auction? Leftover money in seven states",
+                 "Car towed and sold? Where the leftover money goes in seven states",
                  "When a tow yard sells a towed car to cover unpaid charges, some states hold the leftover money for the former owner. Seven states are checked so far, each against its own law or agency page.",
                  body)
 
@@ -446,7 +448,7 @@ def page_notice():
 
   <h2>What the notice is</h2>
   {N0}
-  <p>The notice goes to the people the DMV lists for the car. The DMV says why a seller of the car may still get one.</p>
+  <p>The notice goes to the registered and legal owners of record and to anyone else the lienholder knows has an interest. The DMV says why a seller of the car may still get one.</p>
   {N9}
 
   <h2>What the lienholder must send</h2>
@@ -474,7 +476,7 @@ def page_notice():
     <li><b>Find the mailing date.</b> The 10 days run from the date the notice was mailed, which can be before you receive it. This site's reading: if the date is unclear, act at once.</li>
     <li><b>Check the car and the amount.</b> Is it your car? Does the amount of the lien and the reason match what happened?</li>
     <li><b>Check the sale date.</b> The sale should be 31 to 41 days after the mailing date.</li>
-    <li><b>Decide whether to ask for a hearing.</b> The Declaration of Opposition form comes with the notice. The statute says to return it within 10 days.</li>
+    <li><b>Decide whether to ask for a hearing.</b> The Declaration of Opposition form comes with the notice. The statute says to return it to the department, and the lienholder must include a return envelope preaddressed to the department. Return it within 10 days.</li>
     <li><b>Call the lienholder and the DMV Lien Sale Unit, (916) 657-7617,</b> if something does not add up.</li>
     <li><b>Keep every paper.</b> Keep the notice, the envelope and any receipt.</li>
   </ol>
@@ -494,6 +496,7 @@ def page_notice():
   <ul class="clean">
     <li><a href="{CIV3072}" rel="noopener">California Civil Code \u00a73072</a>, read {READ}</li>
     <li><a href="{DMV_LIEN}" rel="noopener">California DMV, Lien Sales For Vehicles</a>, frequently asked questions, read {READ}</li>
+    <li><a href="{CIV3073}" rel="noopener">California Civil Code \u00a73073</a>, read {READ}</li>
   </ul>
   <p class="fine">Quotations are copied word for word. Text outside a quotation is this site's reading. This is not legal advice.</p>
 """
