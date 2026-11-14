@@ -597,6 +597,16 @@ with sync_playwright() as pw:
     up.select_option("#u-pick", "other"); ok("not checked your state yet" in up.inner_text("#u-msg"), "TF7: the picker says an unchecked state is unchecked")
     ok("cannot look up" in up.inner_text("main").lower(), "TF7: the page says it cannot look up a person's property")
     up.close()
+    # TF7-B: the deposit letter builder runs in the browser, makes no request, and adds the chosen state's sentence
+    reqs3 = []
+    dp = ctxM.new_page(); dp.on("request", lambda r: reqs3.append(r.url))
+    dp.goto(BASE.replace("index.html", "") + "guides/security-deposit-return-deadlines/"); dp.wait_for_selector("#d-go"); k0 = len(reqs3)
+    dp.fill("#d-name", "Rivera, Ana"); dp.fill("#d-ll", "Oak Property Mgmt"); dp.fill("#d-unit", "5 Elm St Apt 2"); dp.fill("#d-out", "1 March 2026"); dp.fill("#d-amt", "1,200.00"); dp.select_option("#d-state", "ny"); dp.click("#d-go")
+    dt = dp.input_value("#d-text")
+    ok("New York General Obligations Law section 7-108" in dt and "Oak Property Mgmt" in dt and "$1,200.00" in dt and "itemized statement" in dt, "TF7: the deposit letter holds the typed details and the state sentence")
+    dp.select_option("#d-state", "other"); dp.click("#d-go"); ok("I understand that" not in dp.input_value("#d-text"), "TF7: no state sentence for an unchecked state")
+    ok(len(reqs3) == k0, f"TF7: the deposit letter builder made no network request ({len(reqs3) - k0})")
+    dp.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
