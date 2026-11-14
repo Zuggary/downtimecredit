@@ -58,7 +58,7 @@ LETTER = r"""
   function v(id) { var e = document.getElementById(id); return e ? e.value.replace(/\s+/g, " ").trim() : ""; }
   function f(x, hint) { return x || "[" + hint + "]"; }
   var LAW = {
-    ca: { discharged: "I understand that California Labor Code section 201 provides that, when an employer discharges an employee, the wages earned and unpaid at the time of discharge are due and payable immediately.", quit: "I understand that California Labor Code section 202 provides that, for an employee without a written contract for a definite period who quits, wages become due not later than 72 hours after, unless the employee gave 72 hours of notice, in which case they are due at the time of quitting." },
+    ca: { discharged: "I understand that California Labor Code section 201 provides that, when an employer discharges an employee, the wages earned and unpaid at the time of discharge are due and payable immediately.", quit: "I understand that California Labor Code section 202 provides that, for an employee without a written contract for a definite period who quits, wages become due not later than 72 hours after quitting, unless the employee gave 72 hours of notice, in which case they are due at the time of quitting." },
     mi: { discharged: "I understand that Michigan Compiled Laws section 408.475 provides that an employer is to pay a discharged employee all wages earned and due as soon as the amount can with due diligence be determined.", quit: "I understand that Michigan Compiled Laws section 408.475 provides that an employer is to pay an employee who voluntarily leaves all wages earned and due as soon as the amount can with due diligence be determined." },
     nc: { any: "I understand that North Carolina General Statutes section 95-25.7 provides that employees whose employment is discontinued for any reason are to be paid all wages due on or before the next regular payday." },
     ny: { any: "I understand that New York Labor Law section 191 provides that, if employment is terminated, the employer is to pay the wages not later than the regular pay day for the pay period during which the termination occurred." },
@@ -98,12 +98,12 @@ def sec(k, name, intro, quotes, note=""):
     return f'  <h2 id="p-{k}">{esc(name)}</h2>\n  <p>{intro}</p>\n  {"".join(quotes)}\n  {note}\n'
 def page():
     rows = [
-     ("California", "Discharged: immediately. Quit: not later than 72 hours after, or at the time of quitting if 72 hours of notice was given (for an employee without a written contract for a definite period).", "ca"),
-     ("Michigan", "Discharged or quit: as soon as the amount can with due diligence be determined.", "mi"),
+     ("California", "Discharged: immediately, with some exceptions (for example seasonal layoffs and state employers). Quit, for an employee without a written contract for a definite period: not later than 72 hours after quitting, or at the time of quitting if 72 hours of notice was given.", "ca"),
+     ("Michigan", "Discharged: immediately, as soon as the amount can with due diligence be determined. Quit: as soon as the amount can with due diligence be determined. The statute sets different rules for some contract employees and hand-harvest workers.", "mi"),
      ("New York", "Not later than the regular pay day for the pay period during which the termination occurred.", "ny"),
      ("North Carolina", "On or before the next regular payday.", "nc"),
      ("Texas", "Discharged: not later than the sixth day after discharge. Left other than by discharge: not later than the next regularly scheduled payday.", "tx"),
-     ("Washington", "At the end of the established pay period.", "wa"),
+     ("Washington", "At the end of the established pay period, with exceptions for some multi-employer industry plans and some labor-management agreements.", "wa"),
     ]
     tbl = "".join(f'<tr><th scope="row"><a href="#p-{k}">{n}</a></th><td>{d}</td><td><a href="{esc(SRC[k][1])}" rel="noopener">{esc(SRC[k][0])}</a></td></tr>' for n, d, k in rows)
     secs = "".join([
@@ -112,7 +112,7 @@ def page():
      sec("ny", "New York", "New York's rule is tied to the regular pay day.", [Q["ny"]], "<p>This site quoted this paragraph and did not summarise the rest of the section.</p>"),
      sec("nc", "North Carolina", "North Carolina's rule applies when employment is discontinued for any reason.", [Q["nc"]], "<p>The statute continues with rules for bonuses and commissions. This site did not summarise them.</p>"),
      sec("tx", "Texas", "Texas treats a discharge and a departure differently.", [Q["tx1"], Q["tx2"]]),
-     sec("wa", "Washington", "Washington's statute names the end of the established pay period.", [Q["wa"]], "<p>The sentence goes on with an exception for some kinds of work. This site quoted the main rule and did not summarise the rest.</p>"),
+     sec("wa", "Washington", "Washington's statute names the end of the established pay period.", [Q["wa"]], "<p>The statute goes on with exceptions for some multi-employer industry plans and for some labor-management agreements. This site quoted the main rule and did not summarise the rest.</p>"),
     ])
     body = f"""
   <div class="callout">
@@ -121,7 +121,7 @@ def page():
   </div>
 
   <h2>When final pay is due in six states</h2>
-  <p>Each row shows the main timing rule this site read in the state's law. This page is about the timing of wages. Pay for unused vacation or time off, commissions and bonuses follow other rules that this site did not summarise.</p>
+  <p>Each row shows the main timing rule this site read in the state's law. This page is about the timing of wages. The statutes have other provisions, for example on bonuses and commissions in some states, that this site did not summarise.</p>
   <div class="table-wrap" tabindex="0" role="region" aria-label="Final pay timing by state"><table><thead><tr><th scope="col">State</th><th scope="col">When final wages are due, per the statute</th><th scope="col">Source</th></tr></thead><tbody>{tbl}</tbody></table></div>
   <p>This site's reading: whether you were discharged or you quit can change the deadline in some states. Keep a record of your last day and how the job ended.</p>
 
