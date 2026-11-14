@@ -239,7 +239,7 @@
     width: 14px;
     height: 14px;
     border: 1.5px solid var(--ink);
-    border-radius: 0;
+    border-radius: 50%;
     background: var(--sheet);
     box-sizing: border-box;
   }
@@ -252,6 +252,7 @@
   .pick [aria-pressed="true"]::before {
     background: var(--crimson);
     border-color: var(--crimson);
+    box-shadow: inset 0 0 0 2.5px var(--tint);
   }
   .pick button:focus-visible { z-index: 1; }
   .cue { margin: 0; font: 400 16px/1.45 var(--text); color: var(--ink); }
@@ -913,7 +914,7 @@
       <button type="button" id="mode-github" aria-pressed="false">GitHub Enterprise Cloud</button>
       <button type="button" id="mode-own" aria-pressed="false">Another vendor or my own contract</button>
     </div>
-    <p class="cue" id="cue"><b>Does this apply to us?</b> Probably, if your company pays for a Microsoft 365 business plan. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
+    <p class="cue" id="cue"><b>Does this apply to us?</b> Possibly, if your company pays for a Microsoft 365 business plan and users could not send or receive email in Outlook on the web. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
     <p class="cue" id="cue-g" hidden><b>Does this apply to us?</b> <span id="cue-g-body">This agreement is for organisations with a Google Workspace agreement. Some editions and causes are left out. Check your edition: Essentials Starter is not covered.</span> <a href="#who-g">See who cannot claim</a>.</p>
     <ul class="outline" aria-label="The three steps">
       <li><a href="#statement">Work it out</a><span id="ol-work">Four numbers give the credit the agreement allows.</span></li>
@@ -930,7 +931,7 @@
     <div class="tear" aria-hidden="true"></div>
     <div class="fields">
       <div class="f"><label for="all">Users on your plan</label><input id="all" inputmode="numeric" autocomplete="off" placeholder="e.g. 50" aria-describedby="all-h"><small class="hint" id="all-h">everyone with an email account on the plan</small></div>
-      <div class="f"><label for="g0u">Of them, without email</label><input id="g0u" inputmode="numeric" autocomplete="off" placeholder="e.g. 35" aria-describedby="g0u-h"><small class="hint" id="g0u-h">the ones who could not send or receive</small></div>
+      <div class="f"><label for="g0u">Of them, without email</label><input id="g0u" inputmode="numeric" autocomplete="off" placeholder="e.g. 35" aria-describedby="g0u-h"><small class="hint" id="g0u-h">the ones who could not send or receive email in Outlook on the web</small></div>
       <div class="f span2"><div class="tl"><span id="g0t">How long they had no email</span></div>
         <div class="hm" role="group" aria-labelledby="g0t">
           <span class="u"><input id="g0h" inputmode="numeric" autocomplete="off" placeholder="e.g. 24" aria-label="Hours without email"><span aria-hidden="true">hours</span></span>

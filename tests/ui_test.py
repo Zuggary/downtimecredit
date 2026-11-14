@@ -60,7 +60,7 @@ with sync_playwright() as pw:
     ok(not re.search(r"(^|\s)(0|-|\u2013)(\s|$)", p.inner_text("#result")), "empty: no 0 or dash that reads as a value")
     ok("Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in p.inner_text("#dl-box"), "deadline: the one sentence")
     ok("Last checked 12 November 2026" in p.inner_text("#st-source") and "Check it against your invoice" in p.inner_text("#st-source"), "source and last-checked date beside the result")
-    ok("You need four numbers" in p.inner_text(".intro") and "Does this apply to us? Probably" in p.inner_text(".intro") and "minutes" not in p.inner_text("#need"), "hero: what you need, and who it applies to")
+    ok("You need four numbers" in p.inner_text(".intro") and "Does this apply to us? Possibly" in p.inner_text(".intro") and "minutes" not in p.inner_text("#need"), "hero: what you need, and who it applies to")
     ok("Not run by or linked to Microsoft or any vendor" in p.inner_text(".trustbar"), "the bar says not linked to any vendor")
     ok("Thursday 31 December 2026" in p.inner_text("#dl-date"), "deadline full date")
     ok(re.match(r"\d+ days left to send it\.", p.inner_text("#dl-days")) is not None, "days left shown")
@@ -556,6 +556,13 @@ with sync_playwright() as pw:
     m = open_page(ctxM, "?today=2026-12-30"); ok("Sooner is safer" in m.inner_text("#cd") or "Send it now" in m.inner_text("#cd"), "item 5: the Sooner is safer line is kept"); m.close()
     m = open_page(ctxM); ok("Sooner is safer. For the Microsoft 365 outage reported on 12 November 2026. From Microsoft's Service Level Agreement." in m.inner_text("#cd").replace("\n", " "), "item 9: the quiet line shows at 375 px"); m.close()
     m = open_page(ctxM); m.click("#mode-g"); top = m.evaluate("document.querySelector('.pick').getBoundingClientRect().bottom"); ok(top < 812, f"item 5: at 375 the toggle stays on the first screen ({top})"); m.close()
+    # 10x: the input helper follows each agreement's own definition of downtime
+    m = open_page(ctxM)
+    ok("Outlook on the web" in m.inner_text("#g0u-h") and "Outlook on the web" in m.inner_text("#cue"), "10x: Microsoft helper and eligibility line use the agreement's Outlook on the web wording")
+    ok("Probably" not in m.inner_text("body"), "10x: no 'Probably' on the page")
+    for btn, hid, want in [("#mode-g", "#g-time-h", "server-side error rate"), ("#mode-atlassian", "#g-time-h", "error rate above 5%"), ("#mode-github", "#g-time-h", "error rate exceeded 5%")]:
+        m.click(btn); ok(want in m.inner_text(hid), f"10x: {btn} helper follows the quoted definition ({want})")
+    m.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
@@ -573,7 +580,7 @@ with sync_playwright() as pw:
         for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", h), ("#g0m", "0" if h != "0" else "30"), ("#fee", "625")]: pg.fill(sel, v)
         pg.check("input[name=m-buy][value=reseller]")
     n = open_page(ctxN, "?today=2026-11-13"); rfill(n)
-    ok("Probably, if your company pays for a Microsoft 365 business plan. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead." in n.inner_text("#cue"), "F4: the cue follows the new route")
+    ok("Possibly, if your company pays for a Microsoft 365 business plan and users could not send or receive email in Outlook on the web. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead." in n.inner_text("#cue"), "F4: the cue follows the new route")
     ok("your provider, or the partner they buy from, asks microsoft for you" in n.inner_text("#who-list").lower() and "files the request" not in n.inner_text("#who-list"), "F4: the first 'cannot claim' row agrees with the route")
     ok("must submit" not in n.evaluate("document.body.textContent") and "provider files the request" not in n.evaluate("document.body.textContent"), "F3: the page never says the provider must submit or files the request")
     ok("Your provider, or the partner they buy from, requests it from Microsoft." in n.inner_text("#sel-note") + n.inner_text("#rules-ms") + n.evaluate("document.getElementById('reseller').textContent"), "F3: the page says who requests it")
