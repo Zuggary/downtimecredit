@@ -109,12 +109,12 @@ def shared_css(font_prefix: str) -> str:
   .sheet {{ background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }}
   .table-wrap {{ width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }}
   @media (max-width: 640px) {{
-    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] {{ display: block; width: 100%; min-width: 0; }}
-    .table-wrap thead {{ display: none; }}
-    .table-wrap tr {{ padding: 12px 14px; border-bottom: 1px solid var(--hairline); }}
-    .table-wrap td {{ display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }}
-    .table-wrap td::before {{ content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }}
-    .table-wrap th[scope=row] {{ padding: 0 0 4px; border: 0; }}
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] {{ display: block; width: 100%; min-width: 0; }}
+    .table-wrap:not(.keep) thead {{ display: none; }}
+    .table-wrap:not(.keep) tr {{ padding: 12px 14px; border-bottom: 1px solid var(--hairline); }}
+    .table-wrap:not(.keep) td {{ display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }}
+    .table-wrap:not(.keep) td::before {{ content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }}
+    .table-wrap:not(.keep) th[scope=row] {{ padding: 0 0 4px; border: 0; }}
     .table-wrap {{ overflow-x: visible; }}
   }}
   hr {{ max-width: 46em; margin-left: 0; }}
@@ -367,8 +367,6 @@ def build_vendor_page(v: dict) -> str:
             if "learn.microsoft" in c.get("source", "") and v.get("resellerDeadline"):
                 qcite = f"Microsoft Partner Center, dated {fmt_date(v['resellerDeadline']['documentDate'])}, last checked {fmt_date(doc['lastChecked'])}."
             quotes_blocks.append(render_quote_block(c["quote"], qcite))
-        elif c.get("finding"):
-            quotes_blocks.append(f"<p class=\"fine\"><b>{esc(c['who'])}</b> {esc(c['finding'])} (Source: <a href=\"{esc(c['source'])}\" rel=\"noopener\">{esc(c['source'])}</a>)</p>")
 
     quotes_section = "\n      ".join(quotes_blocks)
 
@@ -402,7 +400,7 @@ def build_vendor_page(v: dict) -> str:
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to {esc(vendor)} or any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -432,6 +430,7 @@ def build_vendor_page(v: dict) -> str:
 
   <h2>Credit tiers &amp; minimum downtime minutes</h2>
   <div class="sheet">
+    <p>The minutes below assume every user is affected. If only half your users are down, the minutes double.</p>
     <p class="swipe">Swipe sideways to see every column.</p>
     <div class="table-wrap" tabindex="0" role="region" aria-label="{esc(service)} SLA credit table">
       <table>
@@ -545,7 +544,7 @@ def build_sla_index(vendors: list[dict]) -> str:
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Independent of Microsoft, Google, Atlassian, GitHub, Salesforce and every vendor. Nothing you enter leaves your browser.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -558,7 +557,7 @@ def build_sla_index(vendors: list[dict]) -> str:
   <div class="hero">
     <p class="crumb"><a href="../">Downtime Credit</a> / Vendor SLA directory</p>
     <h1>SaaS SLA credit rules, allowed downtime &amp; deadlines</h1>
-    <p class="lede">Quotations are copied word for word from each vendor's published agreement. The minutes, the credit summaries and the deadline column are this site's reading of it. The vendor decides every claim. Open any vendor page for the clauses, or launch its calculator directly.</p>
+    <p class="lede">Each vendor page quotes its agreement word for word. The periods, credit tiers, minutes and deadlines on this page are this site's summary of the four agreements. The vendor decides every claim. Open any vendor page for the clauses, or launch its calculator directly.</p>
     <div class="cta-row">
       <a class="cta" href="../">Open the interactive calculator &rarr;</a>
       <a class="cta-sec" href="../?vendor=own">Enter your own contract or MSA</a>

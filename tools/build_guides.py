@@ -21,7 +21,7 @@ def cite_of(v):
 
 def vendor_block(v, quotes, heading_level=3):
     """quotes: strings (cited to the vendor's agreement) or (text, citation) pairs. A quote already shown is not shown twice."""
-    out = [f'<h{heading_level}><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></h{heading_level}>']
+    out = [f'<h{heading_level}><a href="../../sla/{esc(v["id"])}/">{esc(v["service"] if v["service"].startswith(v["vendor"]) else v["vendor"] + ": " + v["service"])}</a></h{heading_level}>']
     seen = []
     for q in quotes:
         text, cite = (q if isinstance(q, tuple) else (q, cite_of(v)))
@@ -79,7 +79,7 @@ def page(slug, title, meta, h1, lede, body, related):
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -136,7 +136,7 @@ def guide_credits():
     return page("how-service-credits-work", "How service credits work: what four SaaS agreements say",
                 "What a service credit is, how it is counted and what the vendor decides, with quotes from the Microsoft 365, Google Workspace, Atlassian and GitHub agreements.",
                 "How service credits work",
-                "A service credit is what an agreement says a vendor gives back when a service misses its uptime target. This guide quotes four agreements and shows where they differ.",
+                "A service credit is what an agreement says a vendor gives back when a service misses its uptime target. This guide quotes four agreements and shows where they differ. The vendor decides every claim. Not legal advice.",
                 body, [("how-to-ask-for-a-service-credit", "How to ask for a service credit"), ("what-counts-as-downtime", "What counts as downtime")])
 
 
@@ -169,7 +169,7 @@ def guide_ask():
     return page("how-to-ask-for-a-service-credit", "How to ask for a service credit: steps and deadlines",
                 "Six steps to ask a SaaS vendor for a service credit, the claim deadline in the Microsoft 365, Google Workspace, Atlassian and GitHub agreements, and where each says to send the request.",
                 "How to ask for a service credit",
-                "A request goes to the vendor or to your reseller, before a deadline that depends on the agreement. This guide lists the steps and quotes the deadline clauses.",
+                "A request goes to the vendor or to your reseller, before a deadline that depends on the agreement. This guide lists the steps and quotes the deadline clauses. The vendor decides every claim, and these steps are this site's reading. Not legal advice.",
                 body, [("how-service-credits-work", "How service credits work"), ("what-counts-as-downtime", "What counts as downtime")])
 
 
@@ -186,7 +186,7 @@ def guide_downtime():
     return page("what-counts-as-downtime", "What counts as downtime for a service credit",
                 "How the Microsoft 365, Google Workspace, Atlassian and GitHub agreements define downtime, with the clauses quoted and a list of what each one leaves out.",
                 "What counts as downtime",
-                "An outage you felt may not be downtime under the agreement. This guide quotes how four vendors define it and lists what each leaves out.",
+                "An outage you felt may not be downtime under the agreement. This guide quotes how four vendors define it and lists what each leaves out. The vendor decides every claim. Not legal advice.",
                 body, [("how-service-credits-work", "How service credits work"), ("how-to-ask-for-a-service-credit", "How to ask for a service credit")])
 
 
@@ -217,7 +217,7 @@ def index_page():
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <main class="in guide">
   <div class="hero">

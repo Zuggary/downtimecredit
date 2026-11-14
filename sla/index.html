@@ -71,12 +71,12 @@
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
   @media (max-width: 640px) {
-    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] { display: block; width: 100%; min-width: 0; }
-    .table-wrap thead { display: none; }
-    .table-wrap tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
-    .table-wrap td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
-    .table-wrap td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
-    .table-wrap th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap:not(.keep) thead { display: none; }
+    .table-wrap:not(.keep) tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap:not(.keep) td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+    .table-wrap:not(.keep) td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
+    .table-wrap:not(.keep) th[scope=row] { padding: 0 0 4px; border: 0; }
     .table-wrap { overflow-x: visible; }
   }
   hr { max-width: 46em; margin-left: 0; }
@@ -106,7 +106,7 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Independent of Microsoft, Google, Atlassian, GitHub, Salesforce and every vendor. Nothing you enter leaves your browser.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -119,7 +119,7 @@
   <div class="hero">
     <p class="crumb"><a href="../">Downtime Credit</a> / Vendor SLA directory</p>
     <h1>SaaS SLA credit rules, allowed downtime &amp; deadlines</h1>
-    <p class="lede">Quotations are copied word for word from each vendor's published agreement. The minutes, the credit summaries and the deadline column are this site's reading of it. The vendor decides every claim. Open any vendor page for the clauses, or launch its calculator directly.</p>
+    <p class="lede">Each vendor page quotes its agreement word for word. The periods, credit tiers, minutes and deadlines on this page are this site's summary of the four agreements. The vendor decides every claim. Open any vendor page for the clauses, or launch its calculator directly.</p>
     <div class="cta-row">
       <a class="cta" href="../">Open the interactive calculator &rarr;</a>
       <a class="cta-sec" href="../?vendor=own">Enter your own contract or MSA</a>

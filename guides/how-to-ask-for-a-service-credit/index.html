@@ -71,12 +71,12 @@
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
   @media (max-width: 640px) {
-    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] { display: block; width: 100%; min-width: 0; }
-    .table-wrap thead { display: none; }
-    .table-wrap tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
-    .table-wrap td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
-    .table-wrap td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
-    .table-wrap th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap:not(.keep) thead { display: none; }
+    .table-wrap:not(.keep) tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap:not(.keep) td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+    .table-wrap:not(.keep) td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
+    .table-wrap:not(.keep) th[scope=row] { padding: 0 0 4px; border: 0; }
     .table-wrap { overflow-x: visible; }
   }
   hr { max-width: 46em; margin-left: 0; }
@@ -110,7 +110,7 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -122,7 +122,7 @@
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / How to ask for a service credit</p>
     <h1>How to ask for a service credit</h1>
-    <p class="lede">A request goes to the vendor or to your reseller, before a deadline that depends on the agreement. This guide lists the steps and quotes the deadline clauses.</p>
+    <p class="lede">A request goes to the vendor or to your reseller, before a deadline that depends on the agreement. This guide lists the steps and quotes the deadline clauses. The vendor decides every claim, and these steps are this site's reading. Not legal advice.</p>
   </div>
 <h2>Six steps</h2>
 <p>These steps are this site's reading of the four agreements below. Your own contract can differ.</p>
@@ -141,13 +141,13 @@
 <h3><a href="../../sla/microsoft-365-exchange/">Microsoft: Exchange Online</a></h3>
 <blockquote><p>“For claims related to all other Services, we must receive the claim by the end of the Applicable Period following the month in which the Incident occurred. For example, if the Incident occurred on February 15th, we must receive the claim and all required information by March 31st.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
 <blockquote><p>“For claims related to all other services, credit requests must be submitted within one month from the end of the billing month in which the incident occurred.”</p><cite>Microsoft Partner Center, dated 16 June 2026, last checked 12 November 2026. For customers who buy through a reseller.</cite></blockquote>
-<h3><a href="../../sla/google-workspace/">Google: Google Workspace</a></h3>
+<h3><a href="../../sla/google-workspace/">Google Workspace</a></h3>
 <blockquote><p>“Customer must notify Google (or, if Customer ordered Services from a Reseller, Customer must notify Customer&#x27;s Reseller who must notify Google) by creating a support case within thirty days from the time Customer becomes eligible to receive a Service Credit.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“If Customer ordered Services from a Reseller and complies with this requirement, Customer will receive the applicable Service Credit from Customer&#x27;s Reseller on behalf of Google.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
-<h3><a href="../../sla/atlassian-cloud/">Atlassian: Atlassian Cloud</a></h3>
+<h3><a href="../../sla/atlassian-cloud/">Atlassian Cloud</a></h3>
 <blockquote><p>“To be eligible to receive a service credit for Atlassian’s failure to meet the Service Level Commitment (“Service Credit”), Customer must submit a ticket at https://support.atlassian.com with all fields fully and accurately completed within fifteen (15) days after the end of the calendar month in which the alleged failure occurred and provide any other reasonably requested information or documentation (for instance, as described here). Atlassian’s monitoring and logging infrastructure is the sole source of truth for determining whether Atlassian has met the Service Level Commitment.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“If Customer purchased the affected Cloud Product through a Reseller, (a) Customer or the Reseller may submit a ticket as described in Section 2.1 above; and (b) any Service Credit will be based on the fees invoiced by Atlassian to the Reseller for Customer’s use of the affected Cloud Product under the Reseller’s applicable order(s) with Atlassian. Atlassian will issue any associated Service Credits to the Reseller (and not directly to Customer), and the Reseller will be solely responsible for issuing the appropriate amounts to Customer.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
-<h3><a href="../../sla/github-enterprise-cloud/">GitHub: GitHub Enterprise Cloud</a></h3>
+<h3><a href="../../sla/github-enterprise-cloud/">GitHub Enterprise Cloud</a></h3>
 <blockquote><p>“Customer may redeem Service Credits only upon written request within thirty (30) days of the end of the Applicable Period. Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <h2>What Microsoft asks a claim to include</h2>
 <blockquote><p>“(i) a detailed description of the Incident; (ii) information regarding the time and duration of downtime; (iii) affected resource names; (iv) the number and location(s) of affected users; and v) a description of errors that occurred during the incident. Failure to provide the required information will result in claims being rejected.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>

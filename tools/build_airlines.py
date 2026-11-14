@@ -71,7 +71,7 @@ def page(a):
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any airline. Nothing you type leaves your browser.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every airline. The airline decides what it pays; this page quotes the dashboard and the airline's plan.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -83,12 +83,12 @@ def page(a):
   <div class="hero">
     <p class="crumb"><a href="../">US airline commitments</a> / {esc(short)}</p>
     <h1>{esc(title)}</h1>
-    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay.</p>
+    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice.</p>
     <div class="cta-row"><a class="cta" href="../../">Check your own flight &rarr;</a></div>
   </div>
   <h2>What {esc(short)} commits to, per the dashboard</h2>
   <p>Yes or no, as the dashboard shows for {esc(name)}. No means the airline has not committed to it on the dashboard. The commitments apply to delays and cancellations the airline caused, such as maintenance or crew problems.</p>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="{esc(short)} commitments"><table><thead><tr><th scope="col">When {esc(short)} causes the problem</th><th scope="col">Dashboard says</th></tr></thead><tbody>{rows}</tbody></table></div>
+  <div class="table-wrap keep" tabindex="0" role="region" aria-label="{esc(short)} commitments"><table><thead><tr><th scope="col">When {esc(short)} causes the problem</th><th scope="col">Dashboard says</th></tr></thead><tbody>{rows}</tbody></table></div>
   <p>The dashboard does not say what an airline gives when the cause is weather or air traffic control. Ask the airline anyway.</p>
   {plan_html}
   <h2>What applies whatever the airline's plan says</h2>

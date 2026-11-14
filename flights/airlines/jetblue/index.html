@@ -70,12 +70,12 @@
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
   @media (max-width: 640px) {
-    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] { display: block; width: 100%; min-width: 0; }
-    .table-wrap thead { display: none; }
-    .table-wrap tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
-    .table-wrap td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
-    .table-wrap td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
-    .table-wrap th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap:not(.keep) thead { display: none; }
+    .table-wrap:not(.keep) tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap:not(.keep) td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+    .table-wrap:not(.keep) td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
+    .table-wrap:not(.keep) th[scope=row] { padding: 0 0 4px; border: 0; }
     .table-wrap { overflow-x: visible; }
   }
   hr { max-width: 46em; margin-left: 0; }
@@ -107,7 +107,7 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any airline. Nothing you type leaves your browser.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every airline. The airline decides what it pays; this page quotes the dashboard and the airline's plan.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -119,12 +119,12 @@
   <div class="hero">
     <p class="crumb"><a href="../">US airline commitments</a> / JetBlue</p>
     <h1>JetBlue Airways: what it has promised for cancellations and delays</h1>
-    <p class="lede">From the US Department of Transportation's dashboard, last updated 11 September 2025, read 13 November 2026. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay.</p>
+    <p class="lede">From the US Department of Transportation's dashboard, last updated 11 September 2025, read 13 November 2026. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice.</p>
     <div class="cta-row"><a class="cta" href="../../">Check your own flight &rarr;</a></div>
   </div>
   <h2>What JetBlue commits to, per the dashboard</h2>
   <p>Yes or no, as the dashboard shows for JetBlue Airways. No means the airline has not committed to it on the dashboard. The commitments apply to delays and cancellations the airline caused, such as maintenance or crew problems.</p>
-  <div class="table-wrap" tabindex="0" role="region" aria-label="JetBlue commitments"><table><thead><tr><th scope="col">When JetBlue causes the problem</th><th scope="col">Dashboard says</th></tr></thead><tbody><tr><th scope="row">Rebook you on the same airline at no additional cost</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Rebook you on a partner airline, or another airline it has an agreement with, at no additional cost</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">A meal or meal voucher when you wait 3 hours or more</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">A hotel for an overnight cancellation or delay</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Ground transport to and from the hotel</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Cash compensation when you wait 3 hours or more</th><td data-label="Dashboard says"><b>No</b></td></tr><tr><th scope="row">A credit or travel voucher when you wait 3 hours or more</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Frequent flyer miles when you wait 3 hours or more</th><td data-label="Dashboard says"><b>No</b></td></tr></tbody></table></div>
+  <div class="table-wrap keep" tabindex="0" role="region" aria-label="JetBlue commitments"><table><thead><tr><th scope="col">When JetBlue causes the problem</th><th scope="col">Dashboard says</th></tr></thead><tbody><tr><th scope="row">Rebook you on the same airline at no additional cost</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Rebook you on a partner airline, or another airline it has an agreement with, at no additional cost</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">A meal or meal voucher when you wait 3 hours or more</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">A hotel for an overnight cancellation or delay</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Ground transport to and from the hotel</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Cash compensation when you wait 3 hours or more</th><td data-label="Dashboard says"><b>No</b></td></tr><tr><th scope="row">A credit or travel voucher when you wait 3 hours or more</th><td data-label="Dashboard says"><b>Yes</b></td></tr><tr><th scope="row">Frequent flyer miles when you wait 3 hours or more</th><td data-label="Dashboard says"><b>No</b></td></tr></tbody></table></div>
   <p>The dashboard does not say what an airline gives when the cause is weather or air traffic control. Ask the airline anyway.</p>
   <h2>From JetBlue's own plan</h2><p>Read by this site on 13 November 2026. Only the passages quoted here were read; the plan may say more.</p><blockquote><p>“If your JetBlue flight is canceled or disrupted due to a controllable irregularity causing an arrival delay of three hours or more, we will provide each ticketed customer with a reasonable meal in the form of a digital voucher.”</p><cite>JetBlue Airways customer service plan, read 13 November 2026. <a href="https://www.jetblue.com/customer-assurance/customer-service-plan" rel="noopener">Open the plan</a></cite></blockquote><blockquote><p>“If your JetBlue flight is canceled or disrupted due to a controllable irregularity, causing an arrival delay of 3 or more hours, and you are away from your home or origin city overnight, we will provide hotel accommodations at a contracted facility, based on availability.”</p><cite>JetBlue Airways customer service plan, read 13 November 2026. <a href="https://www.jetblue.com/customer-assurance/customer-service-plan" rel="noopener">Open the plan</a></cite></blockquote><blockquote><p>“If no contracted hotel is available, or if ground transportation is not provided, JetBlue will reimburse reasonable overnight hotel expenses and/or ground transportation with valid receipts.”</p><cite>JetBlue Airways customer service plan, read 13 November 2026. <a href="https://www.jetblue.com/customer-assurance/customer-service-plan" rel="noopener">Open the plan</a></cite></blockquote><blockquote><p>“Hotels will not be provided or reimbursed for events that are not deemed a controllable irregularity or for customers who live locally.”</p><cite>JetBlue Airways customer service plan, read 13 November 2026. <a href="https://www.jetblue.com/customer-assurance/customer-service-plan" rel="noopener">Open the plan</a></cite></blockquote>
   <h2>What applies whatever the airline's plan says</h2>

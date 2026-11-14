@@ -71,12 +71,12 @@
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
   @media (max-width: 640px) {
-    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] { display: block; width: 100%; min-width: 0; }
-    .table-wrap thead { display: none; }
-    .table-wrap tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
-    .table-wrap td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
-    .table-wrap td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
-    .table-wrap th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap:not(.keep) thead { display: none; }
+    .table-wrap:not(.keep) tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap:not(.keep) td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+    .table-wrap:not(.keep) td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
+    .table-wrap:not(.keep) th[scope=row] { padding: 0 0 4px; border: 0; }
     .table-wrap { overflow-x: visible; }
   }
   hr { max-width: 46em; margin-left: 0; }
@@ -110,7 +110,7 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -122,18 +122,18 @@
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / What counts as downtime</p>
     <h1>What counts as downtime</h1>
-    <p class="lede">An outage you felt may not be downtime under the agreement. This guide quotes how four vendors define it and lists what each leaves out.</p>
+    <p class="lede">An outage you felt may not be downtime under the agreement. This guide quotes how four vendors define it and lists what each leaves out. The vendor decides every claim. Not legal advice.</p>
   </div>
 <h2>The definition in each agreement</h2>
 <p>Each vendor defines downtime in its own words. Your monitoring tool or your own users may count a different outage from the vendor.</p>
 <h3><a href="../../sla/microsoft-365-exchange/">Microsoft: Exchange Online</a></h3>
 <blockquote><p>“Downtime: Any period of time when users are unable to send or receive email with Outlook Web Access. There is no Scheduled Downtime for this service.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
-<h3><a href="../../sla/google-workspace/">Google: Google Workspace</a></h3>
+<h3><a href="../../sla/google-workspace/">Google Workspace</a></h3>
 <blockquote><p>&quot;Downtime&quot; means, for a domain, a period of time during which the user web interface for the applicable Covered Services used by Customer has more than a five percent user error rate. Downtime is measured based on server side error rate.</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
-<h3><a href="../../sla/atlassian-cloud/">Atlassian: Atlassian Cloud</a></h3>
+<h3><a href="../../sla/atlassian-cloud/">Atlassian Cloud</a></h3>
 <blockquote><p>“Downtime Minute” occurs when the Error Rate in a given minute is greater than 5%.</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“Error Rate” means, over a given 1-minute period, the percentage of Customer’s requests to Covered Experiences resulting in an error out of Customer’s total requests to those Covered Experiences.</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
-<h3><a href="../../sla/github-enterprise-cloud/">GitHub: GitHub Enterprise Cloud</a></h3>
+<h3><a href="../../sla/github-enterprise-cloud/">GitHub Enterprise Cloud</a></h3>
 <blockquote><p>“Downtime” is a period of time where either (i) the error rate exceeds five percent (5%) in a given minute for a Service feature or (ii) the Service was unavailable as determined by a combination of GitHub’s internal and external monitoring systems.</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“In addition to these Service-specific definitions, Downtime does not include Scheduled Downtime, and Downtime does not include unavailability of a Service due to limitations or exclusions identified in Section 4 (“Limitations and Exclusions”).”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <h2>What each agreement leaves out</h2>

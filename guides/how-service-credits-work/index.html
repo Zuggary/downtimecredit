@@ -71,12 +71,12 @@
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
   @media (max-width: 640px) {
-    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] { display: block; width: 100%; min-width: 0; }
-    .table-wrap thead { display: none; }
-    .table-wrap tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
-    .table-wrap td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
-    .table-wrap td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
-    .table-wrap th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap:not(.keep) thead { display: none; }
+    .table-wrap:not(.keep) tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap:not(.keep) td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+    .table-wrap:not(.keep) td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
+    .table-wrap:not(.keep) th[scope=row] { padding: 0 0 4px; border: 0; }
     .table-wrap { overflow-x: visible; }
   }
   hr { max-width: 46em; margin-left: 0; }
@@ -110,7 +110,7 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
@@ -122,20 +122,20 @@
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / How service credits work</p>
     <h1>How service credits work</h1>
-    <p class="lede">A service credit is what an agreement says a vendor gives back when a service misses its uptime target. This guide quotes four agreements and shows where they differ.</p>
+    <p class="lede">A service credit is what an agreement says a vendor gives back when a service misses its uptime target. This guide quotes four agreements and shows where they differ. The vendor decides every claim. Not legal advice.</p>
   </div>
 <h2>What the agreements say a credit is</h2>
 <p>These are the credit clauses, copied word for word.</p>
 <h3><a href="../../sla/microsoft-365-exchange/">Microsoft: Exchange Online</a></h3>
 <blockquote><p>“Service Credit” is the percentage of the Applicable Service Fees credited to you following Microsoft’s claim approval.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
 <blockquote><p>“Applicable Service Fees” means the total fees actually paid by you for a Service that are applied to the Applicable Period in which a Service Credit is owed.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
-<h3><a href="../../sla/google-workspace/">Google: Google Workspace</a></h3>
+<h3><a href="../../sla/google-workspace/">Google Workspace</a></h3>
 <blockquote><p>“Days of Service added to the end of the Service term (for offline billing customers), or monetary credit equal to the value of days applied to a future invoice (for online billing customers), for the applicable Covered Service(s) that did not meet the Google Workspace SLA”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“Google Workspace Essentials Service Credit. If Customer orders Google Workspace Essentials edition directly from Google, any Service Credits that may be due to Customer will be issued in the form of monetary credits (and not additional Service days) that will be applied to Customer&#x27;s next invoice.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
-<h3><a href="../../sla/atlassian-cloud/">Atlassian: Atlassian Cloud</a></h3>
+<h3><a href="../../sla/atlassian-cloud/">Atlassian Cloud</a></h3>
 <blockquote><p>“If Atlassian confirms a failure to meet the Service Level Commitment, Atlassian will apply the Service Credit, which will be calculated as described in Appendix B, against a future payment due from Customer for the affected Cloud Product, provided that Customer’s account is fully paid up, without any overdue payments or disputes. No refunds or cash value will be given for unused Service Credits. Service Credits may not be transferred or applied to any other Atlassian account or Product. The aggregate maximum Service Credit applied to an invoice will not exceed 100% of the amount invoiced for the affected Cloud Product in that invoice billing period (which, since Service Credits are applied to future payments, is not the month in which the affected Cloud Product was unavailable).”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“Notes:* Percentage of the monthly fees attributed to the affected Eligible Cloud Product. The percentage of monthly fees attributable to an Eligible Cloud Product when purchased together with other Products under one SKU will be determined by Atlassian.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
-<h3><a href="../../sla/github-enterprise-cloud/">GitHub: GitHub Enterprise Cloud</a></h3>
+<h3><a href="../../sla/github-enterprise-cloud/">GitHub Enterprise Cloud</a></h3>
 <blockquote><p>“Service Credit” is the percentage of the Applicable Service Fees credited to Customer following GitHub’s claim approval.</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“Applicable Service Fees” means the total fees paid by Customer for a Service that are applied to the Applicable Period in which a Service Credit is owed.</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <h2>The tiers in each agreement</h2>
