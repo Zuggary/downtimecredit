@@ -18,6 +18,9 @@ def walk(x):
 import subprocess, tempfile
 _js = tempfile.NamedTemporaryFile("w", suffix=".js", delete=False); _js.write('load("%s"); print(JSON.stringify({a: FLIGHTS.AIRLINES, q: FLIGHTS.QUOTES, k: FLIGHTS.AIRLINE_KEYS}));' % os.path.join(ROOT, "flights", "flights.js")); _js.close()
 FL = json.loads(subprocess.run(["/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc", _js.name], capture_output=True, text=True).stdout); os.unlink(_js.name)
+import glob as _g
+for _f in _g.glob(os.path.join(ROOT, "refs", "tf6", "*.txt")):
+    pool.append(norm(open(_f, encoding="utf-8").read()))
 walk(vendors); walk(FL["q"]); walk([a.get("plan") for a in FL["a"].values() if a.get("plan")]); blob = "\n".join(pool)
 pages = []
 for d in ["sla", "guides", "flights/airlines"]:
@@ -46,10 +49,11 @@ for p in pages:
     ok("slack" not in s.lower(), rel + ": no Slack text")
     ok(not re.search(r"you are owed|guaranteed|legal advice\b(?!\.)|will be refunded", re.sub(r"<[^>]+>", " ", s), re.I) or "Not legal advice" in s, rel + ": careful wording")
     for q in re.findall(r"<blockquote[^>]*>(.*?)</blockquote>", s, re.S):
-        m = re.search(r"<p[^>]*>(.*?)</p>", q, re.S)
-        if not m: ok(False, rel + ": quote has no text"); continue
-        txt = norm(re.sub(r"<[^>]+>", "", m.group(1))).strip('" ')
-        ok(txt in blob, rel + ": quote is in the vendor files: " + txt[:60])
+        ms = re.findall(r"<p[^>]*>(.*?)</p>", q, re.S)
+        if not ms: ok(False, rel + ": quote has no text"); continue
+        for m1 in ms:
+            txt = norm(re.sub(r"<[^>]+>", "", m1)).strip('" ')
+            ok(txt in blob, rel + ": quote is in the source texts: " + txt[:60])
     ok(not re.search(r"<h[23][^>]*>[^<]*</h[23]>\s*<h[23]", s), rel + ": no heading directly followed by a heading")
 
 # AdSense site-ownership tag on every page; no ad script anywhere; airline pages held out of the first review

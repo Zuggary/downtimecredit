@@ -563,6 +563,18 @@ with sync_playwright() as pw:
     for btn, hid, want in [("#mode-g", "#g-time-h", "server-side error rate"), ("#mode-atlassian", "#g-time-h", "error rate above 5%"), ("#mode-github", "#g-time-h", "error rate exceeded 5%")]:
         m.click(btn); ok(want in m.inner_text(hid), f"10x: {btn} helper follows the quoted definition ({want})")
     m.close()
+    # TF6: the lien-sale guide helper runs in the browser and makes no request while it works
+    reqs = []
+    hp = ctxM.new_page(); hp.on("request", lambda r: reqs.append(r.url))
+    hp.goto(BASE.replace("index.html", "") + "guides/car-towed-lien-sale-money-california/"); hp.wait_for_selector("#h-go"); n0 = len(reqs)
+    hp.fill("#h-name", "Rivera, Ana M"); hp.fill("#h-addr", "12 Oak Street"); hp.fill("#h-city", "Fresno, CA 93701"); hp.fill("#h-plate", "7ABC123"); hp.fill("#h-vin", "4F2"); hp.fill("#h-amt", "1,250.00"); hp.fill("#h-email", "a@example.com"); hp.fill("#h-phone", "555-0100")
+    hp.click("#h-go"); txt = hp.input_value("#h-text")
+    ok("2. Name or company name: Rivera, Ana M" in txt and "8. Refund amount requested" in txt and "$1,250.00" in txt and "10. VIN/HIN (last 3 characters): 4F2" in txt and "12. License plate number: 7ABC123" in txt, "TF6: the helper puts the typed details on the DMV form items")
+    with hp.expect_download() as dlh: hp.click("#h-dl")
+    ok(dlh.value.suggested_filename == "lien-sale-refund-notes.txt", "TF6: the helper saves a text file")
+    ok(len(reqs) == n0, f"TF6: the helper made no network request while it ran ({len(reqs) - n0})")
+    ok("cannot look up" in hp.inner_text("main").lower(), "TF6: the page says it cannot look up a car")
+    hp.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")

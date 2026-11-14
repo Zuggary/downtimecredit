@@ -187,13 +187,15 @@ def guide_downtime():
                 body, [("how-service-credits-work", "How service credits work"), ("how-to-ask-for-a-service-credit", "How to ask for a service credit")])
 
 
+EXTRA_GUIDES = [("car-towed-lien-sale-money-california", "Car towed and sold at a lien sale? Money may be held for you", "California: where the leftover money goes, the three-year deadline, the DMV lookup and the steps to claim."),
+                ("lien-sale-surplus-other-states", "How states handle leftover money from lien sales", "The states checked so far against their statutes: where the money goes and how long a claim can wait.")]
 GUIDES = [("how-service-credits-work", "How service credits work", "What a credit is, how it is counted and what the vendor decides.", guide_credits),
           ("how-to-ask-for-a-service-credit", "How to ask for a service credit", "Six steps, the deadline in each agreement and where to send the request.", guide_ask),
           ("what-counts-as-downtime", "What counts as downtime", "How four vendors define downtime, and what each leaves out.", guide_downtime)]
 
 
 def index_page():
-    items = "".join(f'<li><a href="{s}/"><b>{esc(t)}</b></a><br><span class="fine">{esc(d)}</span></li>' for s, t, d, _ in GUIDES)
+    items = "".join(f'<li><a href="{s}/"><b>{esc(t)}</b></a><br><span class="fine">{esc(d)}</span></li>' for s, t, d in [(a, b, c) for a, b, c, _ in GUIDES] + EXTRA_GUIDES)
     canonical = f"{bp.SITE_ORIGIN}/guides/"
     return f"""<!doctype html>
 <html lang="en">
@@ -300,7 +302,7 @@ def about_page():
 
 
 def sitemap():
-    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/privacy.html"]
+    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + [f"/guides/{s}/" for s, *_ in EXTRA_GUIDES] + ["/flights/", "/privacy.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith(('/guides', '/flights/airlines/')) and p != '/flights/airlines/' else bp.LASTMOD}</lastmod></url>" for p in paths]
     return "\n".join(lines + ["</urlset>", ""])
