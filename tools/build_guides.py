@@ -188,6 +188,7 @@ def guide_downtime():
 
 
 EXTRA_GUIDES = [("car-towed-lien-sale-money-california", "Car towed and sold at a lien sale? Money may be held for you", "California: where the leftover money goes, the three-year deadline, the DMV lookup and the steps to claim."),
+                ("ask-the-tow-yard-where-the-money-went", "Ask the tow yard in writing where the money went", "A letter you can build in your browser, with the sentence from each state this site has checked."),
                 ("california-notice-of-pending-lien-sale", "Got a notice of pending lien sale? What it must say", "California: what the statute says the notice must contain, the 10-day window and a checklist."),
                 ("lien-sale-surplus-other-states", "How states handle leftover money from lien sales", "Seven states checked so far: where the money goes and how long a claim can wait.")]
 GUIDES = [("how-service-credits-work", "How service credits work", "What a credit is, how it is counted and what the vendor decides.", guide_credits),

@@ -302,7 +302,7 @@ def page_california():
   </ul>
   <p class="fine">Quotations are copied word for word from the source named under each. Text outside a quotation is this site's reading. The DMV decides every claim. This is not legal advice.</p>
   <h2>More</h2>
-  <ul class="clean"><li><a href="../lien-sale-surplus-other-states/">How other states handle lien-sale surplus</a></li><li><a href="../">All guides</a></li></ul>
+  <ul class="clean"><li><a href="../lien-sale-surplus-other-states/">How other states handle lien-sale surplus</a></li><li><a href="../ask-the-tow-yard-where-the-money-went/">Ask the tow yard in writing where the money went</a></li><li><a href="../">All guides</a></li></ul>
 """
     return shell("car-towed-lien-sale-money-california",
                  "Car towed and sold? Money may be held for you at the California DMV",
@@ -398,6 +398,8 @@ def page_states():
 
   <h2>Other states</h2>
   <p>Rules differ by state and by type of sale. If your car was sold in another state, search that state's motor vehicle agency for lien sale surplus, or ask the tow yard in writing where the leftover money went. We will add a state here after we read its statute.</p>
+
+  <p>Not sure where your money went? <a href="../ask-the-tow-yard-where-the-money-went/">Ask the tow yard in writing</a>.</p>
 
   <h2>What this site cannot do</h2>
   <ul class="clean">
@@ -508,10 +510,145 @@ def page_notice():
                  body)
 
 
+ASK_HELPER = r"""
+<section id="helper" aria-labelledby="h-help">
+  <h2 id="h-help">Write your letter</h2>
+  <p>This tool runs in your browser. Nothing you type is sent anywhere. It builds a letter you can print or copy. You send the letter yourself.</p>
+  <form id="hf" class="hform" novalidate>
+    <div class="f"><label for="a-name">Your name</label><input id="a-name" autocomplete="off"></div>
+    <div class="f"><label for="a-addr">Your mailing address</label><input id="a-addr" autocomplete="off"></div>
+    <div class="f"><label for="a-yard">Tow yard or lot name and address</label><input id="a-yard" autocomplete="off"></div>
+    <div class="f"><label for="a-car">Your vehicle (year, make, model)</label><input id="a-car" autocomplete="off" placeholder="e.g. 2009 Honda Civic"></div>
+    <div class="f"><label for="a-id">Plate number, or last 5 characters of the VIN</label><input id="a-id" autocomplete="off"></div>
+    <div class="f"><label for="a-towed">Date the car was towed, if you know it</label><input id="a-towed" autocomplete="off" placeholder="e.g. 3 March 2024"></div>
+    <div class="f"><label for="a-state">State where the car was towed and sold</label>
+      <select id="a-state"><option value="">Choose a state</option><option value="ca">California</option><option value="fl">Florida</option><option value="ga">Georgia</option><option value="mi">Michigan</option><option value="nv">Nevada</option><option value="pa">Pennsylvania</option><option value="wa">Washington</option><option value="other">Another state</option></select></div>
+    <button type="button" class="cta" id="a-go">Build my letter</button>
+  </form>
+  <div id="a-out" hidden>
+    <h3>Your letter</h3>
+    <p class="fine">Check every line before you send it. Keep a copy.</p>
+    <textarea id="a-text" readonly rows="26" aria-label="Your letter"></textarea>
+    <div class="cta-row"><button type="button" class="cta-sec" id="a-copy">Copy letter</button><button type="button" class="cta-sec" id="a-dl">Save as a text file</button><button type="button" class="cta-sec" id="a-print">Print</button></div>
+  </div>
+</section>
+<script>
+(function () {
+  "use strict";
+  function v(id) { var e = document.getElementById(id); return e ? e.value.replace(/\s+/g, " ").trim() : ""; }
+  function f(x, hint) { return x || "[" + hint + "]"; }
+  var LAW = {
+    ca: "I understand that California Civil Code section 3073 provides that, after the lien and a capped processing cost are paid, the balance of the sale money is forwarded to the Department of Motor Vehicles.",
+    fl: "I understand that Florida Statutes section 713.78 provides that the proceeds of the sale, after payment of reasonable towing and storage charges and costs of the sale, are deposited with the clerk of the circuit court if the owner or lienholder is absent.",
+    ga: "I understand that the Georgia Department of Revenue says a business that sold an abandoned or unclaimed vehicle at public sale under a court order must remit the remaining proceeds to the Department of Revenue.",
+    mi: "I understand that Michigan Compiled Laws section 257.252g provides that any extra money from a public sale of this kind is sent to the Department of Treasury's unclaimed property division.",
+    nv: "I understand that the Nevada lien statutes provide that the balance of the sale proceeds must be delivered, on demand, to the person entitled to it.",
+    pa: "I understand that 75 Pennsylvania Consolidated Statutes section 7308 provides that, after the salvor's costs, the remainder of the proceeds of a sale of an abandoned vehicle is paid to the department and transmitted to the State Treasurer.",
+    wa: "I understand that Revised Code of Washington 46.55.130 provides that surplus money from a registered tow truck operator's auction is remitted within thirty days to the department of licensing."
+  };
+  function build() {
+    var L = [], st = v("a-state");
+    L.push("[Date]");
+    L.push("");
+    L.push(f(v("a-yard"), "Tow yard or lot name and address"));
+    L.push("");
+    L.push("Re: " + f(v("a-car"), "vehicle") + ", plate or VIN " + f(v("a-id"), "plate or last 5 of VIN") + ", towed " + f(v("a-towed"), "date towed"));
+    L.push("");
+    L.push("To whom it may concern:");
+    L.push("");
+    L.push("I am writing about the vehicle above, which I understand was towed to your lot and later sold. Please send me, in writing:");
+    L.push("1. The date and place of the sale, and the price it sold for.");
+    L.push("2. An itemized statement of the amount you say was owed: towing, storage (with the daily rate and the dates), processing or preparation fees, and any other charge.");
+    L.push("3. How the sale money was applied to those charges.");
+    L.push("4. Whether any money was left after the charges, and if so the amount, the date it was sent, and the name and address of the agency, court or person it was sent to.");
+    L.push("5. Copies of the notices you sent about the sale, with the addresses you used and the proof of mailing.");
+    L.push("");
+    if (LAW[st]) { L.push(LAW[st]); L.push(""); }
+    L.push("Please reply to the address below.");
+    L.push("");
+    L.push("Sincerely,");
+    L.push(f(v("a-name"), "Your name"));
+    L.push(f(v("a-addr"), "Your mailing address"));
+    return L.join("\n");
+  }
+  var go = document.getElementById("a-go"), out = document.getElementById("a-out"), ta = document.getElementById("a-text");
+  if (!go) { return; }
+  go.addEventListener("click", function () { ta.value = build(); out.hidden = false; ta.scrollTop = 0; });
+  document.getElementById("a-copy").addEventListener("click", function () { ta.focus(); ta.select(); try { if (navigator.clipboard) { navigator.clipboard.writeText(ta.value); } else { document.execCommand("copy"); } } catch (e) { document.execCommand("copy"); } });
+  document.getElementById("a-dl").addEventListener("click", function () {
+    var b = new Blob([ta.value], { type: "text/plain" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(b); a.download = "letter-to-tow-yard.txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  });
+  document.getElementById("a-print").addEventListener("click", function () { window.print(); });
+}());
+</script>
+"""
+
+
+def page_ask():
+    body = f"""
+  <div class="callout">
+    <p><b>Start here.</b> If your car was sold and you never heard where the leftover money went, you can ask the tow yard in writing. The tool below builds the letter.</p>
+    <p class="fine">This site cannot look up your car or send anything for you. It is information, not legal advice. In California, also use <a href="../car-towed-lien-sale-money-california/">the DMV lookup</a>.</p>
+  </div>
+
+  <h2>Why ask in writing</h2>
+  <p>A written request gives you a record. It asks the tow yard for the facts you need: what it charged, what the car sold for, and whether any money was left over and where it went. The laws this site has read say leftover money goes to an agency, a court clerk or the person entitled, depending on the state.</p>
+  <p>The <a href="../lien-sale-surplus-other-states/">states page</a> shows the sentence for each state this site has checked: California, Florida, Georgia, Michigan, Nevada, Pennsylvania and Washington. The letter uses a short plain-words version of that sentence for the state you choose. Which sentence applies depends on the kind of sale. The yard's answer will show which kind it was.</p>
+
+  <h2>What the letter asks for</h2>
+  <ul class="clean">
+    <li>The date and place of the sale, and the price.</li>
+    <li>An itemized statement of the charges: towing, storage with the daily rate and dates, processing fees and any other charge.</li>
+    <li>How the sale money was applied.</li>
+    <li>Whether money was left over, the amount, the date it was sent and to whom.</li>
+    <li>Copies of the notices, the addresses used and proof of mailing.</li>
+  </ul>
+
+{ASK_HELPER}
+
+  <h2>After you send it</h2>
+  <ul class="clean">
+    <li>This site's suggestion: send it by a method that gives you a receipt, such as certified mail with return receipt, and keep a copy.</li>
+    <li>If the yard names an agency that holds the money, ask that agency how to claim. In California, the claim steps are in <a href="../car-towed-lien-sale-money-california/">the California guide</a>.</li>
+    <li>If a notice arrived before the sale, see <a href="../california-notice-of-pending-lien-sale/">what a California notice must say</a>.</li>
+    <li>If the yard does not answer, or the answers do not add up, a lawyer or a legal aid office can tell you your options. This site cannot.</li>
+  </ul>
+
+  <h2>What this site cannot do</h2>
+  <ul class="clean">
+    <li>It cannot check whether money is held for your car.</li>
+    <li>It does not send the letter. You send it.</li>
+    <li>It cannot promise that the yard will answer or that money was left over.</li>
+    <li>It is not a law firm. This page is information, not legal advice.</li>
+  </ul>
+
+  <h2>Sources</h2>
+  <ul class="clean">
+    <li><a href="{CIV3073}" rel="noopener">California Civil Code \u00a73073</a>, read {READ}</li>
+    <li><a href="{FL_URL}" rel="noopener">Florida Statutes \u00a7713.78</a>, read {READ}</li>
+    <li><a href="{GA_URL}" rel="noopener">Georgia Department of Revenue page</a>, read {READ}</li>
+    <li><a href="{MI_URL}" rel="noopener">Michigan Compiled Laws \u00a7257.252g</a>, read {READ}</li>
+    <li><a href="{NV_URL}" rel="noopener">Nevada Revised Statutes chapter 108</a>, read {READ}</li>
+    <li><a href="{PA_URL}" rel="noopener">75 Pennsylvania Consolidated Statutes \u00a77308</a>, read {READ}</li>
+    <li><a href="{WA_RCW}" rel="noopener">Revised Code of Washington 46.55.130</a>, read {READ}</li>
+  </ul>
+  <p class="fine">The state sentences in the letter are short plain-words versions of those sources, shown with their exact words on the states page. This is not legal advice.</p>
+"""
+    return shell("ask-the-tow-yard-where-the-money-went",
+                 "Car sold by a tow yard? Ask in writing where the money went",
+                 "A letter template for asking a tow yard what your car sold for, what it charged and where any leftover money went, with a state-by-state sentence from the laws this site has read.",
+                 "Ask the tow yard in writing where the money went",
+                 "If your car was sold and you never heard about leftover money, you can ask the tow yard for the facts in writing. This tool builds the letter in your browser.",
+                 body)
+
+
 def main():
     bp.write_if_changed(ROOT / "guides" / "car-towed-lien-sale-money-california" / "index.html", page_california())
     bp.write_if_changed(ROOT / "guides" / "lien-sale-surplus-other-states" / "index.html", page_states())
     bp.write_if_changed(ROOT / "guides" / "california-notice-of-pending-lien-sale" / "index.html", page_notice())
+    bp.write_if_changed(ROOT / "guides" / "ask-the-tow-yard-where-the-money-went" / "index.html", page_ask())
     print("Built 2 surplus guides.")
 
 

@@ -580,6 +580,16 @@ with sync_playwright() as pw:
     sp.select_option("#st-pick", "s-florida"); ok("Florida" in sp.inner_text("#st-msg") and sp.evaluate("document.activeElement.id") == "s-florida", "TF6: the picker goes to the Florida section")
     sp.select_option("#st-pick", "other"); ok("not checked your state yet" in sp.inner_text("#st-msg"), "TF6: the picker says an unchecked state is unchecked")
     sp.close()
+    # TF6: the tow yard letter builder runs in the browser, makes no request and adds the chosen state's sentence
+    reqs2 = []
+    ap = ctxM.new_page(); ap.on("request", lambda r: reqs2.append(r.url))
+    ap.goto(BASE.replace("index.html", "") + "guides/ask-the-tow-yard-where-the-money-went/"); ap.wait_for_selector("#a-go"); m0 = len(reqs2)
+    ap.fill("#a-name", "Rivera, Ana"); ap.fill("#a-yard", "Ace Towing, 1 Main St"); ap.fill("#a-car", "2009 Honda Civic"); ap.fill("#a-id", "7ABC123"); ap.select_option("#a-state", "fl"); ap.click("#a-go")
+    lt = ap.input_value("#a-text")
+    ok("Florida Statutes section 713.78" in lt and "Ace Towing, 1 Main St" in lt and "2009 Honda Civic" in lt and "Rivera, Ana" in lt and "itemized statement" in lt, "TF6: the letter holds the typed details and the state sentence")
+    ap.select_option("#a-state", "other"); ap.click("#a-go"); ok("I understand that" not in ap.input_value("#a-text"), "TF6: no state sentence for an unchecked state")
+    ok(len(reqs2) == m0, f"TF6: the letter builder made no network request ({len(reqs2) - m0})")
+    ap.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
