@@ -188,6 +188,7 @@ def guide_downtime():
 
 
 EXTRA_GUIDES = [("car-towed-lien-sale-money-california", "Car towed and sold at a lien sale? Money may be held for you", "California: where the leftover money goes, the three-year deadline, the DMV lookup and the steps to claim."),
+                ("final-paycheck-deadlines", "Final paycheck deadlines in six states", "When final wages are due in California, Michigan, New York, North Carolina, Texas and Washington, and a letter to ask."),
                 ("security-deposit-return-deadlines", "Security deposit return deadlines in seven states", "The main return rule in California, Florida, Michigan, New York, North Carolina, Ohio and Texas, and a letter to ask."),
                 ("unclaimed-property-by-state", "Unclaimed property: where to search in ten large states", "The official search for California, Florida, Georgia, Illinois, Michigan, New York, North Carolina, Ohio, Pennsylvania and Texas, and what each says."),
                 ("ask-the-tow-yard-where-the-money-went", "Ask the tow yard in writing where the money went", "A letter you can build in your browser, with the sentence from each of the ten states this site has checked."),

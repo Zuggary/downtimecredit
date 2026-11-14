@@ -607,6 +607,17 @@ with sync_playwright() as pw:
     dp.select_option("#d-state", "other"); dp.click("#d-go"); ok("I understand that" not in dp.input_value("#d-text"), "TF7: no state sentence for an unchecked state")
     ok(len(reqs3) == k0, f"TF7: the deposit letter builder made no network request ({len(reqs3) - k0})")
     dp.close()
+    # TF7-C: the final pay letter builder runs in the browser, makes no request, and picks the sentence by how the job ended
+    reqs4 = []
+    pp = ctxM.new_page(); pp.on("request", lambda r: reqs4.append(r.url))
+    pp.goto(BASE.replace("index.html", "") + "guides/final-paycheck-deadlines/"); pp.wait_for_selector("#p-go"); z0 = len(reqs4)
+    pp.fill("#p-name", "Rivera, Ana"); pp.fill("#p-emp", "Acme Co, 1 Main St"); pp.fill("#p-end", "14 March 2026"); pp.select_option("#p-how", "discharged"); pp.select_option("#p-state", "tx"); pp.click("#p-go")
+    pt = pp.input_value("#p-text")
+    ok("sixth day after the date of discharge" in pt and "Acme Co, 1 Main St" in pt and "14 March 2026" in pt, "TF7: the pay letter picks the discharge sentence for Texas")
+    pp.select_option("#p-how", "quit"); pp.click("#p-go"); ok("next regularly scheduled payday" in pp.input_value("#p-text"), "TF7: the pay letter picks the quit sentence for Texas")
+    pp.select_option("#p-state", "other"); pp.click("#p-go"); ok("I understand that" not in pp.input_value("#p-text"), "TF7: no state sentence for an unchecked state")
+    ok(len(reqs4) == z0, f"TF7: the pay letter builder made no network request ({len(reqs4) - z0})")
+    pp.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
