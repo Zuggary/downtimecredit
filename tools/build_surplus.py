@@ -205,6 +205,23 @@ def page_california():
     <p class="fine">This site cannot look up your car and does not see what you type at the DMV. The DMV decides every claim. This page is information, not legal advice.</p>
   </div>
 
+  <h2>Steps</h2>
+  <ol>
+    <li><b>Find your plate number or VIN.</b> Use the plate or VIN of the car that was towed. The lookup takes the plate number, or the last 5 digits of the VIN.</li>
+    <li><b>Use the DMV lookup.</b> The DMV describes what it does.</li>
+  </ol>
+  {Q8}
+  {QSTEPS}
+  <ol start="3">
+    <li><b>Follow the steps the lookup shows.</b> When the lookup finds your car, it shows the date of sale, the amount and the date fees were paid, and tells you what to do. The DMV's results page says this:</li>
+    <li><b>Open the form and read its instructions.</b> <a href="{DMV_FORM}" rel="noopener">Application for Refund (ADM 399), PDF</a>. Collect the documents in the checklist below.</li>
+    <li><b>Sign the form yourself and mail it as the DMV's results page says.</b> The address is in the DMV's steps above. The form itself also allows you to submit it at a DMV office.</li>
+    <li><b>Wait for the DMV to decide.</b> The DMV decides every claim. The form says you will be told what it decided.</li>
+  </ol>
+  {Q9}
+  <p>Questions the page does not answer go to the DMV Lien Sale Unit.</p>
+  {Q10}
+
   <h2>What happens to the money after a lien sale</h2>
   <p>A tow yard or storage lot that is owed money on a vehicle can sell it at a lien sale. Civil Code §3073 says where the sale money goes.</p>
   {Q0}
@@ -224,23 +241,6 @@ def page_california():
   {Q6}
   {Q7}
   <p>This site's reading: the lienholder must forward the money within 5 or 15 days of the sale, so the two counts are close. Plan on three years from the sale date, and do not wait. The statute says the DMV does not honor a late claim. The DMV's general refund form also says it will not honor a refund request received more than three years after the DMV received the payment.</p>
-
-  <h2>Steps</h2>
-  <ol>
-    <li><b>Find your plate number or VIN.</b> Use the plate or VIN of the car that was towed. The lookup takes the plate number, or the last 5 digits of the VIN.</li>
-    <li><b>Use the DMV lookup.</b> The DMV describes what it does.</li>
-  </ol>
-  {Q8}
-  {QSTEPS}
-  <ol start="3">
-    <li><b>Follow the steps the lookup shows.</b> When the lookup finds your car, it shows the date of sale, the amount and the date fees were paid, and tells you what to do. The DMV's results page says this:</li>
-    <li><b>Open the form and read its instructions.</b> <a href="{DMV_FORM}" rel="noopener">Application for Refund (ADM 399), PDF</a>. Collect the documents in the checklist below.</li>
-    <li><b>Sign the form yourself and mail it as the DMV's results page says.</b> The address is in the DMV's steps above. The form itself also allows you to submit it at a DMV office.</li>
-    <li><b>Wait for the DMV to decide.</b> The DMV decides every claim. The form says you will be told what it decided.</li>
-  </ol>
-  {Q9}
-  <p>Questions the page does not answer go to the DMV Lien Sale Unit.</p>
-  {Q10}
 
   <h2>Documents checklist</h2>
   <p>This list follows what the DMV's refund form asks for, plus some suggestions from this site. The DMV's steps say to mail the form with supporting documentation. The form's own instructions list proof the DMV may ask for, such as proof of payment and receipts. The DMV Lien Sale Unit can say which proof applies to your refund.</p>
