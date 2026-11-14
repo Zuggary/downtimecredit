@@ -112,8 +112,8 @@ def shared_css(font_prefix: str) -> str:
     .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] {{ display: block; width: 100%; min-width: 0; }}
     .table-wrap thead {{ display: none; }}
     .table-wrap tr {{ padding: 12px 14px; border-bottom: 1px solid var(--hairline); }}
-    .table-wrap td {{ display: flex; justify-content: space-between; gap: 14px; padding: 4px 0; border: 0; text-align: right; }}
-    .table-wrap td::before {{ content: attr(data-label); font-weight: 700; text-align: left; flex: 0 0 40%; }}
+    .table-wrap td {{ display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }}
+    .table-wrap td::before {{ content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }}
     .table-wrap th[scope=row] {{ padding: 0 0 4px; border: 0; }}
     .table-wrap {{ overflow-x: visible; }}
   }}
