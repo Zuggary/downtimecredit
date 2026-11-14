@@ -95,8 +95,11 @@ def page(a):
   <p>The Department of Transportation says this about refunds, and about asking.</p>
   {refund}
   {ask}
-  <h2>Source</h2>
-  <ul class="clean"><li><a href="{esc(D["u"])}" rel="noopener">US Department of Transportation, Airline Cancellation and Delay Dashboard</a>, last updated {esc(D["d"])}, read {esc(D["r"])}</li><li><a href="{esc(a["link"])}" rel="noopener">{esc(name)} customer service plan</a></li></ul>
+  <h2>Sources and when we read them</h2>
+  <div class="table-wrap keep" tabindex="0" role="region" aria-label="Sources and dates read"><table><thead><tr><th scope="col">Source</th><th scope="col">Dated</th><th scope="col">Last read</th></tr></thead><tbody>
+    <tr><th scope="row"><a href="{esc(D["u"])}" rel="noopener">US Department of Transportation, Airline Cancellation and Delay Dashboard</a></th><td>{esc(D["d"])}</td><td>{esc(D["r"])}</td></tr>
+    <tr><th scope="row"><a href="{esc(a["link"])}" rel="noopener">{esc(name)} customer service plan</a></th><td>{"Not stated on the page" if plan else "Not read"}</td><td>{esc(D["r"]) if plan else "Not read by this site"}</td></tr>
+  </tbody></table></div>
   <p class="fine">Quotations are copied word for word. Everything else is this site's reading. An airline decides what it pays. This is not legal advice.</p>
   <h2>Other airlines</h2>
   <ul class="clean">{others}</ul>

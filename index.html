@@ -191,6 +191,19 @@
   /* Hero & Mode Selector */
   .hero { display: grid; gap: var(--s5); padding-top: 16px; padding-bottom: var(--s6); }
   .intro { min-width: 0; }
+  /* Phones: the tool comes first. Heading, vendor chips, the short eligibility line, then the statement with its result on top, then the deadline. */
+  @media (max-width: 767px) {
+    .hero { gap: var(--s3); }
+    .intro { display: contents; }
+    .intro > h1 { order: 1; font-size: 30px; line-height: 1.1; margin: 0; }
+    .intro > .lede, .intro > .need { display: none; }
+    .intro > .pick { order: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .intro > .pick button:last-child { grid-column: 1 / -1; }
+    .intro > .cue { order: 3; margin: 0; font-size: 15px; }
+    .panels { order: 4; }
+    .intro > .cd { order: 5; }
+    .intro > .outline { order: 6; }
+  }
   .panels { min-width: 0; }
   h1 {
     font: 400 38px/1.05 var(--head);
@@ -260,15 +273,6 @@
   .cue span[id$="-body"] { display: contents; }   /* a plain wrapper for the script; no box of its own */
   .outline { display: none; }
 
-  @media (max-width: 767px) {
-    .intro { display: flex; flex-direction: column; }
-    .intro h1 { order: 1; }
-    .intro .lede { order: 2; }
-    .intro #need { order: 3; }
-    .intro .pick { order: 4; }
-    .intro .cd { order: 5; margin-top: var(--s2); margin-bottom: var(--s3); }
-    .intro .cue { order: 6; }
-  }
 
   /* Pure Typographic Deadline Block */
   .cd { margin: 0 0 var(--s4); max-width: 40em; }

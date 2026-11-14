@@ -60,7 +60,7 @@ with sync_playwright() as pw:
     ok(not re.search(r"(^|\s)(0|-|\u2013)(\s|$)", p.inner_text("#result")), "empty: no 0 or dash that reads as a value")
     ok("Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in p.inner_text("#dl-box"), "deadline: the one sentence")
     ok("Last checked 12 November 2026" in p.inner_text("#st-source") and "Check it against your invoice" in p.inner_text("#st-source"), "source and last-checked date beside the result")
-    ok("You need four numbers" in p.inner_text(".intro") and "Does this apply to us? Possibly" in p.inner_text(".intro") and "minutes" not in p.inner_text("#need"), "hero: what you need, and who it applies to")
+    ok("You need four numbers" in p.text_content(".intro") and "Does this apply to us? Possibly" in p.text_content(".intro") and "minutes" not in p.text_content("#need"), "hero: what you need, and who it applies to")
     ok("Not run by or linked to Microsoft or any vendor" in p.inner_text(".trustbar"), "the bar says not linked to any vendor")
     ok("Thursday 31 December 2026" in p.inner_text("#dl-date"), "deadline full date")
     ok(re.match(r"\d+ days left to send it\.", p.inner_text("#dl-days")) is not None, "days left shown")
