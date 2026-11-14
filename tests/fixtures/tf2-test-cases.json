@@ -1,0 +1,1599 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 30000,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 840
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 42000,
+        "uptime_pct": "98.0555",
+        "tier": 50,
+        "credit_cents": 15000
+      }
+    },
+    {
+      "id": 2,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 72000,
+        "uptime_pct": "96.6666",
+        "tier": 50,
+        "credit_cents": 31250
+      }
+    },
+    {
+      "id": 3,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 180000,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2160
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 108000,
+        "uptime_pct": "95.0000",
+        "tier": 50,
+        "credit_cents": 90000
+      }
+    },
+    {
+      "id": 4,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 180000,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2161
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 108050,
+        "uptime_pct": "94.9976",
+        "tier": 100,
+        "credit_cents": 180000
+      }
+    },
+    {
+      "id": 5,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 30000,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 432
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 21600,
+        "uptime_pct": "99.0000",
+        "tier": 25,
+        "credit_cents": 7500
+      }
+    },
+    {
+      "id": 6,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 30000,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 433
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 21650,
+        "uptime_pct": "98.9976",
+        "tier": 50,
+        "credit_cents": 15000
+      }
+    },
+    {
+      "id": 7,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 43
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 2150,
+        "uptime_pct": "99.9004",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 8,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 30000,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 44
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 2200,
+        "uptime_pct": "99.8981",
+        "tier": 25,
+        "credit_cents": 7500
+      }
+    },
+    {
+      "id": 9,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 5000,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 5,
+            "down_minutes": 43200
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 216000000,
+        "downtime_user_minutes": 216000,
+        "uptime_pct": "99.9000",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 10,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 5000,
+        "fee_cents": 100000,
+        "groups": [
+          {
+            "affected_users": 6,
+            "down_minutes": 43200
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 216000000,
+        "downtime_user_minutes": 259200,
+        "uptime_pct": "99.8800",
+        "tier": 25,
+        "credit_cents": 25000
+      }
+    },
+    {
+      "id": 11,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 10,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 14400,
+        "uptime_pct": "99.3333",
+        "tier": 25,
+        "credit_cents": 15625
+      }
+    },
+    {
+      "id": 12,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 1440,
+        "uptime_pct": "99.9333",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 13,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 1
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 1,
+        "uptime_pct": "99.9976",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 14,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 600,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 1440,
+        "uptime_pct": "96.6666",
+        "tier": 50,
+        "credit_cents": 300
+      }
+    },
+    {
+      "id": 15,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 1,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 1440,
+        "uptime_pct": "96.6666",
+        "tier": 50,
+        "credit_cents": 1
+      }
+    },
+    {
+      "id": 16,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 1251,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 1440,
+        "uptime_pct": "96.6666",
+        "tier": 50,
+        "credit_cents": 626
+      }
+    },
+    {
+      "id": 17,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 1250,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 100
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 100,
+        "uptime_pct": "99.7685",
+        "tier": 25,
+        "credit_cents": 313
+      }
+    },
+    {
+      "id": 18,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 2,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 100
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 100,
+        "uptime_pct": "99.7685",
+        "tier": 25,
+        "credit_cents": 1
+      }
+    },
+    {
+      "id": 19,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 1,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 100
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 100,
+        "uptime_pct": "99.7685",
+        "tier": 25,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 20,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 0,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 1440
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 72000,
+        "uptime_pct": "96.6666",
+        "tier": 50,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 21,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 43200
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 2160000,
+        "uptime_pct": "0.0000",
+        "tier": 100,
+        "credit_cents": 62500
+      }
+    },
+    {
+      "id": 22,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 20,
+            "down_minutes": 960
+          },
+          {
+            "affected_users": 30,
+            "down_minutes": 240
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 26400,
+        "uptime_pct": "98.7777",
+        "tier": 50,
+        "credit_cents": 31250
+      }
+    },
+    {
+      "id": 23,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 25,
+            "down_minutes": 432
+          },
+          {
+            "affected_users": 25,
+            "down_minutes": 432
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 21600,
+        "uptime_pct": "99.0000",
+        "tier": 25,
+        "credit_cents": 15625
+      }
+    },
+    {
+      "id": 24,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 25,
+            "down_minutes": 432
+          },
+          {
+            "affected_users": 25,
+            "down_minutes": 433
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 21625,
+        "uptime_pct": "98.9988",
+        "tier": 50,
+        "credit_cents": 31250
+      }
+    },
+    {
+      "id": 25,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 0,
+            "down_minutes": 0
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 0,
+        "uptime_pct": "100.0000",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 26,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2160
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2232000,
+        "downtime_user_minutes": 108000,
+        "uptime_pct": "95.1612",
+        "tier": 50,
+        "credit_cents": 31250
+      }
+    },
+    {
+      "id": 27,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2232
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2232000,
+        "downtime_user_minutes": 111600,
+        "uptime_pct": "95.0000",
+        "tier": 50,
+        "credit_cents": 31250
+      }
+    },
+    {
+      "id": 28,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2233
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2232000,
+        "downtime_user_minutes": 111650,
+        "uptime_pct": "94.9977",
+        "tier": 100,
+        "credit_cents": 62500
+      }
+    },
+    {
+      "id": 29,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2016
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2016000,
+        "downtime_user_minutes": 100800,
+        "uptime_pct": "95.0000",
+        "tier": 50,
+        "credit_cents": 31250
+      }
+    },
+    {
+      "id": 30,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2017
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2016000,
+        "downtime_user_minutes": 100850,
+        "uptime_pct": "94.9975",
+        "tier": 100,
+        "credit_cents": 62500
+      }
+    },
+    {
+      "id": 31,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 120000,
+        "fee_cents": 432000000,
+        "groups": [
+          {
+            "affected_users": 120000,
+            "down_minutes": 1423
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 5184000000,
+        "downtime_user_minutes": 170760000,
+        "uptime_pct": "96.7060",
+        "tier": 50,
+        "credit_cents": 216000000
+      }
+    },
+    {
+      "id": 32,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 300,
+        "fee_cents": 123456789,
+        "groups": [
+          {
+            "affected_users": 300,
+            "down_minutes": 200
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 12960000,
+        "downtime_user_minutes": 60000,
+        "uptime_pct": "99.5370",
+        "tier": 25,
+        "credit_cents": 30864197
+      }
+    },
+    {
+      "id": 33,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 1,
+        "fee_cents": 20678852,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 59
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 40320,
+        "downtime_user_minutes": 59,
+        "uptime_pct": "99.8536",
+        "tier": 25,
+        "credit_cents": 5169713
+      }
+    },
+    {
+      "id": 34,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 300,
+        "fee_cents": 274,
+        "groups": [
+          {
+            "affected_users": 94,
+            "down_minutes": 3026
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 12528000,
+        "downtime_user_minutes": 284444,
+        "uptime_pct": "97.7295",
+        "tier": 50,
+        "credit_cents": 137
+      }
+    },
+    {
+      "id": 35,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 4999,
+        "fee_cents": 851,
+        "groups": [
+          {
+            "affected_users": 1766,
+            "down_minutes": 1811
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 201559680,
+        "downtime_user_minutes": 3198226,
+        "uptime_pct": "98.4132",
+        "tier": 50,
+        "credit_cents": 426
+      }
+    },
+    {
+      "id": 36,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 300,
+        "fee_cents": 58029696,
+        "groups": [
+          {
+            "affected_users": 24,
+            "down_minutes": 2919
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 12528000,
+        "downtime_user_minutes": 70056,
+        "uptime_pct": "99.4408",
+        "tier": 25,
+        "credit_cents": 14507424
+      }
+    },
+    {
+      "id": 37,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 50,
+        "fee_cents": 25927390,
+        "groups": [
+          {
+            "affected_users": 20,
+            "down_minutes": 14920
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2088000,
+        "downtime_user_minutes": 298400,
+        "uptime_pct": "85.7088",
+        "tier": 100,
+        "credit_cents": 25927390
+      }
+    },
+    {
+      "id": 38,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 3,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 1,
+            "down_minutes": 47
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 125280,
+        "downtime_user_minutes": 47,
+        "uptime_pct": "99.9624",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 39,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 300,
+        "fee_cents": 259,
+        "groups": [
+          {
+            "affected_users": 268,
+            "down_minutes": 12063
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 12960000,
+        "downtime_user_minutes": 3232884,
+        "uptime_pct": "75.0549",
+        "tier": 100,
+        "credit_cents": 259
+      }
+    },
+    {
+      "id": 40,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 3,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 2,
+            "down_minutes": 37
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 133920,
+        "downtime_user_minutes": 74,
+        "uptime_pct": "99.9447",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 41,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 7,
+        "fee_cents": 32534693,
+        "groups": [
+          {
+            "affected_users": 7,
+            "down_minutes": 3227
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 292320,
+        "downtime_user_minutes": 22589,
+        "uptime_pct": "92.2725",
+        "tier": 100,
+        "credit_cents": 32534693
+      }
+    },
+    {
+      "id": 42,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 25,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 2,
+            "down_minutes": 49
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 1080000,
+        "downtime_user_minutes": 98,
+        "uptime_pct": "99.9909",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 43,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 7,
+        "fee_cents": 181,
+        "groups": [
+          {
+            "affected_users": 5,
+            "down_minutes": 573
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 282240,
+        "downtime_user_minutes": 2865,
+        "uptime_pct": "98.9849",
+        "tier": 50,
+        "credit_cents": 91
+      }
+    },
+    {
+      "id": 44,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 7,
+        "fee_cents": 906,
+        "groups": [
+          {
+            "affected_users": 4,
+            "down_minutes": 13226
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 312480,
+        "downtime_user_minutes": 52904,
+        "uptime_pct": "83.0696",
+        "tier": 100,
+        "credit_cents": 906
+      }
+    },
+    {
+      "id": 45,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 1,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 0,
+            "down_minutes": 52
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 41760,
+        "downtime_user_minutes": 0,
+        "uptime_pct": "100.0000",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 46,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 3,
+        "fee_cents": 310778,
+        "groups": [
+          {
+            "affected_users": 3,
+            "down_minutes": 30932
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 125280,
+        "downtime_user_minutes": 92796,
+        "uptime_pct": "25.9291",
+        "tier": 100,
+        "credit_cents": 310778
+      }
+    },
+    {
+      "id": 47,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 1,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 0,
+            "down_minutes": 8000
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 44640,
+        "downtime_user_minutes": 0,
+        "uptime_pct": "100.0000",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 48,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 25,
+        "fee_cents": 395,
+        "groups": [
+          {
+            "affected_users": 25,
+            "down_minutes": 47
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 1008000,
+        "downtime_user_minutes": 1175,
+        "uptime_pct": "99.8834",
+        "tier": 25,
+        "credit_cents": 99
+      }
+    },
+    {
+      "id": 49,
+      "inputs": {
+        "days_in_month": 31,
+        "all_users": 300,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 161,
+            "down_minutes": 30
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 13392000,
+        "downtime_user_minutes": 4830,
+        "uptime_pct": "99.9639",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 50,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 300,
+        "fee_cents": 230633,
+        "groups": [
+          {
+            "affected_users": 5,
+            "down_minutes": 16760
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 12528000,
+        "downtime_user_minutes": 83800,
+        "uptime_pct": "99.3310",
+        "tier": 25,
+        "credit_cents": 57658
+      }
+    },
+    {
+      "id": 51,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 7,
+        "fee_cents": 28311728,
+        "groups": [
+          {
+            "affected_users": 6,
+            "down_minutes": 32801
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 292320,
+        "downtime_user_minutes": 196806,
+        "uptime_pct": "32.6744",
+        "tier": 100,
+        "credit_cents": 28311728
+      }
+    },
+    {
+      "id": 52,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 25,
+        "fee_cents": 448033,
+        "groups": [
+          {
+            "affected_users": 21,
+            "down_minutes": 1217
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 1044000,
+        "downtime_user_minutes": 25557,
+        "uptime_pct": "97.5520",
+        "tier": 50,
+        "credit_cents": 224017
+      }
+    },
+    {
+      "id": 53,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 4999,
+        "fee_cents": 570,
+        "groups": [
+          {
+            "affected_users": 1735,
+            "down_minutes": 1119
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 201559680,
+        "downtime_user_minutes": 1941465,
+        "uptime_pct": "99.0367",
+        "tier": 25,
+        "credit_cents": 143
+      }
+    },
+    {
+      "id": 54,
+      "inputs": {
+        "days_in_month": 28,
+        "all_users": 3,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 3,
+            "down_minutes": 3
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 120960,
+        "downtime_user_minutes": 9,
+        "uptime_pct": "99.9925",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 55,
+      "inputs": {
+        "days_in_month": 29,
+        "all_users": 50,
+        "fee_cents": 336,
+        "groups": [
+          {
+            "affected_users": 35,
+            "down_minutes": 2688
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2088000,
+        "downtime_user_minutes": 94080,
+        "uptime_pct": "95.4942",
+        "tier": 50,
+        "credit_cents": 168
+      }
+    },
+    {
+      "id": 56,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 33,
+            "down_minutes": 10
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 2160000,
+        "downtime_user_minutes": 330,
+        "uptime_pct": "99.9847",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 57,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 1,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 0,
+            "down_minutes": 1082
+          }
+        ]
+      },
+      "expected": {
+        "user_minutes": 43200,
+        "downtime_user_minutes": 0,
+        "uptime_pct": "100.0000",
+        "tier": 0,
+        "credit_cents": 0
+      }
+    },
+    {
+      "id": 58,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 51,
+            "down_minutes": 60
+          }
+        ]
+      },
+      "expected": {
+        "error": "affected exceed all users"
+      }
+    },
+    {
+      "id": 59,
+      "inputs": {
+        "days_in_month": 30,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 10,
+            "down_minutes": 43201
+          }
+        ]
+      },
+      "expected": {
+        "error": "time down exceeds the month"
+      }
+    },
+    {
+      "id": 60,
+      "inputs": {
+        "days_in_month": 27,
+        "all_users": 50,
+        "fee_cents": 62500,
+        "groups": [
+          {
+            "affected_users": 10,
+            "down_minutes": 60
+          }
+        ]
+      },
+      "expected": {
+        "error": "bad input"
+      }
+    }
+  ],
+  "deadline_cases": [
+    {
+      "incident_year": 2026,
+      "incident_month": 11,
+      "expected": "2026-12-31"
+    },
+    {
+      "incident_year": 2026,
+      "incident_month": 12,
+      "expected": "2027-01-31"
+    },
+    {
+      "incident_year": 2027,
+      "incident_month": 1,
+      "expected": "2027-02-28"
+    },
+    {
+      "incident_year": 2028,
+      "incident_month": 1,
+      "expected": "2028-02-29"
+    },
+    {
+      "incident_year": 2026,
+      "incident_month": 3,
+      "expected": "2026-04-30"
+    },
+    {
+      "incident_year": 2100,
+      "incident_month": 1,
+      "expected": "2100-02-28"
+    }
+  ],
+  "flag_cases": [
+    {
+      "name": "Nov 30d 2161m (95% boundary, flagged)",
+      "inputs": {
+        "days_in_month": 30,
+        "month": 11,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2161
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "tier": 100
+          },
+          {
+            "month_minutes": 43260,
+            "tier": 50
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Nov 30d 2160m (95% exact, unflagged)",
+      "inputs": {
+        "days_in_month": 30,
+        "month": 11,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2160
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "tier": 50
+          },
+          {
+            "month_minutes": 43260,
+            "tier": 50
+          }
+        ],
+        "flagged": false
+      }
+    },
+    {
+      "name": "Nov 30d 433m (99% both 50%, unflagged)",
+      "inputs": {
+        "days_in_month": 30,
+        "month": 11,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 433
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "tier": 50
+          },
+          {
+            "month_minutes": 43260,
+            "tier": 50
+          }
+        ],
+        "flagged": false
+      }
+    },
+    {
+      "name": "Nov 30d 44m (99.9% both 25%, unflagged)",
+      "inputs": {
+        "days_in_month": 30,
+        "month": 11,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 44
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "tier": 25
+          },
+          {
+            "month_minutes": 43260,
+            "tier": 25
+          }
+        ],
+        "flagged": false
+      }
+    },
+    {
+      "name": "Mar 31d 2232m (95% boundary shorter, flagged)",
+      "inputs": {
+        "days_in_month": 31,
+        "month": 3,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2232
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "tier": 50
+          },
+          {
+            "month_minutes": 44580,
+            "tier": 100
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Mar 31d 446m (99% boundary shorter, flagged)",
+      "inputs": {
+        "days_in_month": 31,
+        "month": 3,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 446
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "tier": 25
+          },
+          {
+            "month_minutes": 44580,
+            "tier": 50
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Apr 30d 2161m (95% boundary longer, flagged)",
+      "inputs": {
+        "days_in_month": 30,
+        "month": 4,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2161
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "tier": 100
+          },
+          {
+            "month_minutes": 43260,
+            "tier": 50
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Sep 30d 2160m (95% boundary shorter, flagged)",
+      "inputs": {
+        "days_in_month": 30,
+        "month": 9,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2160
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "tier": 50
+          },
+          {
+            "month_minutes": 43140,
+            "tier": 100
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Oct 31d 2232m (both offsets, flagged)",
+      "inputs": {
+        "days_in_month": 31,
+        "month": 10,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2232
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "tier": 50
+          },
+          {
+            "month_minutes": 44580,
+            "tier": 100
+          },
+          {
+            "month_minutes": 44700,
+            "tier": 50
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Oct 31d 2235m (both offsets, flagged 100 vs 50)",
+      "inputs": {
+        "days_in_month": 31,
+        "month": 10,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2235
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "tier": 100
+          },
+          {
+            "month_minutes": 44580,
+            "tier": 100
+          },
+          {
+            "month_minutes": 44700,
+            "tier": 50
+          }
+        ],
+        "flagged": true
+      }
+    },
+    {
+      "name": "Jan 31d 2233m (non-DST month, unflagged)",
+      "inputs": {
+        "days_in_month": 31,
+        "month": 1,
+        "all_users": 50,
+        "groups": [
+          {
+            "affected_users": 50,
+            "down_minutes": 2233
+          }
+        ]
+      },
+      "expected": {
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "tier": 100
+          }
+        ],
+        "flagged": false
+      }
+    }
+  ]
+}

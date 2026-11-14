@@ -1,0 +1,128 @@
+{
+  "id": "atlassian-cloud",
+  "vendor": "Atlassian",
+  "service": "Atlassian Cloud",
+  "document": {
+    "title": "Atlassian Cloud Service Level Agreement",
+    "url": "https://www.atlassian.com/legal/sla",
+    "date": "2026-04-30",
+    "lastChecked": "2026-11-13",
+    "label": "Atlassian Cloud SLA",
+    "claimGuideUrl": "https://support.atlassian.com/subscriptions-and-billing/docs/service-level-agreement-for-atlassian-cloud-products/"
+  },
+  "letterStyle": "support-case",
+  "scopeNote": "Applies to Eligible Cloud Products on Premium and Enterprise plans. This calculator uses Premium Plan tiers (below 99.9%); Enterprise Plan adds a 5% credit tier between 99.9% and 99.95%.",
+  "services": [
+    "Jira (Premium and Enterprise)",
+    "Confluence (Premium and Enterprise)",
+    "Jira Service Management (Premium and Enterprise)",
+    "Bitbucket (Premium)",
+    "Compass (Premium)",
+    "Loom (Business + AI and Enterprise)",
+    "Jira Product Discovery (Premium and Enterprise)"
+  ],
+  "servicesClause": {
+    "quote": "For Eligible Cloud Products (as listed in the table in Appendix A) Atlassian must provide the following monthly uptime percentage to Customer (the “Service Level Commitment”):",
+    "also": [
+      "* Except for Bitbucket GIT transactions and Jira Service Management 'Receive Alert', Covered Experiences include browser-based experiences only (not, e.g., integrations, API calls or mobile versions).",
+      "*** For purposes of this Service Level Agreement, Loom Business + AI will be considered a Premium Plan Cloud Product."
+    ],
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "formula": "total-minutes",
+  "formulaClause": {
+    "quote": "The monthly uptime percentage indicated in the above tables is determined by subtracting from 100% the percentage of Downtime Minutes (as defined below) out of the total minutes in the relevant calendar month. This calculation is done independently for each Eligible Cloud Product. All calendar months are measured in the UTC time zone.",
+    "layout": "100% - (Downtime Minutes / total minutes in the UTC calendar month x 100)",
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "downtimeClause": {
+    "quote": "“Downtime Minute” occurs when the Error Rate in a given minute is greater than 5%.",
+    "also": [
+      "“Error Rate” means, over a given 1-minute period, the percentage of Customer’s requests to Covered Experiences resulting in an error out of Customer’s total requests to those Covered Experiences.",
+      "Customer attempted no requests to any of the Covered Experiences over a minute, the Error Rate for that minute is 0%. It does not count as a Downtime Minute for the affected Eligible Cloud Product."
+    ],
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "period": {
+    "type": "calendar-month",
+    "timeZone": "UTC",
+    "quote": "All calendar months are measured in the UTC time zone.",
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "comparison": "strict-below",
+  "creditUnit": "percent-of-fee",
+  "creditClause": {
+    "quote": "If Atlassian confirms a failure to meet the Service Level Commitment, Atlassian will apply the Service Credit, which will be calculated as described in Appendix B, against a future payment due from Customer for the affected Cloud Product, provided that Customer’s account is fully paid up, without any overdue payments or disputes. No refunds or cash value will be given for unused Service Credits. Service Credits may not be transferred or applied to any other Atlassian account or Product. The aggregate maximum Service Credit applied to an invoice will not exceed 100% of the amount invoiced for the affected Cloud Product in that invoice billing period (which, since Service Credits are applied to future payments, is not the month in which the affected Cloud Product was unavailable).",
+    "also": [
+      "Notes:* Percentage of the monthly fees attributed to the affected Eligible Cloud Product. The percentage of monthly fees attributable to an Eligible Cloud Product when purchased together with other Products under one SKU will be determined by Atlassian."
+    ],
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "tiers": [
+    {
+      "below": "99.9",
+      "credit": 10,
+      "quote": "Less than 99.9% but greater than or equal to 99.0%",
+      "creditCell": "10%",
+      "source": "https://www.atlassian.com/legal/sla"
+    },
+    {
+      "below": "99",
+      "credit": 25,
+      "quote": "Less than 99.0% but greater than or equal to 95.0%",
+      "creditCell": "25%",
+      "source": "https://www.atlassian.com/legal/sla"
+    },
+    {
+      "below": "95",
+      "credit": 50,
+      "quote": "Less than 95.0%",
+      "creditCell": "50%",
+      "source": "https://www.atlassian.com/legal/sla"
+    }
+  ],
+  "deadline": {
+    "rule": "days-after-period-end",
+    "period": "calendar-month",
+    "days": 15,
+    "sendByDaysBefore": 1,
+    "quote": "To be eligible to receive a service credit for Atlassian’s failure to meet the Service Level Commitment (“Service Credit”), Customer must submit a ticket at https://support.atlassian.com with all fields fully and accurately completed within fifteen (15) days after the end of the calendar month in which the alleged failure occurred and provide any other reasonably requested information or documentation (for instance, as described here). Atlassian’s monitoring and logging infrastructure is the sole source of truth for determining whether Atlassian has met the Service Level Commitment.",
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "resellerClause": {
+    "quote": "If Customer purchased the affected Cloud Product through a Reseller, (a) Customer or the Reseller may submit a ticket as described in Section 2.1 above; and (b) any Service Credit will be based on the fees invoiced by Atlassian to the Reseller for Customer’s use of the affected Cloud Product under the Reseller’s applicable order(s) with Atlassian. Atlassian will issue any associated Service Credits to the Reseller (and not directly to Customer), and the Reseller will be solely responsible for issuing the appropriate amounts to Customer.",
+    "source": "https://www.atlassian.com/legal/sla"
+  },
+  "cannotClaim": [
+    {
+      "who": "Free, Standard, sandbox, or Beta products: only Eligible Cloud Products on Premium or Enterprise plans are covered.",
+      "quote": "The Service Level Commitment does not apply to (i) sandbox instances or Free or Beta Products (or similar concepts in the Agreement) or (ii) features excluded from the Service Level Commitment in the applicable Documentation.",
+      "source": "https://www.atlassian.com/legal/sla"
+    },
+    {
+      "who": "Accounts in breach or with overdue payments: account must be paid up and product provisioned.",
+      "quote": "Customer is not entitled to Service Credits if Customer is in breach of the Agreement (as defined below) or has not provisioned the relevant Cloud Product.",
+      "source": "https://www.atlassian.com/legal/sla"
+    },
+    {
+      "who": "Routine scheduled or emergency maintenance: excluded under the Atlassian Maintenance Policy.",
+      "quote": "routine scheduled maintenance or reasonable emergency maintenance as stated in the Atlassian Maintenance Policy.",
+      "source": "https://www.atlassian.com/legal/sla"
+    },
+    {
+      "who": "Force majeure or internet access problems outside Atlassian's control: not covered.",
+      "quote": "force majeure events or other factors outside of Atlassian’s reasonable control, including internet access or related problems;",
+      "source": "https://www.atlassian.com/legal/sla"
+    },
+    {
+      "who": "Customer equipment, network connections, or third-party products: not covered.",
+      "quote": "Customer equipment, software, network connections or other infrastructure;",
+      "source": "https://www.atlassian.com/legal/sla"
+    }
+  ],
+  "notes": [
+    "Enterprise Plan adds a fourth credit tier: Less than 99.95% but greater than or equal to 99.9% gives a 5% Service Credit.",
+    "All calendar months are measured in the UTC time zone, so daylight-saving clock shifts do not alter the number of minutes in a month.",
+    "Covered Experiences generally include browser-based experiences only (plus Bitbucket GIT transactions and Jira Service Management 'Receive Alert'), and minutes in which Customer attempted zero requests have a 0% Error Rate."
+  ]
+}

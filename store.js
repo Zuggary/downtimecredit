@@ -60,12 +60,13 @@ var DTCStore = (function () {
         c.inputs.groups.push({ affectedUsers: y.affectedUsers, downMinutes: y.downMinutes });
       }
     }
-    // per-vendor input keys: a support-case vendor needs a listed service and carries no fee, users, groups or period; every other incident carries no service or buyer
+    // per-vendor input keys: a support-case vendor needs a listed service (and allows feeCents only when rule.allowFee is true); every other incident carries no service
     var rule = ctx.rules && ctx.rules[x.vendorId], ci = c.inputs;
-    if (x.vendorId === "own-contract" || !rule) { if (ci.service !== undefined || (ci.reseller !== undefined && x.vendorId === "own-contract")) return null; }   // the buyer choice (reseller, true or false) belongs to Microsoft and Google incidents
+    if (x.vendorId === "own-contract" || !rule) { if (ci.service !== undefined || (ci.reseller !== undefined && x.vendorId === "own-contract")) return null; }   // the buyer choice (reseller, true or false) belongs to SaaS vendor incidents
     else {
       if (typeof ci.service !== "string" || (!ctx.lenient && rule.services.indexOf(ci.service) < 0)) return null;   // a stored incident keeps a service the list no later holds
-      if (["feeCents", "allUsers", "groups", "periodDays"].some(function (k) { return ci[k] !== undefined; })) return null;
+      var badKeys = rule.allowFee ? ["allUsers", "groups", "periodDays"] : ["feeCents", "allUsers", "groups", "periodDays"];
+      if (badKeys.some(function (k) { return ci[k] !== undefined; })) return null;
     }
     var f = x.fields === undefined ? {} : x.fields;
     if (!plainObj(f) || !onlyKeys(f, FIELD_KEYS)) return null;

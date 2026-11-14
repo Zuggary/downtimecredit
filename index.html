@@ -17,8 +17,12 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="A credit statement: users, hours without email, the fee, and the credit you may be owed, with the claim deadline.">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Downtime Credit SLA Calculator","url":"https://www.downtimecredit.com/","applicationCategory":"BusinessApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Work out SaaS outage service credits from verified SLA terms for Microsoft 365, Google Workspace, Atlassian Cloud, GitHub Enterprise Cloud, or your own contract, draft the claim request, and track the filing deadline locally in your browser."}
+</script>
 <style>
   @font-face { font-family: "DM Serif DC"; src: url("fonts/dm-serif-display-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
   @font-face { font-family: "Hanken DC"; src: url("fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
@@ -215,7 +219,7 @@
   .pick button {
     position: relative;
     font: 400 16px/1.3 var(--text);
-    padding: 10px 14px;
+    padding: 8px 14px;
     text-align: left;
     color: var(--ink);
     background: var(--sheet);
@@ -225,7 +229,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 48px;
+    min-height: 44px;
     min-width: 0;
   }
   .pick button + button { border-top: 1px solid var(--hairline); }
@@ -252,6 +256,7 @@
   .pick button:focus-visible { z-index: 1; }
   .cue { margin: 0; font: 400 16px/1.45 var(--text); color: var(--ink); }
   .cue a { font-weight: 600; }
+  .cue span[id$="-body"] { display: contents; }   /* a plain wrapper for the script; no box of its own */
   .outline { display: none; }
 
   @media (max-width: 767px) {
@@ -883,7 +888,7 @@
 </header>
 <nav class="doors" aria-label="What happened">
   <div class="in">
-    <a href="./" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace or your own contract</span></a>
+    <a href="./" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
     <a href="flights/"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
   </div>
 </nav>
@@ -897,13 +902,15 @@
       <div id="cd-g"></div><div id="cd-o"></div>
     </div>
     <p class="need" id="need">You need four numbers: users on your plan, how many lost email, for how long, and what you paid for November.</p>
-    <div class="pick" role="group" aria-label="Which outage">
+    <div class="pick" id="vendor-pick" role="group" aria-label="Which outage">
       <button type="button" id="mode-ms" aria-pressed="true">Microsoft 365 outage, 12&nbsp;Nov</button>
       <button type="button" id="mode-g" aria-pressed="false">Google Workspace</button>
+      <button type="button" id="mode-atlassian" aria-pressed="false">Atlassian Cloud</button>
+      <button type="button" id="mode-github" aria-pressed="false">GitHub Enterprise Cloud</button>
       <button type="button" id="mode-own" aria-pressed="false">Another vendor or my own contract</button>
     </div>
     <p class="cue" id="cue"><b>Does this apply to us?</b> Probably, if your company pays for a Microsoft 365 business plan. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
-    <p class="cue" id="cue-g" hidden><b>Does this apply to us?</b> This agreement is for organisations with a Google Workspace agreement. Some editions and causes are left out. Check your edition: Essentials Starter is not covered. <a href="#who-g">See who cannot claim</a>.</p>
+    <p class="cue" id="cue-g" hidden><b>Does this apply to us?</b> <span id="cue-g-body">This agreement is for organisations with a Google Workspace agreement. Some editions and causes are left out. Check your edition: Essentials Starter is not covered.</span> <a href="#who-g">See who cannot claim</a>.</p>
     <ul class="outline" aria-label="The three steps">
       <li><a href="#statement">Work it out</a><span id="ol-work">Four numbers give the credit the agreement allows.</span></li>
       <li><a href="#write">Write it</a><span>The request, with the details the agreement asks for.</span></li>
@@ -914,7 +921,7 @@
   <div class="panels">
   <form class="sheet" id="statement" novalidate aria-labelledby="st-title">
     <div class="sh"><h2 id="st-title">Credit statement</h2><button type="button" class="exbtn" id="ex-toggle" aria-pressed="false">Example</button></div>
-    <p class="sub">Microsoft 365 email outage reported on 12 November 2026</p>
+    <p class="sub" id="ms-sub">Microsoft 365 email outage reported on 12 November 2026</p>
     <p class="exflag">Example numbers: Harbor &amp; Pine Dental (made up).</p>
     <div class="tear" aria-hidden="true"></div>
     <div class="fields">
@@ -927,7 +934,8 @@
         </div></div>
       <div id="groups" class="span2"></div>
       <div class="span2"><button type="button" class="linkbtn" id="add-group">+ Some people were down for a different time</button></div>
-      <div class="f span2"><label for="fee">What you paid for <span class="long">this service for </span>November <small>(from your invoice)</small></label><input id="fee" inputmode="decimal" autocomplete="off" placeholder="$ e.g. 625.00" aria-describedby="fee-h"><small class="hint" id="fee-h">From your invoice: the fee for this service for November. Billed yearly? Use the part that covers November (about one twelfth); the agreement speaks of fees &ldquo;applied to&rdquo; the month.</small></div>
+      <div class="f span2"><label for="fee">What you paid for <span class="long">this service for </span><span id="ms-fee-m">November</span> <small>(from your invoice)</small></label><input id="fee" inputmode="decimal" autocomplete="off" placeholder="$ e.g. 625.00" aria-describedby="fee-h"><small class="hint" id="fee-h">From your invoice: the fee for this service for <span id="ms-fee-m2">November</span>. Billed yearly? Use the part that covers <span id="ms-fee-m3">November</span> (about one twelfth); the agreement speaks of fees &ldquo;applied to&rdquo; the month.</small></div>
+      <details class="more span2" id="ms-date-more"><summary>Different outage month? Change the date</summary><div class="f" style="margin-top:8px"><label for="ms-start">Day the outage started</label><input id="ms-start" type="date" value="2026-11-12" aria-describedby="ms-start-w"><small id="ms-start-w" class="echo"></small></div></details>
       <fieldset class="opt span2"><legend>Where did you buy Microsoft 365?</legend>
         <label><input type="radio" name="m-buy" value="microsoft" checked><span>From Microsoft</span></label>
         <label><input type="radio" name="m-buy" value="reseller"><span>From a reseller or provider (for example GoDaddy, or your IT company)</span></label></fieldset>
@@ -945,7 +953,7 @@
     <p class="fine" id="st-source"></p>
     <details class="more" id="sums"><summary>How this was worked out</summary>
       <dl class="work">
-        <dt>All email-minutes in November <small id="w-um-f">30 days &times; 1,440 minutes &times; your users (the agreement calls these User Minutes)</small></dt><dd id="w-um"></dd>
+        <dt>All email-minutes in <span id="w-um-m">November</span> <small id="w-um-f">30 days &times; 1,440 minutes &times; your users (the agreement calls these User Minutes)</small></dt><dd id="w-um"></dd>
         <dt>Email-minutes lost <small id="w-dum-f">each user without email &times; the minutes they were down (Downtime User Minutes)</small></dt><dd id="w-dum"></dd>
         <dt>Share of the month email worked <small>to 4 decimals, never rounded up (the uptime)</small></dt><dd id="w-up"></dd>
         <dt>Credit level <small id="w-tier-f">from the agreement's credit table</small></dt><dd id="w-tier"></dd>
@@ -990,21 +998,22 @@
   </form>
   <form class="sheet" id="g-form" novalidate aria-labelledby="g-title" hidden>
     <div class="sh"><h2 id="g-title">Credit statement</h2><button type="button" class="exbtn" id="g-ex" aria-pressed="false">Example</button></div>
-    <p class="sub">Google Workspace, uptime counted over the calendar month</p>
+    <p class="sub" id="g-sub">Google Workspace, uptime counted over the calendar month</p>
     <p class="exflag">Example numbers: Harbor &amp; Pine Dental (made up).</p>
     <div class="tear" aria-hidden="true"></div>
     <div class="fields">
-      <div class="f span2"><label for="g-svc">Which service was down?</label><select id="g-svc"></select></div>
-      <div class="f span2"><label for="g-start">Day the first downtime of the month started</label><input id="g-start" type="date" aria-describedby="g-start-w"><small id="g-start-w" class="echo"></small></div>
+      <div class="f span2"><label for="g-svc" id="g-svc-l">Which service was down?</label><select id="g-svc"></select></div>
+      <div class="f span2"><label for="g-start" id="g-start-l">Day the first downtime of the month started</label><input id="g-start" type="date" aria-describedby="g-start-w"><small id="g-start-w" class="echo"></small></div>
       <div class="f span2"><span id="g-time">How long was the service down for your domain?</span>
         <div class="hm" role="group" aria-labelledby="g-time">
           <span class="u"><input id="g-h" inputmode="numeric" autocomplete="off" placeholder="e.g. 5" aria-label="Hours the service was down"><span aria-hidden="true">hours</span></span>
           <span class="u"><input id="g-m" inputmode="numeric" autocomplete="off" placeholder="e.g. 30" aria-label="Minutes the service was down"><span aria-hidden="true">minutes</span></span>
         </div>
         <small class="hint" id="g-time-h">Add up the whole calendar month, for this one service. If there were several outages this month, the safest reading is to use the first one and add up all the minutes. Google measures downtime by its own server-side error rate. This is your own count; Google's figure may differ.</small></div>
-      <fieldset class="opt span2"><legend>Where did you buy Google Workspace?</legend>
-        <label><input type="radio" name="g-buy" value="google" checked><span>Bought from Google</span></label>
-        <label><input type="radio" name="g-buy" value="reseller"><span>Bought from a reseller</span></label></fieldset>
+      <div class="f span2" id="g-paid-row" hidden><label for="g-paid" id="g-paid-l">What you paid for this product for the period <small>(from your invoice)</small></label><input id="g-paid" inputmode="decimal" autocomplete="off" placeholder="$ e.g. 1,200.00" aria-describedby="g-paid-h"><small class="hint" id="g-paid-h"></small></div>
+      <fieldset class="opt span2"><legend id="g-buy-leg">Where did you buy Google Workspace?</legend>
+        <label><input type="radio" name="g-buy" value="google" checked><span id="g-buy-direct">Bought from Google</span></label>
+        <label><input type="radio" name="g-buy" value="reseller"><span id="g-buy-reseller">Bought from a reseller</span></label></fieldset>
     </div>
     <div class="tear" aria-hidden="true"></div>
     <div id="g-out" aria-live="polite"></div>
@@ -1091,15 +1100,15 @@
     <div class="rules">
       <div>
         <h3>What counts as down</h3>
-        <p>Google's definition: downtime is, for a domain, a period when the user web interface of the service has more than a five percent user error rate, and it is measured based on server side error rate. You cannot measure that yourself. What you type is your own count of how long the service was down; Google's figure may differ.</p>
-        <h3 style="margin-top:18px">The month</h3>
-        <p>The month is the calendar month the downtime started in, counted as its days &times; 1,440 minutes. The agreement names no time zone. In a month with a clock change the month may be 60 minutes longer or shorter, so near a credit level's edge the statement shows both readings. If the downtime ran past the end of the month, type only the minutes in the month it started in. Minutes in the next month count toward that month, as a separate request.</p>
+        <p id="g-rule-down">Google's definition: downtime is, for a domain, a period when the user web interface of the service has more than a five percent user error rate, and it is measured based on server side error rate. You cannot measure that yourself. What you type is your own count of how long the service was down; Google's figure may differ.</p>
+        <h3 style="margin-top:18px" id="g-rule-per-h">The month</h3>
+        <p id="g-rule-per">The month is the calendar month the downtime started in, counted as its days &times; 1,440 minutes. The agreement names no time zone. In a month with a clock change the month may be 60 minutes longer or shorter, so near a credit level's edge the statement shows both readings. If the downtime ran past the end of the month, type only the minutes in the month it started in. Minutes in the next month count toward that month, as a separate request.</p>
       </div>
       <div>
-        <h3>Bought from a reseller?</h3>
-        <p>You can still claim. You notify your reseller, your reseller must notify Google, and you get the credit from your reseller. Choose &ldquo;Bought from a reseller&rdquo; in the statement and the request is addressed to them.</p>
-        <h3 style="margin-top:18px">No fee to type</h3>
-        <p>The credit is days of service, so there is no fee and no user count to enter. The agreement gives at most 15 days of service for one service in one calendar month, and 15 days is already its top level.</p>
+        <h3 id="g-rule-buy-h">Bought from a reseller?</h3>
+        <p id="g-rule-buy">You can still claim. You notify your reseller, your reseller must notify Google, and you get the credit from your reseller. Choose &ldquo;Bought from a reseller&rdquo; in the statement and the request is addressed to them.</p>
+        <h3 style="margin-top:18px" id="g-rule-fee-h">No fee to type</h3>
+        <p id="g-rule-fee">The credit is days of service, so there is no fee and no user count to enter. The agreement gives at most 15 days of service for one service in one calendar month, and 15 days is already its top level.</p>
       </div>
     </div>
     <details class="more"><summary>See the agreement's text</summary><div id="g-quotes"></div></details>
@@ -1133,7 +1142,7 @@
   <section>
     <h2 id="who-runs">Who runs this</h2>
     <p id="who-runs-p">Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. A free tool. No ads at present. It is not legal advice, and it files nothing for you.</p>
-    <p>The outage tracker: <a href="https://isit364yet.com">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
+    <p>The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
   </section>
   <section>
     <h2>Sources</h2>

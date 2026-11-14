@@ -5,7 +5,8 @@ import functools, http.server, json, os, re, socket, sys, tempfile, threading
 from playwright.sync_api import sync_playwright
 
 HERE = os.path.dirname(os.path.abspath(__file__)); SITE = os.path.dirname(HERE)
-CASES = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SITE, "..", "..", "research", "TF2-test-cases.json")
+_res_cases = os.path.join(SITE, "..", "..", "research", "TF2-test-cases.json")
+CASES = sys.argv[1] if len(sys.argv) > 1 else (_res_cases if os.path.isfile(_res_cases) else os.path.join(HERE, "fixtures", "tf2-test-cases.json"))
 data = json.load(open(CASES))
 passed, failed, fails = 0, 0, []
 def ok(c, what):
@@ -249,8 +250,8 @@ with sync_playwright() as pw:
     def gfill(pg, svc, start, h, m):
         pg.select_option("#g-svc", svc); pg.fill("#g-start", start); pg.fill("#g-h", str(h)); pg.fill("#g-m", str(m))
     g = gopen()
-    eq([g.get_attribute(f"#mode-{k}", "aria-pressed") for k in ("ms", "g", "own")], ["false", "true", "false"], "google: the toggle shows Google pressed")
-    eq(g.inner_text(".pick").split("\n"), ["Microsoft 365 outage, 12\xa0Nov", "Google Workspace", "Another vendor or my own contract"], "google: three toggle options in order")
+    eq([g.get_attribute(f"#mode-{k}", "aria-pressed") for k in ("ms", "g", "atlassian", "github", "own")], ["false", "true", "false", "false", "false"], "google: the toggle shows Google pressed")
+    eq(g.inner_text(".pick").split("\n"), ["Microsoft 365 outage, 12\xa0Nov", "Google Workspace", "Atlassian Cloud", "GitHub Enterprise Cloud", "Another vendor or my own contract"], "google: five toggle options in order")
     ok(g.is_hidden("#statement") and g.is_hidden("#own-form") and not g.is_hidden("#g-form"), "google: only the Google statement shows")
     ok(g.is_hidden("#fee") and g.is_hidden("#all") and g.query_selector("#g-form input[id*=fee], #g-form input[id*=users]") is None, "google: fee and user fields are hidden")
     eq(g.inner_text("#g-r-line"), "Your credit appears here.", "google: empty line")
@@ -264,11 +265,11 @@ with sync_playwright() as pw:
     eq(g.inner_text("#g-form label[for=g-start]"), "Day the first downtime of the month started", "google: the date label"); ok("How long was the service down for your domain?" in g.inner_text("#g-form"), "google: the time question")
     # keyboard and aria-pressed on the toggle
     g.focus("#mode-ms"); g.keyboard.press("Tab"); eq(g.evaluate("document.activeElement.id"), "mode-g", "google: Tab reaches the Google toggle"); g.keyboard.press("Enter")
-    eq([g.get_attribute(f"#mode-{k}", "aria-pressed") for k in ("ms", "g", "own")], ["false", "true", "false"], "google: Enter keeps aria-pressed")
-    g.keyboard.press("Tab"); eq(g.evaluate("document.activeElement.id"), "mode-own", "google: Tab then reaches own")
+    eq([g.get_attribute(f"#mode-{k}", "aria-pressed") for k in ("ms", "g", "atlassian", "github", "own")], ["false", "true", "false", "false", "false"], "google: Enter keeps aria-pressed")
+    g.keyboard.press("Tab"); eq(g.evaluate("document.activeElement.id"), "mode-atlassian", "google: Tab reaches Atlassian"); g.keyboard.press("Tab"); eq(g.evaluate("document.activeElement.id"), "mode-github", "google: Tab reaches GitHub"); g.keyboard.press("Tab"); eq(g.evaluate("document.activeElement.id"), "mode-own", "google: Tab then reaches own")
     # the toggle fits at 375
-    boxes = g.evaluate("() => ['mode-ms','mode-g','mode-own'].map(i => { const r = document.getElementById(i).getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })")
-    ok(all(l >= 0 and r <= 375 for l, r in boxes), f"google: the three toggle buttons fit inside 375 px ({boxes})")
+    boxes = g.evaluate("() => ['mode-ms','mode-g','mode-atlassian','mode-github','mode-own'].map(i => { const r = document.getElementById(i).getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; })")
+    ok(all(l >= 0 and r <= 375 for l, r in boxes), f"google: the five toggle buttons fit inside 375 px ({boxes})")
     eq(g.evaluate("document.documentElement.scrollWidth - innerWidth"), 0, "google: no horizontal overflow at 375")
     # results
     def gline(): return g.inner_text("#g-r-line")
@@ -532,7 +533,9 @@ with sync_playwright() as pw:
     m = open_page(ctxM); ft = m.inner_text("footer")
     ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: privacy@downtimecredit.com." in ft, "item 4: the publisher line in the footer")
     html = open(os.path.join(SITE, "index.html")).read(); pv = open(os.path.join(SITE, "privacy.html")).read()
-    ok("github" not in html.lower() and "github" not in m.inner_text("body").lower() and not re.search(r'href="[^"]*github', pv, re.I) and not re.search(r"(?<![\w.])@[A-Za-z0-9_]{2,}", re.sub(r"<style.*?</style>", "", html + pv, flags=re.S)), "item 4: no GitHub link, name or handle in the page or privacy page")
+    page_text = re.sub(r'<script\s+type=["\']application/ld\+json["\']>.*?</script>', "", html + pv, flags=re.S | re.I)
+    page_text = re.sub(r"<style.*?</style>", "", page_text, flags=re.S)
+    ok(not re.search(r'href="[^"]*github\.com/(?!customer-terms)', html + pv, re.I) and not re.search(r"(?<![\w.])@[A-Za-z0-9_]{2,}", page_text), "item 4: no author GitHub link or handle in the page or privacy page")
     ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: " in pv, "item 4: the publisher line on the privacy page")
     # item 5: one countdown, under the lede, in each mode
     def cdn(pg): return pg.locator("[id$='dl-days']:visible").count()
@@ -932,6 +935,51 @@ with sync_playwright() as pw:
     rs_all = pdl.evaluate("JSON.parse(sessionStorage.getItem('__rs_all') || '[]')")
     eq(rs_all.count("/step/to-flights"), 1, f"doors (live): real click on flights tab records /step/to-flights once ({rs_all})")
     pdl.close(); ctxDL.close()
+
+    # ---------- Atlassian Cloud & GitHub Enterprise Cloud (N1, N2, N3) ----------
+    ctxMV = b.new_context(viewport={"width": 1280, "height": 900}, accept_downloads=True); route(ctxMV); ctxMV.grant_permissions(["clipboard-read", "clipboard-write"])
+    mv = open_page(ctxMV, "?today=2026-11-13")
+    def mvclip():
+        mv.click("#sum-copy"); mv.wait_for_function("document.getElementById('sum-state').textContent.indexOf('clipboard') >= 0"); return mv.evaluate("navigator.clipboard.readText()")
+    def mvics():
+        with mv.expect_download() as d: mv.click("#ics-btn")
+        return open(d.value.path(), encoding="utf-8", newline="").read().replace("\r\n ", "").replace("\\,", ",").replace("\\;", ";")
+    # Google .ics UID prefix check
+    mv.click("#mode-g"); gfill(mv, "Gmail", "2026-11-03", 5, 0)
+    ok("UID:google-" in mvics(), "google: .ics UID uses google- prefix")
+    # GitHub Enterprise Cloud: direct, Microsoft, no-credit, .ics
+    mv.click("#mode-github")
+    eq(mv.inner_text("#g-buy-reseller"), "Bought through Microsoft", "github: buyer label omits reseller")
+    mv.fill("#g-start", "2026-11-03"); mv.fill("#g-h", "2"); mv.fill("#g-m", "12"); mv.fill("#g-paid", "3150")
+    eq(mv.inner_text("#g-r-line"), "No credit: uptime for the quarter was 99.9% or more.", "github: no-credit wording")
+    mv.fill("#g-h", "23"); mv.fill("#g-m", "20")
+    ok("Send a written request to GitHub Support by Saturday 30 January 2027, so send it by Friday 29 January." in mv.inner_text("#g-dl-box"), "github direct: countdown box")
+    eq(mv.inner_text("#g-st-date"), "Send a written request to GitHub Support by Friday 29 January 2027. See the countdown above.", "github direct: #g-st-date")
+    ics_gh_dir = mvics()
+    ok("UID:github-" in ics_gh_dir and "Send the written request by Friday 29 January 2027 (the agreement allows 30 days after the end of the calendar quarter; last day Saturday 30 January 2027), direct to GitHub Support." in ics_gh_dir and "14 days left to send the written request to GitHub Support" in ics_gh_dir, "github direct: .ics UID, description, alarm")
+    mv.check("input[name=g-buy][value=reseller]")
+    gh_box = mv.inner_text("#g-dl-box")
+    ok("Send your written request by Saturday 30 January 2027, so send it by Friday 29 January as a Microsoft support ticket." in gh_box and "reseller" not in gh_box.lower() and "credits go to" not in gh_box.lower(), "github Microsoft: countdown box")
+    eq(mv.inner_text("#g-st-date"), "Send it by Friday 29 January 2027 as a Microsoft support ticket. See the countdown above.", "github Microsoft: #g-st-date")
+    gh_sum = mvclip()
+    ok("You send a written request as a Microsoft support ticket." in gh_sum and "as a Microsoft support ticket." in gh_sum and "reseller" not in gh_sum.lower(), "github Microsoft: pack summary")
+    ics_gh_ms = mvics()
+    ok("UID:github-" in ics_gh_ms and "Send the written request by Friday 29 January 2027 (the agreement allows 30 days after the end of the calendar quarter; last day Saturday 30 January 2027), as a Microsoft support ticket." in ics_gh_ms and "14 days left to send the written request as a Microsoft support ticket" in ics_gh_ms and "reseller" not in ics_gh_ms.lower(), "github Microsoft: .ics description, alarm, no reseller")
+    # Atlassian Cloud: no-credit, credit + Enterprise note, reseller wording, .ics
+    mv.click("#mode-atlassian")
+    mv.fill("#g-start", "2026-11-03"); mv.fill("#g-h", "0"); mv.fill("#g-m", "43"); mv.fill("#g-paid", "1200")
+    eq(mv.inner_text("#g-r-line"), "No credit on a Premium plan: uptime for the month was 99.9% or more. On an Enterprise plan the commitment is 99.95%, and uptime from 99.9% up to but not including 99.95% earns a 5% credit; this page does not work out Enterprise credits.", "atlassian: no-credit wording")
+    mv.fill("#g-h", "5"); mv.fill("#g-m", "0")
+    eq(mv.inner_text("#g-plan-note"), "This uses Premium tiers; Enterprise credits differ: see the note above.", "atlassian: Enterprise note next to credit result")
+    mv.check("input[name=g-buy][value=reseller]")
+    at_box = mv.inner_text("#g-dl-box")
+    ok("Submit a ticket to Atlassian support by Tuesday 15 December 2026, so submit the ticket by Monday 14 December. Either you or your reseller may submit the ticket." in at_box and "credits go to" not in at_box.lower(), "atlassian reseller: countdown box")
+    eq(mv.inner_text("#g-st-date"), "Submit the ticket by Monday 14 December 2026. See the countdown above.", "atlassian reseller: #g-st-date")
+    at_sum = mvclip()
+    ok("This uses Premium tiers; Enterprise credits differ: see the note above." in at_sum and "Either you or your reseller may submit the ticket" in at_sum and "so submit the ticket by Monday 14 December." in at_sum and "credits go to" not in at_sum.lower(), "atlassian reseller: pack summary")
+    ics_at_rs = mvics()
+    ok("UID:atlassian-" in ics_at_rs and "Submit the Atlassian support ticket by Monday 14 December 2026 (the agreement allows 15 days after the end of the calendar month in which the failure occurred; last day Tuesday 15 December 2026). Either you or your reseller may submit the ticket." in ics_at_rs and "14 days left to submit the Atlassian support ticket" in ics_at_rs, "atlassian reseller: .ics UID, description, alarm")
+    mv.close(); ctxMV.close()
 
     b.close()
 srv.shutdown()

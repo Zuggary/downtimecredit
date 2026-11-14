@@ -1,14 +1,23 @@
 #!/bin/zsh
-# Downtime Credit engine and store tests under jsc (no node on this Mac). Exit 0 = all pass.
-# Reference cases come from the factory's research/TF2-test-cases.json (pass its path as $1 to override).
+# Downtime Credit engine, store, and flights tests under jsc (no node on this Mac). Exit 0 = all pass.
+# Reference cases come from research/TF2-test-cases.json when present, or tests/fixtures/tf2-test-cases.json (pass $1 to override).
 JSC=/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc
 here="${0:A:h}"; site="${here:h}"
-cases="${1:-${site:h:h}/research/TF2-test-cases.json}"
+default_cases="${site:h:h}/research/TF2-test-cases.json"
+[[ -f $default_cases ]] || default_cases="$here/fixtures/tf2-test-cases.json"
+cases="${1:-$default_cases}"
+gsrc="${site:h:h}/research/TF2-google-sla-source.txt"
+[[ -f $gsrc ]] || gsrc="$here/fixtures/tf2-google-sla-source.txt"
+gcases="${site:h:h}/research/TF2-google-cases.json"
+[[ -f $gcases ]] || gcases="$here/fixtures/tf2-google-cases.json"
 [[ -x $JSC ]] || { print "jsc not found"; exit 2; }
 [[ -f $cases ]] || { print "reference cases not found: $cases"; exit 2; }
-out=$($JSC "$here/test-engine.js" -- "$site" "$cases" 2>&1)
+out=$($JSC "$here/test-engine.js" -- "$site" "$cases" "$gsrc" "$gcases" 2>&1)
 print -r -- "$out"
 print -r -- "$out" | tail -1 | grep -q " 0 failed$" || exit 1
+fout=$(cd "$site" && $JSC "$site/flights/flights.js" "$here/test-flights.js" 2>&1)
+print -r -- "$fout"
+print -r -- "$fout" | tail -1 | grep -q " 0 failed$" || exit 1
 for f in engine.js store.js; do
   for w in '(^|[^.A-Za-z])document[.]' '(^|[^A-Za-z])fetch[(]' XMLHttpRequest '(^|[^A-Za-z])eval[(]' 'new Function' innerHTML cookie; do
     grep -Eq "$w" "$site/$f" && { print "$f matches $w"; exit 1; }

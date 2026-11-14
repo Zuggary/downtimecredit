@@ -1,0 +1,1285 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 0
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "100.0000",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 1
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.9976",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 43
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.9004",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 44
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.8981",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 45
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.8958",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 100
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.7685",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 300
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.3055",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 431
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.0023",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 432
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.0000",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 433
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "98.9976",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 1000
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "97.6851",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 1440
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "96.6666",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2159
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "95.0023",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2160
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2161
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "94.9976",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 5000
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "88.4259",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 43200
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "0.0000",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 0
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "100.0000",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 44
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.9014",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 45
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.8991",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 446
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.0008",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 447
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "98.9986",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 2232
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 2233
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "94.9977",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 44640
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "0.0000",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 0
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "100.0000",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 40
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "99.9007",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 41
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "99.8983",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 403
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "99.0004",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 404
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "98.9980",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 2016
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 2017
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "94.9975",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "inputs": {
+        "days_in_month": 28,
+        "down_minutes": 40320
+      },
+      "expected": {
+        "month_minutes": 40320,
+        "uptime_pct": "0.0000",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 40320,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 34,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 0,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "100.0000",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 35,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 41,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "99.9018",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 36,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 42,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "99.8994",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 37,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 417,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "99.0014",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 38,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 418,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "98.9990",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 39,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 2088,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 40,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 2089,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "94.9976",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 41,
+      "inputs": {
+        "days_in_month": 29,
+        "down_minutes": 41760,
+        "month": 2
+      },
+      "expected": {
+        "month_minutes": 41760,
+        "uptime_pct": "0.0000",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 41760,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 42,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 43,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.9004",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 0
+          },
+          {
+            "month_minutes": 43260,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 43,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 44,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.8981",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          },
+          {
+            "month_minutes": 43260,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 44,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 432,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.0000",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          },
+          {
+            "month_minutes": 43260,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 45,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 433,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "98.9976",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          },
+          {
+            "month_minutes": 43260,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 46,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2160,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          },
+          {
+            "month_minutes": 43260,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 47,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2161,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "94.9976",
+        "credit_days": 15,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 15
+          },
+          {
+            "month_minutes": 43260,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 48,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 43200,
+        "month": 11
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "0.0000",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 15
+          },
+          {
+            "month_minutes": 43260,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 49,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 44,
+        "month": 3
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.9014",
+        "credit_days": 0,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 0
+          },
+          {
+            "month_minutes": 44580,
+            "days": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": 50,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 45,
+        "month": 3
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.8991",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 3
+          },
+          {
+            "month_minutes": 44580,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 51,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 446,
+        "month": 3
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.0008",
+        "credit_days": 3,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 3
+          },
+          {
+            "month_minutes": 44580,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 52,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 2232,
+        "month": 3
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 7
+          },
+          {
+            "month_minutes": 44580,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 53,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 44640,
+        "month": 3
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "0.0000",
+        "credit_days": 15,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 54,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 44,
+        "month": 4
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.8981",
+        "credit_days": 3,
+        "flagged": false,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          },
+          {
+            "month_minutes": 43260,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 55,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2161,
+        "month": 4
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "94.9976",
+        "credit_days": 15,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 15
+          },
+          {
+            "month_minutes": 43260,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 56,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 432,
+        "month": 9
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "99.0000",
+        "credit_days": 3,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 3
+          },
+          {
+            "month_minutes": 43140,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 57,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 2160,
+        "month": 9
+      },
+      "expected": {
+        "month_minutes": 43200,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 43200,
+            "days": 7
+          },
+          {
+            "month_minutes": 43140,
+            "days": 15
+          }
+        ]
+      }
+    },
+    {
+      "id": 58,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 446,
+        "month": 10
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "99.0008",
+        "credit_days": 3,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 3
+          },
+          {
+            "month_minutes": 44580,
+            "days": 7
+          },
+          {
+            "month_minutes": 44700,
+            "days": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": 59,
+      "inputs": {
+        "days_in_month": 31,
+        "down_minutes": 2232,
+        "month": 10
+      },
+      "expected": {
+        "month_minutes": 44640,
+        "uptime_pct": "95.0000",
+        "credit_days": 7,
+        "flagged": true,
+        "variants": [
+          {
+            "month_minutes": 44640,
+            "days": 7
+          },
+          {
+            "month_minutes": 44580,
+            "days": 15
+          },
+          {
+            "month_minutes": 44700,
+            "days": 7
+          }
+        ]
+      }
+    },
+    {
+      "id": 60,
+      "inputs": {
+        "days_in_month": 30,
+        "down_minutes": 43201,
+        "month": 11
+      },
+      "expected": {
+        "error": "time down exceeds the month"
+      }
+    },
+    {
+      "id": 61,
+      "inputs": {
+        "days_in_month": 32,
+        "down_minutes": 10
+      },
+      "expected": {
+        "error": "bad input"
+      }
+    }
+  ],
+  "deadline_cases": [
+    {
+      "start": "2026-11-03",
+      "expected_last_day": "2026-12-03",
+      "expected_send_by": "2026-12-02"
+    },
+    {
+      "start": "2026-01-31",
+      "expected_last_day": "2026-03-02",
+      "expected_send_by": "2026-03-01"
+    },
+    {
+      "start": "2027-01-31",
+      "expected_last_day": "2027-03-02",
+      "expected_send_by": "2027-03-01"
+    },
+    {
+      "start": "2028-01-31",
+      "expected_last_day": "2028-03-01",
+      "expected_send_by": "2028-02-29"
+    },
+    {
+      "start": "2028-02-29",
+      "expected_last_day": "2028-03-30",
+      "expected_send_by": "2028-03-29"
+    },
+    {
+      "start": "2026-12-15",
+      "expected_last_day": "2027-01-14",
+      "expected_send_by": "2027-01-13"
+    },
+    {
+      "start": "2026-06-01",
+      "expected_last_day": "2026-07-01",
+      "expected_send_by": "2026-06-30"
+    }
+  ]
+}

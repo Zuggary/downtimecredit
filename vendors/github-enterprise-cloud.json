@@ -1,0 +1,127 @@
+{
+  "id": "github-enterprise-cloud",
+  "vendor": "GitHub",
+  "service": "GitHub Enterprise Cloud",
+  "document": {
+    "title": "GitHub Online Services SLA",
+    "url": "https://github.com/customer-terms/github-online-services-sla",
+    "date": "2026-06-01",
+    "dateNote": "Published as Version: June 2026",
+    "lastChecked": "2026-11-13",
+    "label": "GitHub Online Services SLA"
+  },
+  "letterStyle": "support-case",
+  "scopeNote": "Applies to GitHub Enterprise Cloud paid accounts (uptime measured per calendar quarter). Customers who purchased through Microsoft submit requests via a Microsoft support ticket.",
+  "services": [
+    "git Operations",
+    "Issues",
+    "Pages",
+    "Pull Requests",
+    "Webhooks",
+    "API requests"
+  ],
+  "servicesClause": {
+    "quote": "“Service Feature” is one of the following components of GitHub Enterprise Cloud: git Operations, Issues, Pages, Pull Requests, Webhooks, and API requests to these components.",
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "formula": "total-minutes",
+  "formulaClause": {
+    "quote": "“Uptime” means the percentage a Service was available out of the total possible availability for the Service in a calendar quarter. Uptime is calculated using the formula specified for each Service below.",
+    "quoteNote": "Section 5.B shows the GitHub Enterprise Cloud formula as a fraction image (alt text: \"Availability formula showing “Maximum Available Minutes minus Downtime” divided by “Maximum Available Minutes,” multiplied by 100 to calculate percentage uptime.\"). `layout` is this site's plain linear notation, never shown in quote marks.",
+    "also": [
+      "GitHub commits to maintain at least 99.9% Uptime for the applicable GitHub service."
+    ],
+    "layout": "(Maximum Available Minutes - Downtime) / Maximum Available Minutes x 100",
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "downtimeClause": {
+    "quote": "“Downtime” is a period of time where either (i) the error rate exceeds five percent (5%) in a given minute for a Service feature or (ii) the Service was unavailable as determined by a combination of GitHub’s internal and external monitoring systems.",
+    "also": [
+      "In addition to these Service-specific definitions, Downtime does not include Scheduled Downtime, and Downtime does not include unavailability of a Service due to limitations or exclusions identified in Section 4 (“Limitations and Exclusions”).",
+      "“Scheduled Downtime” means periods of Downtime related to network, hardware, or Service maintenance or upgrades. We will publish notice or notify you at least five (5) days prior to the commencement of such Downtime, unless a bona fide emergency prevents us from doing so."
+    ],
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "period": {
+    "type": "calendar-quarter",
+    "quote": "“Applicable Period” means the calendar quarter in which a Service Credit is owed.",
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "comparison": "strict-below",
+  "creditUnit": "percent-of-fee",
+  "creditClause": {
+    "quote": "“Service Credit” is the percentage of the Applicable Service Fees credited to Customer following GitHub’s claim approval.",
+    "also": [
+      "“Applicable Service Fees” means the total fees paid by Customer for a Service that are applied to the Applicable Period in which a Service Credit is owed.",
+      "Service Credits may be in the form of a refund or a credit to Customer’s account. Service Credits cannot be exchanged into cash, and are limited to a maximum of ninety (90) days of paid service per calendar quarter. Customer must have paid all outstanding invoices to receive Service Credits. Service Credits expire upon termination of Customer’s agreement with GitHub."
+    ],
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "tiers": [
+    {
+      "below": "99.9",
+      "credit": 5,
+      "quote": "99.5% <= Uptime < 99.9%",
+      "creditCell": "5%",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    },
+    {
+      "below": "99.5",
+      "credit": 10,
+      "quote": "99.0% <= Uptime < 99.5%",
+      "creditCell": "10%",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    },
+    {
+      "below": "99",
+      "credit": 25,
+      "quote": "Uptime < 99.0%",
+      "creditCell": "25%",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    }
+  ],
+  "deadline": {
+    "rule": "days-after-period-end",
+    "period": "calendar-quarter",
+    "days": 30,
+    "sendByDaysBefore": 1,
+    "quote": "Customer may redeem Service Credits only upon written request within thirty (30) days of the end of the Applicable Period. Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft.",
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "resellerClause": {
+    "quote": "Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft.",
+    "source": "https://github.com/customer-terms/github-online-services-sla"
+  },
+  "cannotClaim": [
+    {
+      "who": "Previews or purchases made with a subscription credit: not covered.",
+      "quote": "B. For a Preview, or a purchase made with a subscription credit;",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    },
+    {
+      "who": "Rate limits, performance degradation, or latency without unavailability: not covered.",
+      "quote": "J. That result from rate limits, performance degradation, or other latency issues without actual service unavailability (except for services which explicitly include a performance-based Service Level); or",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    },
+    {
+      "who": "Factors outside GitHub's reasonable control, including external network failures: not covered.",
+      "quote": "A. Due to factors outside our reasonable control (for example, natural disaster, war, acts of terrorism, riots, government action, or a network or device failure external to our data centers, including at your site or between your site and our data center);",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    },
+    {
+      "who": "Third-party software, hardware, or inadequate bandwidth: not covered.",
+      "quote": "C. That result from the use of services, hardware, or software not provided by us, including, but not limited to, issues resulting from inadequate bandwidth or related to third-party software or services;",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    },
+    {
+      "who": "Throttling of suspected abuse or compromised accounts: not covered.",
+      "quote": "I. That result from our throttling of suspected abusive behavior or hacked accounts;",
+      "source": "https://github.com/customer-terms/github-online-services-sla"
+    }
+  ],
+  "notes": [
+    "Document states 'Version: June 2026' (recorded as 2026-06-01 for ISO calendar sorting).",
+    "Uptime is measured over a full calendar quarter (90 to 92 days, or 129,600 to 132,480 minutes), so more than about 130 to 132 minutes of quarterly downtime is required to fall below 99.9%.",
+    "GitHub Actions (execution-based) and GitHub Packages (hourly storage error rate) have separate formulas in Sections 5.A and 5.C of the SLA."
+  ]
+}

@@ -1,0 +1,41 @@
+Google Workspace Service Level Agreement
+Source: https://workspace.google.com/terms/sla/
+Last Modified: August 31, 2026 (Checked 2026-11-13)
+
+Verbatim clauses verified against vendors/google-workspace.json:
+
+the Gmail, Google Calendar, Google Chat, Google Cloud Search, Google Docs, Google Drive, Google Forms, Google Groups for Business, Google Keep, Google Meet, Google Pics, Google Sheets, Google Sites, Google Slides, Google Tasks, Google Vault, Google Vids, and Google Voice components of the Services, excluding Gmail Labs functionality
+
+"Monthly Uptime Percentage" means total number of minutes in a calendar month minus the number of minutes of Downtime in a calendar month, divided by the total number of minutes in a calendar month.
+
+"Downtime" means, for a domain, a period of time during which the user web interface for the applicable Covered Services used by Customer has more than a five percent user error rate. Downtime is measured based on server side error rate.
+
+Days of Service added to the end of the Service term (for offline billing customers), or monetary credit equal to the value of days applied to a future invoice (for online billing customers), for the applicable Covered Service(s) that did not meet the Google Workspace SLA
+
+Google Workspace Essentials Service Credit. If Customer orders Google Workspace Essentials edition directly from Google, any Service Credits that may be due to Customer will be issued in the form of monetary credits (and not additional Service days) that will be applied to Customer's next invoice.
+
+shall not exceed fifteen days of Service added to the end of Customer's term for that Covered Service
+
+< 99.9% - >= 99.0%
+
+< 99.0% - >= 95.0%
+
+< 95.0%
+
+Customer must notify Google (or, if Customer ordered Services from a Reseller, Customer must notify Customer's Reseller who must notify Google) by creating a support case within thirty days from the time Customer becomes eligible to receive a Service Credit.
+
+If Customer ordered Services from a Reseller and complies with this requirement, Customer will receive the applicable Service Credit from Customer's Reseller on behalf of Google.
+
+Customer must notify Customer's Reseller who must notify Google
+
+any services comprised within the Google Workspace Essentials Starter edition (notwithstanding that this SLA may define such services as Google Workspace Covered Services)
+
+any services that expressly exclude it (as stated in the documentation for such services)
+
+excluding Gmail Labs functionality
+
+caused by factors described in the "Force Majeure" section of the Agreement
+
+that resulted from Customer's equipment and/or third party equipment, (not within the primary control of Google)
+
+that resulted from Customer’s or its End Users’ abuses or other behaviors that violate the Agreement

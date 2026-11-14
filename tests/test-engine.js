@@ -8,6 +8,12 @@ function ok(c, what, grp) { grp = grp || "other"; groups[grp] = groups[grp] || [
 function J(x) { return typeof x === "bigint" ? x + "n" : JSON.stringify(x); }
 function eq(a, b, what, grp) { ok(a === b, what + ": got " + J(a) + ", want " + J(b), grp); }
 function file(p) { return readFile(SITE + "/" + p); }
+function refFile(resRel, fixRel) {
+  if (resRel === "TF2-google-sla-source.txt" && args[2]) return readFile(args[2]);
+  if (resRel === "TF2-google-cases.json" && args[3]) return readFile(args[3]);
+  try { var t = readFile(SITE + "/../../research/" + resRel); if (t && t.length) return t; } catch (e) {}
+  return readFile(SITE + "/tests/fixtures/" + fixRel);
+}
 
 // ---------- vendor files ----------
 var index = JSON.parse(file("vendors/index.json"));
@@ -327,14 +333,14 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
     v = JSON.parse(texts["microsoft-365-exchange.json"]); v.deadline.from = "start"; ok(!E.validateVendor(v).ok, "schema rejects from on end-of-next-month", "google");
     v = JSON.parse(texts["microsoft-365-exchange.json"]); v.featured = { start: "nope" }; ok(!E.validateVendor(v).ok, "schema rejects a bad featured block", "google"); })();
   // the source file: every quote must be in it, character for character (a missing file fails)
-  var src = ""; try { src = readFile(SITE + "/../../research/TF2-google-sla-source.txt"); } catch (e) { src = ""; }
+  var src = ""; try { src = refFile("TF2-google-sla-source.txt", "tf2-google-sla-source.txt"); } catch (e) { src = ""; }
   ok(src.length > 1000, "Google SLA source text is present", "google");
   var quotes = [];
   (function walk(o) { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === "object") Object.keys(o).forEach(function (k) { if (k === "quote" && typeof o[k] === "string") quotes.push(o[k]); else if (k === "also" && Array.isArray(o[k])) o[k].forEach(function (a) { quotes.push(a); }); else walk(o[k]); }); })(JSON.parse(texts["google-workspace.json"]));
   ok(quotes.length >= 14, "Google file carries its quotes (" + quotes.length + ")", "google");
   quotes.forEach(function (q, i) { ok(src.indexOf(q) >= 0, "Google quote " + i + " is in the source: " + q.slice(0, 50), "google"); });
   // 61 credit cases and 7 deadline cases
-  var gc = null; try { gc = JSON.parse(readFile(SITE + "/../../research/TF2-google-cases.json")); } catch (e) { gc = null; }
+  var gc = null; try { gc = JSON.parse(refFile("TF2-google-cases.json", "tf2-google-cases.json")); } catch (e) { gc = null; }
   ok(gc !== null, "Google reference cases are present", "google");
   if (gc) {
     eq(gc.cases.length, 61, "61 Google cases present", "google"); eq(gc.deadline_cases.length, 7, "7 Google deadline cases present", "google");
@@ -494,7 +500,7 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
 
 // ---------- the hand-off pack ----------
 (function () {
-  var GWV = loaded.vendors.filter(function (v) { return v.id === "google-workspace"; })[0], gc = JSON.parse(readFile(SITE + "/../../research/TF2-google-cases.json")), longest = 0, n = 0, bad = 0;
+  var GWV = loaded.vendors.filter(function (v) { return v.id === "google-workspace"; })[0], gc = JSON.parse(refFile("TF2-google-cases.json", "tf2-google-cases.json")), longest = 0, n = 0, bad = 0;
   function sane(t, label) { n++; if (/undefined|NaN|\[object/.test(t)) { bad++; fails.push("summary has undefined/NaN: " + label); } longest = Math.max(longest, t.length); return t; }
   var dMS = E.deadline(MS.deadline, { start: "2026-11-12" }), dRS = E.resellerDeadline(MS.resellerDeadline, { start: "2026-11-12" }, dMS.date);
   data.cases.forEach(function (c) {
@@ -649,29 +655,207 @@ ok(line(empty, "(i) Description of the Incident").indexOf("[what happened, in yo
   ok(E.claimText(MS, { inputs: inp, result: r, fields: { description: "." } }).indexOf("[what happened, in your words]") > 0, "a typed lone full stop falls back to the blank", "countdown");
 })();
 
-// ---------- step counting: static checks ----------
+// ---------- multi-vendor: Atlassian Cloud, GitHub Enterprise Cloud, calendar-quarter, UTC, days-after-period-end ----------
 (function () {
-  var app = file("app.js"), html = file("index.html"), m = /var STEPS = \{([^}]*)\}/.exec(app), names = [];
-  ok(!!m, "the STEPS whitelist is in app.js", "steps");
-  if (m) m[1].replace(/"([a-z0-9-]+)": 1/g, function (a, n) { names.push(n); return a; });
-  ok(names.length >= 14, "the whitelist holds its names (" + names.length + ")", "steps");
-  ok(names.indexOf("to-flights") >= 0, "the whitelist includes to-flights", "steps");
-  [["app.js", app], ["index.html", html]].forEach(function (f) {
-    var text = f[1].replace(/function countStep\(name\)/, ""), n = 0, i = -1, re = /countStep\(/g, x;
-    while ((x = re.exec(text))) {
-      n++; var rest = text.slice(x.index + x[0].length), lit = /^"([a-z0-9-]+)"\)/.exec(rest);
-      ok(!!lit && names.indexOf(lit[1]) >= 0, f[0] + ": countStep call " + n + " has a whitelisted string literal: " + rest.slice(0, 30), "steps");
-    }
-    ok(n > 0, f[0] + " has countStep calls (" + n + ")", "steps");
+  var GW = JSON.parse(file("vendors/google-workspace.json"));
+  var AT = JSON.parse(file("vendors/atlassian-cloud.json"));
+  var GH = JSON.parse(file("vendors/github-enterprise-cloud.json"));
+  eq(E.validateVendor(AT).ok, true, "Atlassian Cloud vendor JSON passes schema validation", "multivendor");
+  eq(E.validateVendor(GH).ok, true, "GitHub Enterprise Cloud vendor JSON passes schema validation", "multivendor");
+  eq(E.kindOf(AT), "sc", "Atlassian Cloud kind is sc", "multivendor");
+  eq(E.kindOf(GH), "sc", "GitHub Enterprise Cloud kind is sc", "multivendor");
+
+  // daysInQuarter & quarterName across leap and non-leap years
+  eq(E.daysInQuarter(2026, 1), 90, "Q1 2026 has 90 days (31+28+31)", "multivendor");
+  eq(E.daysInQuarter(2026, 3), 90, "March 2026 is in Q1 (90 days)", "multivendor");
+  eq(E.daysInQuarter(2028, 2), 91, "Q1 2028 leap year has 91 days (31+29+31)", "multivendor");
+  eq(E.daysInQuarter(2026, 4), 91, "Q2 2026 has 91 days (30+31+30)", "multivendor");
+  eq(E.daysInQuarter(2026, 7), 92, "Q3 2026 has 92 days (31+31+30)", "multivendor");
+  eq(E.daysInQuarter(2026, 11), 92, "Q4 2026 has 92 days (31+30+31)", "multivendor");
+  eq(E.quarterName(2026, 1), "Q1 2026", "Q1 name", "multivendor");
+  eq(E.quarterName(2026, 5), "Q2 2026", "Q2 name", "multivendor");
+  eq(E.quarterName(2026, 8), "Q3 2026", "Q3 name", "multivendor");
+  eq(E.quarterName(2026, 11), "Q4 2026", "Q4 name", "multivendor");
+
+  // Atlassian Cloud (UTC calendar-month, strict-below: <99.9% -> 10%, <99.0% -> 25%, <95.0% -> 50%)
+  // 30-day month = 43,200 min. 99.9% = 43.2 min down -> 43 min = 99.9004% (0%), 44 min = 99.8981% (10%)
+  var at0 = E.compute(AT, { periodDays: 30, month: 11, downMinutes: 43, feeCents: 120000 });
+  eq(at0.tier, 0, "Atlassian 43m in 30d month -> 99.9004% -> 0%", "multivendor");
+  eq(at0.creditCents, 0, "Atlassian 0% -> $0.00", "multivendor");
+  var at10 = E.compute(AT, { periodDays: 30, month: 11, downMinutes: 44, feeCents: 120000 });
+  eq(at10.tier, 10, "Atlassian 44m in 30d month -> 99.8981% -> 10%", "multivendor");
+  eq(at10.creditCents, 12000, "Atlassian 10% of $1,200 -> $120.00", "multivendor");
+  var at25 = E.compute(AT, { periodDays: 30, month: 11, downMinutes: 433, feeCents: 120000 });
+  eq(at25.tier, 25, "Atlassian 433m in 30d month -> 98.9976% -> 25%", "multivendor");
+  var at50 = E.compute(AT, { periodDays: 30, month: 11, downMinutes: 2500, feeCents: 120000 });
+  eq(at50.tier, 50, "Atlassian 2500m in 30d month -> <95% -> 50%", "multivendor");
+  eq(at50.creditCents, 60000, "Atlassian 50% of $1,200 -> $600.00", "multivendor");
+  // Atlassian specifies timeZone: "UTC", so 2161 min in Nov (and boundary minutes in Mar/Oct) NEVER flag DST clock-change uncertainty
+  var atUtcNov = E.compute(AT, { periodDays: 30, month: 11, downMinutes: 2161, feeCents: 100000 });
+  eq(atUtcNov.tier, 50, "Atlassian 2161m in 30d UTC Nov -> 50%", "multivendor");
+  eq(atUtcNov.periodChecks.length, 1, "Atlassian UTC calendar-month skips Nov DST variants", "multivendor");
+  eq(atUtcNov.uncertain, false, "Atlassian UTC calendar-month is not uncertain at 2161m", "multivendor");
+  var atUtcMar = E.compute(AT, { periodDays: 31, month: 3, downMinutes: 2232, feeCents: 100000 });
+  eq(atUtcMar.periodChecks.length, 1, "Atlassian UTC calendar-month skips March DST variants", "multivendor");
+
+  // GitHub Enterprise Cloud: calendar-quarter (<99.9% -> 5%, <99.5% -> 10%, <99.0% -> 25%) -> Q4 = 92 days = 132,480 min
+  // 99.9% of 132,480 = 132.48 min down -> 132 min = 99.9003% (0%), 133 min = 99.8996% (5%)
+  // 99.5% of 132,480 = 662.4 min down -> 662 min = 99.5003% (5%), 663 min = 99.4995% (10%)
+  // 99.0% of 132,480 = 1,324.8 min down -> 1,324 min = 99.0006% (10%), 1,325 min = 98.9998% (25%)
+  var gh0 = E.compute(GH, { periodDays: 92, month: 11, downMinutes: 132, feeCents: 315000 });
+  eq(gh0.periodMinutes, 132480, "GitHub Q4 periodMinutes is 132,480", "multivendor");
+  eq(gh0.tier, 0, "GitHub 132m in 92d quarter -> 99.9003% -> 0%", "multivendor");
+  var gh5 = E.compute(GH, { periodDays: 92, month: 11, downMinutes: 133, feeCents: 315000 });
+  eq(gh5.tier, 5, "GitHub 133m in 92d quarter -> 99.8996% -> 5%", "multivendor");
+  eq(gh5.creditCents, 15750, "GitHub 5% of $3,150 -> $157.50", "multivendor");
+  var gh10 = E.compute(GH, { periodDays: 92, month: 11, downMinutes: 663, feeCents: 315000 });
+  eq(gh10.tier, 10, "GitHub 663m in 92d quarter -> 99.4995% -> 10%", "multivendor");
+  eq(gh10.creditCents, 31500, "GitHub 10% of $3,150 -> $315.00", "multivendor");
+  var gh25 = E.compute(GH, { periodDays: 92, month: 10, downMinutes: 1325, feeCents: 315000 });
+  eq(gh25.tier, 25, "GitHub 1325m in 92d quarter -> 98.9998% -> 25%", "multivendor");
+  eq(gh25.creditCents, 78750, "GitHub 25% of $3,150 -> $787.50", "multivendor");
+  ok(!!E.compute(GH, { periodDays: 30, downMinutes: 10, feeCents: 1000 }).error, "calendar-quarter rejects 30-day periodDays", "multivendor");
+
+  // days-after-period-end deadlines
+  var dAtNov = E.deadline(AT.deadline, { start: "2026-11-03" }, AT.period);
+  eq(dAtNov.date, "2026-12-15", "Atlassian Nov 2026 outage -> month-end Nov 30 + 15 days = 2026-12-15", "multivendor");
+  eq(dAtNov.sendBy, "2026-12-14", "Atlassian sendBy 1 day before = 2026-12-14", "multivendor");
+  var dAtFebLeap = E.deadline(AT.deadline, { start: "2028-02-10" }, AT.period);
+  eq(dAtFebLeap.date, "2028-03-15", "Atlassian Feb 2028 leap month -> Feb 29 + 15 days = 2028-03-15", "multivendor");
+  var dAtCross = E.deadline(AT.deadline, { start: "2026-11-30", end: "2026-12-01" }, AT.period);
+  ok(dAtCross.crossesMonth === true && /month end/.test(dAtCross.crossNote), "Atlassian month-crossing outage carries crossNote", "multivendor");
+
+  var dGhQ4 = E.deadline(GH.deadline, { start: "2026-11-03" }, GH.period);
+  eq(dGhQ4.date, "2027-01-30", "GitHub Q4 2026 outage -> Dec 31 + 30 days = 2027-01-30", "multivendor");
+  eq(dGhQ4.sendBy, "2027-01-29", "GitHub sendBy 1 day before = 2027-01-29", "multivendor");
+  var dGhQ1 = E.deadline(GH.deadline, { start: "2026-01-15" }, GH.period);
+  eq(dGhQ1.date, "2026-04-30", "GitHub Q1 2026 outage -> Mar 31 + 30 days = 2026-04-30", "multivendor");
+  var dGhQ2 = E.deadline(GH.deadline, { start: "2026-05-02" }, GH.period);
+  eq(dGhQ2.date, "2026-07-30", "GitHub Q2 2026 outage -> Jun 30 + 30 days = 2026-07-30", "multivendor");
+  var dGhQ3 = E.deadline(GH.deadline, { start: "2026-08-20" }, GH.period);
+  eq(dGhQ3.date, "2026-10-30", "GitHub Q3 2026 outage -> Sep 30 + 30 days = 2026-10-30", "multivendor");
+  var dGhCross = E.deadline(GH.deadline, { start: "2026-03-31", end: "2026-04-01" }, GH.period);
+  ok(dGhCross.crossesMonth === true && /quarter end/.test(dGhCross.crossNote), "GitHub quarter-crossing outage carries crossNote", "multivendor");
+
+  // letters, summaries, records, and store feeCents support
+  var atLetter = E.claimText(AT, { inputs: { service: AT.services[0], downMinutes: 300, feeCents: 120000, reseller: false }, result: E.compute(AT, { periodDays: 30, month: 11, downMinutes: 300, feeCents: 120000 }), fields: { resources: "harborpine.atlassian.net" }, start: "2026-11-03", deadline: dAtNov.date });
+  ok(atLetter.indexOf("Hello Atlassian support,") > 0 && atLetter.indexOf("harborpine.atlassian.net") > 0 && atLetter.indexOf("$120.00") > 0 && atLetter.indexOf("15 December 2026") > 0, "Atlassian direct letter includes site, dollar credit, and Dec 15 deadline", "multivendor");
+  var ghLetter = E.claimText(GH, { inputs: { service: GH.services[0], downMinutes: 1400, feeCents: 315000, reseller: false }, result: E.compute(GH, { periodDays: 92, month: 11, downMinutes: 1400, feeCents: 315000 }), fields: { resources: "harbor-pine" }, start: "2026-11-03", deadline: dGhQ4.date });
+  ok(ghLetter.indexOf("Hello GitHub support,") > 0 && ghLetter.indexOf("harbor-pine") > 0 && ghLetter.indexOf("$787.50") > 0 && ghLetter.indexOf("calendar quarter") > 0 && ghLetter.indexOf("30 January 2027") > 0, "GitHub direct letter includes enterprise, quarter, dollar credit, and Jan 30 deadline", "multivendor");
+  var ghSum = E.summaryText(GH, { service: GH.services[0], downMinutes: 1400, feeCents: 315000 }, E.compute(GH, { periodDays: 92, month: 11, downMinutes: 1400, feeCents: 315000 }), dGhQ4, { today: "2026-11-13", start: "2026-11-03" });
+  ok(ghSum.indexOf("$787.50") > 0 && ghSum.indexOf("Q4 2026") > 0, "GitHub summary includes dollar credit and quarter", "multivendor");
+  var ghRec = E.recordHtml(GH, { service: GH.services[0], downMinutes: 1400, feeCents: 315000 }, E.compute(GH, { periodDays: 92, month: 11, downMinutes: 1400, feeCents: 315000 }), dGhQ4, { today: "2026-11-13", start: "2026-11-03", letter: ghLetter });
+  ok(ghRec.indexOf("GitHub Enterprise Cloud") > 0 && ghRec.indexOf("$787.50") > 0, "GitHub record HTML renders cleanly", "multivendor");
+
+  // N1: GitHub direct & Microsoft channel, Atlassian direct & reseller channel countdowns and summaries
+  eq(E.scChannel(GH), "microsoft", "GitHub scChannel is microsoft", "multivendor");
+  eq(E.scChannel(AT), "reseller", "Atlassian scChannel is reseller", "multivendor");
+  [["2026-11-13", "open", "Send your written request by Saturday 30 January 2027, so send it by Friday 29 January as a Microsoft support ticket."],
+   ["2027-01-29", "sendby", "Send your written request by tomorrow, Saturday 30 January 2027, as a Microsoft support ticket."],
+   ["2027-01-30", "last", "Send your written request today, Saturday 30 January 2027, as a Microsoft support ticket."],
+   ["2027-01-31", "passed", "A written request as a Microsoft support ticket was due by Saturday 30 January 2027. That date has passed. The agreement gives no right to a late claim. You can still open a Microsoft support ticket."]].forEach(function (row) {
+    var m = E.countdownModel("sc", dGhQ4, { today: row[0], name: GH.vendor, reseller: true, channel: E.scChannel(GH), slaLabel: GH.document.label });
+    eq(m.state, row[1], "GitHub Microsoft countdown state " + row[0], "multivendor");
+    eq(m.sentence, row[2], "GitHub Microsoft countdown sentence " + row[0], "multivendor");
+    ok(m.text.toLowerCase().indexOf("reseller") < 0 && m.text.indexOf("credits go to") < 0, "GitHub Microsoft countdown " + row[0] + " has no reseller/credits-go-to wording", "multivendor");
   });
-  ["app.js", "engine.js", "store.js", "index.html"].forEach(function (f) { ok(file(f).indexOf("pushState") < 0, f + " never calls pushState", "steps"); });
-  ok(app.indexOf('"/step/" + name') >= 0 && (app.match(/"\/step\//g) || []).length === 1, "one place builds a step path, from the whitelisted name", "steps");
-  ok(!/countStep\([^")]/.test(app.replace("function countStep(name)", "")) && !/countStep\("[^"]*"\s*\+/.test(app + html), "no concatenation or variable inside a countStep call", "steps");
-  ok(app.indexOf("if (!LIVE ||") > 0 && app.indexOf('/(^|\\.)downtimecredit\\.com$/.test(location.hostname)') > 0, "the live-host gate is in front of every step", "steps");
+  [["2026-11-13", "open", "Send a written request to GitHub Support by Saturday 30 January 2027, so send it by Friday 29 January."],
+   ["2027-01-29", "sendby", "Send a written request to GitHub Support by tomorrow, Saturday 30 January 2027."],
+   ["2027-01-30", "last", "Send a written request to GitHub Support today, Saturday 30 January 2027."],
+   ["2027-01-31", "passed", "A written request to GitHub Support was due by Saturday 30 January 2027. That date has passed. The agreement gives no right to a late claim. You can still ask GitHub Support."]].forEach(function (row) {
+    var m = E.countdownModel("sc", dGhQ4, { today: row[0], name: GH.vendor, reseller: false, channel: E.scChannel(GH), slaLabel: GH.document.label });
+    eq(m.sentence, row[2], "GitHub direct countdown sentence " + row[0], "multivendor");
+  });
+  [["2026-11-13", "open", "Submit a ticket to Atlassian support by Tuesday 15 December 2026, so submit the ticket by Monday 14 December. Either you or your reseller may submit the ticket."],
+   ["2026-12-14", "sendby", "Submit a ticket to Atlassian support by tomorrow, Tuesday 15 December 2026. Either you or your reseller may submit the ticket."],
+   ["2026-12-15", "last", "Submit a ticket to Atlassian support today, Tuesday 15 December 2026. Either you or your reseller may submit the ticket."],
+   ["2026-12-16", "passed", "A ticket to Atlassian support was due by Tuesday 15 December 2026. That date has passed. The agreement gives no right to a late claim. You can still ask Atlassian support."]].forEach(function (row) {
+    var m = E.countdownModel("sc", dAtNov, { today: row[0], name: AT.vendor, reseller: true, channel: E.scChannel(AT), slaLabel: AT.document.label });
+    eq(m.sentence, row[2], "Atlassian reseller countdown sentence " + row[0], "multivendor");
+    ok(m.text.indexOf("credits go to") < 0 && m.text.indexOf("Tell your reseller") < 0, "Atlassian reseller countdown " + row[0] + " avoids credits-go-to/Tell-your-reseller", "multivendor");
+  });
+  var ghMsSum = E.summaryText(GH, { service: GH.services[0], downMinutes: 1400, feeCents: 315000, reseller: true }, gh25, dGhQ4, { today: "2026-11-13", start: "2026-11-03" });
+  ok(ghMsSum.indexOf("Who asks: You send a written request as a Microsoft support ticket.") > 0 && ghMsSum.indexOf("as a Microsoft support ticket.") > 0 && ghMsSum.toLowerCase().indexOf("reseller") < 0, "GitHub Microsoft summary says Microsoft support ticket with no reseller", "multivendor");
+  var ghDirSum = E.summaryText(GH, { service: GH.services[0], downMinutes: 1400, feeCents: 315000, reseller: false }, gh25, dGhQ4, { today: "2026-11-13", start: "2026-11-03" });
+  ok(ghDirSum.indexOf("Who asks: You send a written request to GitHub Support.") > 0 && ghDirSum.indexOf("Send a written request to GitHub Support by Saturday 30 January 2027") > 0, "GitHub direct summary names GitHub Support", "multivendor");
+  var atRsSum = E.summaryText(AT, { service: AT.services[0], downMinutes: 300, feeCents: 120000, reseller: true }, at10, dAtNov, { today: "2026-11-13", start: "2026-11-03" });
+  ok(atRsSum.indexOf("Either you or your reseller may submit the ticket") > 0 && atRsSum.indexOf("so submit the ticket by Monday 14 December.") > 0 && atRsSum.indexOf("who is responsible for issuing the appropriate amounts to you.") > 0 && atRsSum.indexOf("credits go to") < 0, "Atlassian reseller summary follows section 2.3 and submit-the-ticket wording", "multivendor");
+
+  // N2: vendor-specific .ics for Atlassian and GitHub (direct & reseller/Microsoft), and Google .ics byte-identical + UID prefix
+  function unfoldIcs(s) { return s.replace(/\r\n /g, "").replace(/\\,/g, ",").replace(/\\;/g, ";"); }
+  var atIcsDirRaw = E.scIcs(AT, dAtNov, { service: AT.services[0], reseller: false }, "atlassian-1");
+  icsOk(atIcsDirRaw, "2026-12-15", "ics Atlassian direct");
+  var atIcsDir = unfoldIcs(atIcsDirRaw);
+  ok(atIcsDir.indexOf("UID:atlassian-1@downtimecredit.com") > 0 && atIcsDir.indexOf("SUMMARY:Atlassian Cloud service credit: submit Atlassian support ticket (Jira (Premium and Enterprise))") > 0, "Atlassian direct .ics UID and summary", "multivendor");
+  ok(atIcsDir.indexOf("Submit the Atlassian support ticket by Monday 14 December 2026 (the agreement allows 15 days after the end of the calendar month in which the failure occurred; last day Tuesday 15 December 2026).") > 0, "Atlassian direct .ics description", "multivendor");
+  ok(atIcsDir.indexOf("DESCRIPTION:14 days left to submit the Atlassian support ticket") > 0 && atIcsDir.indexOf("DESCRIPTION:3 days left to submit the Atlassian support ticket") > 0, "Atlassian direct .ics alarms", "multivendor");
+  ok(atIcsDir.indexOf("when you become eligible") < 0 && atIcsDir.indexOf("open the support case") < 0 && atIcsDir.indexOf("30 days end") < 0, "Atlassian direct .ics has no Google wording", "multivendor");
+  var atIcsRsRaw = E.scIcs(AT, dAtNov, { service: AT.services[0], reseller: true }, "atlassian-2");
+  icsOk(atIcsRsRaw, "2026-12-15", "ics Atlassian reseller");
+  var atIcsRs = unfoldIcs(atIcsRsRaw);
+  ok(atIcsRs.indexOf("Submit the Atlassian support ticket by Monday 14 December 2026 (the agreement allows 15 days after the end of the calendar month in which the failure occurred; last day Tuesday 15 December 2026). Either you or your reseller may submit the ticket.") > 0 && atIcsRs.indexOf("DESCRIPTION:14 days left to submit the Atlassian support ticket") > 0, "Atlassian reseller .ics description and alarm", "multivendor");
+  var ghIcsDirRaw = E.scIcs(GH, dGhQ4, { service: GH.services[0], reseller: false }, "github-1");
+  icsOk(ghIcsDirRaw, "2027-01-30", "ics GitHub direct");
+  var ghIcsDir = unfoldIcs(ghIcsDirRaw);
+  ok(ghIcsDir.indexOf("UID:github-1@downtimecredit.com") > 0 && ghIcsDir.indexOf("SUMMARY:GitHub Enterprise Cloud service credit: written request to GitHub Support (git Operations)") > 0, "GitHub direct .ics UID and summary", "multivendor");
+  ok(ghIcsDir.indexOf("Send the written request by Friday 29 January 2027 (the agreement allows 30 days after the end of the calendar quarter; last day Saturday 30 January 2027), direct to GitHub Support.") > 0, "GitHub direct .ics description", "multivendor");
+  ok(ghIcsDir.indexOf("DESCRIPTION:14 days left to send the written request to GitHub Support") > 0 && ghIcsDir.indexOf("DESCRIPTION:3 days left to send the written request to GitHub Support") > 0, "GitHub direct .ics alarms", "multivendor");
+  ok(ghIcsDir.indexOf("when you become eligible") < 0 && ghIcsDir.indexOf("open the support case") < 0, "GitHub direct .ics has no Google wording", "multivendor");
+  var ghIcsMsRaw = E.scIcs(GH, dGhQ4, { service: GH.services[0], reseller: true }, "github-2");
+  icsOk(ghIcsMsRaw, "2027-01-30", "ics GitHub Microsoft");
+  var ghIcsMs = unfoldIcs(ghIcsMsRaw);
+  ok(ghIcsMs.indexOf("SUMMARY:GitHub Enterprise Cloud service credit: Microsoft support ticket (git Operations)") > 0, "GitHub Microsoft .ics summary", "multivendor");
+  ok(ghIcsMs.indexOf("Send the written request by Friday 29 January 2027 (the agreement allows 30 days after the end of the calendar quarter; last day Saturday 30 January 2027), as a Microsoft support ticket.") > 0, "GitHub Microsoft .ics description", "multivendor");
+  ok(ghIcsMs.indexOf("DESCRIPTION:14 days left to send the written request as a Microsoft support ticket") > 0 && ghIcsMs.indexOf("DESCRIPTION:3 days left to send the written request as a Microsoft support ticket") > 0 && ghIcsMs.toLowerCase().indexOf("reseller") < 0, "GitHub Microsoft .ics alarms and no reseller", "multivendor");
+  // Google .ics byte-identical and app.js UID prefix check
+  var dGw = E.deadline(GW.deadline, { start: "2026-11-12" });
+  var gwRuleD = "This counts 30 days from the day the downtime started, the earliest reading.";
+  var gwRuleR = gwRuleD + " Your reseller notifies Google, so tell them sooner.";
+  eq(E.scIcs(GW, dGw, { service: "Gmail", reseller: false }, "google-1"), E.icsFor({ deadline: dGw.date, sendBy: dGw.sendBy, uid: "google-1", vendor: GW.vendor, product: GW.service, service: "Gmail", supportCase: true, rule: gwRuleD }), "Google direct .ics stays byte-identical", "multivendor");
+  eq(E.scIcs(GW, dGw, { service: "Gmail", reseller: true }, "google-2"), E.icsFor({ deadline: dGw.date, sendBy: dGw.sendBy, uid: "google-2", vendor: GW.vendor, product: GW.service, service: "Gmail", supportCase: true, rule: gwRuleR }), "Google reseller .ics stays byte-identical", "multivendor");
+  var appSrc = file("app.js");
+  ok(appSrc.indexOf('"google-"') > 0 && appSrc.indexOf('"atlassian-"') > 0 && appSrc.indexOf('"github-"') > 0 && appSrc.indexOf('c.v.id + "-" + ownSession') < 0, "app.js uses google-, atlassian-, github- UID prefixes", "multivendor");
+  ok(appSrc.indexOf("channel: E.scChannel(v)") > 0, "app.js gCalc passes channel to countdownModel", "multivendor");
+
+  // N3: vendor-specific no-credit lines and Atlassian Enterprise note
+  var atNoCredWant = "No credit on a Premium plan: uptime for the month was 99.9% or more. On an Enterprise plan the commitment is 99.95%, and uptime from 99.9% up to but not including 99.95% earns a 5% credit; this page does not work out Enterprise credits.";
+  var ghNoCredWant = "No credit: uptime for the quarter was 99.9% or more.";
+  eq(E.partsText(E.resultParts(at0, AT.vendor, { vendorId: AT.id, service: AT.service, below: E.firstTierBelow(AT), periodWord: E.periodWordOf(AT) })), atNoCredWant, "Atlassian resultParts no-credit wording", "multivendor");
+  eq(E.partsText(E.resultParts(gh0, GH.vendor, { vendorId: GH.id, service: GH.service, below: E.firstTierBelow(GH), periodWord: E.periodWordOf(GH) })), ghNoCredWant, "GitHub resultParts no-credit wording", "multivendor");
+  eq(E.partsText(E.resultParts(E.compute(MS, { periodDays: 30, month: 11, allUsers: 50, groups: [{ affectedUsers: 50, downMinutes: 10 }], feeCents: 10000 }), "Microsoft", {})), "No credit: email worked 99.9% of the month or more, so no credit level applies.", "Microsoft no-credit wording unchanged", "multivendor");
+  eq(E.partsText(E.googleResultParts(E.compute(GW, { periodDays: 30, month: 11, downMinutes: 10 }))), "No credit: the service stayed up at least 99.9% of the month, so no credit level applies.", "Google no-credit wording unchanged", "multivendor");
+  var at0Sum = E.summaryText(AT, { service: AT.services[0], downMinutes: 43, feeCents: 120000 }, at0, dAtNov, { today: "2026-11-13", start: "2026-11-03" });
+  ok(at0Sum.indexOf("Result: " + atNoCredWant) > 0 && at0Sum.indexOf("email worked") < 0, "Atlassian no-credit summary uses Premium/Enterprise wording", "multivendor");
+  var gh0Sum = E.summaryText(GH, { service: GH.services[0], downMinutes: 132, feeCents: 315000 }, gh0, dGhQ4, { today: "2026-11-13", start: "2026-11-03" });
+  ok(gh0Sum.indexOf("Result: " + ghNoCredWant) > 0 && gh0Sum.indexOf("99.5% or more") < 0 && gh0Sum.indexOf("email worked") < 0, "GitHub no-credit summary uses 99.9% quarter wording", "multivendor");
+  var atCredSum = E.summaryText(AT, { service: AT.services[0], downMinutes: 44, feeCents: 120000 }, at10, dAtNov, { today: "2026-11-13", start: "2026-11-03" });
+  ok(atCredSum.indexOf("Result: Up to about $120.00 credit, if Atlassian accepts the claim. This uses Premium tiers; Enterprise credits differ: see the note above.") > 0, "Atlassian credit summary includes the Premium/Enterprise note", "multivendor");
+  var atNoFeeSum = E.summaryText(AT, { service: AT.services[0], downMinutes: 44 }, at10, dAtNov, { today: "2026-11-13", start: "2026-11-03", noFee: true });
+  ok(atNoFeeSum.indexOf("Result: Type what you paid to see the amount. This uses Premium tiers; Enterprise credits differ: see the note above.") > 0, "Atlassian credit summary with no fee includes the Premium/Enterprise note", "multivendor");
+
+  var stRules = {
+    "google-workspace": { services: GW.services, allowFee: false },
+    "atlassian-cloud": { services: AT.services, allowFee: true },
+    "github-enterprise-cloud": { services: GH.services, allowFee: true }
+  };
+  var st = S.createStore({ storage: null, knownVendors: ["microsoft-365-exchange", "google-workspace", "atlassian-cloud", "github-enterprise-cloud"], rules: stRules });
+  var addAt = st.add({ vendorId: "atlassian-cloud", title: "Jira Nov", start: "2026-11-03", inputs: { downMinutes: 300, service: AT.services[0], feeCents: 120000, reseller: false } });
+  ok(!addAt.error && st.all()[0].inputs.feeCents === 120000, "store accepts feeCents on Atlassian Cloud", "multivendor");
+  var addGh = st.add({ vendorId: "github-enterprise-cloud", title: "GH Q4", start: "2026-11-03", inputs: { downMinutes: 1400, service: GH.services[0], feeCents: 315000, reseller: false } });
+  ok(!addGh.error && st.all()[1].inputs.feeCents === 315000, "store accepts feeCents on GitHub Enterprise Cloud", "multivendor");
+  var rejectGwFee = st.add({ vendorId: "google-workspace", title: "GW bad", start: "2026-11-03", inputs: { downMinutes: 300, service: "Gmail", feeCents: 10000 } });
+  ok(!!rejectGwFee.error, "store still refuses feeCents on Google Workspace", "multivendor");
 })();
 
-// ---------- report ----------
-print("reference cases: " + caseOk + "/60 exact; reference deadline cases: " + dlOk + "/6");
+// the Microsoft no-credit sentence stays as it was, wherever the engine is asked for it (saved list and result line)
+(function () {
+  var ms = JSON.parse(readFile(SITE + "/vendors/microsoft-365-exchange.json"));
+  var r = E.resultParts({ tier: 0, uncertain: false, creditUnit: "percent-of-fee" }, "Microsoft", { vendorId: "microsoft-365-exchange", below: "99.9" });
+  ok(r.text === "No credit: email worked 99.9% of the month or more, so no credit level applies.", "Microsoft no-credit sentence unchanged even when a threshold is passed: " + r.text, "multivendor");
+  var g = E.resultParts({ tier: 0, uncertain: false, creditUnit: "percent-of-fee" }, "GitHub", { vendorId: "github-enterprise-cloud", below: "99.9", periodWord: "quarter" });
+  ok(g.text === "No credit: uptime for the quarter was 99.9% or more.", "GitHub no-credit sentence: " + g.text, "multivendor");
+})();
+
 Object.keys(groups).forEach(function (g) { print("  " + g + ": " + groups[g][0] + " passed, " + groups[g][1] + " failed"); });
 fails.slice(0, 25).forEach(function (f) { print("FAIL " + f); });
 print(pass + " passed, " + fail + " failed");

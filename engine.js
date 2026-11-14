@@ -16,6 +16,13 @@ var DTC = (function () {
   // ---------- calendar on integers (proleptic Gregorian; days_from_civil, H. Hinnant) ----------
   function isLeap(y) { return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
   function daysInMonth(y, m) { return [31, isLeap(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1]; }
+  function quarterStartMonth(m) { return Math.floor((m - 1) / 3) * 3 + 1; }
+  function daysInQuarter(y, m) {
+    if (!isWhole(y) || !isWhole(m) || m < 1 || m > 12) return NaN;
+    var q0 = quarterStartMonth(m);
+    return daysInMonth(y, q0) + daysInMonth(y, q0 + 1) + daysInMonth(y, q0 + 2);
+  }
+  function quarterName(y, m) { return "Q" + (Math.floor((m - 1) / 3) + 1) + " " + y; }
   function dayNumber(y, m, d) {                       // days since 1970-01-01
     y -= m <= 2 ? 1 : 0;
     var era = Math.floor(y / 400), yoe = y - era * 400;
@@ -66,7 +73,8 @@ var DTC = (function () {
   // ---------- deadline rules ----------
   // end-of-next-month: from the month the incident occurred (start date). days-after: N calendar days after the incident's end date,
   // or after its start date when the rule says from: "start" (the default is "end").
-  function deadline(rule, incident) {
+  // days-after-period-end: N calendar days after the last day of the calendar month or calendar quarter containing start.
+  function deadline(rule, incident, period) {
     if (!rule) return { error: "no deadline rule" };
     if (rule.rule === "end-of-next-month") {
       var s = parseISO(incident && incident.start);
@@ -81,6 +89,22 @@ var DTC = (function () {
       var e = parseISO(incident && (rule.from === "start" ? incident.start : (incident.end || incident.start)));
       if (!e) return { error: "end date needed" };
       return inRange(withSendBy(rule, { date: addDays(iso(e), rule.days) }));
+    }
+    if (rule.rule === "days-after-period-end") {
+      if (!isWhole(rule.days) || rule.days < 1 || rule.days > 3660) return { error: "bad day count" };
+      var sp = parseISO(incident && incident.start);
+      if (!sp) return { error: "start date needed" };
+      var pType = (period && period.type) || rule.period || "calendar-month";
+      var em = pType === "calendar-quarter" ? quarterStartMonth(sp.m) + 2 : sp.m;
+      var pEnd = iso({ y: sp.y, m: em, d: daysInMonth(sp.y, em) });
+      var rp = withSendBy(rule, { date: addDays(pEnd, rule.days) });
+      var ep = parseISO(incident && incident.end);
+      if (ep && iso(ep) > pEnd) {
+        var pw = pType === "calendar-quarter" ? "quarter" : "month";
+        rp.crossesMonth = true;
+        rp.crossNote = "This incident crosses a " + pw + " end. Each " + pw + " is counted separately; this uses the " + pw + " it started in, the earlier deadline.";
+      }
+      return inRange(rp);
     }
     return { error: "unknown deadline rule" };
   }
@@ -123,7 +147,7 @@ var DTC = (function () {
 
   // ---------- schema ----------
   var FORMULAS = ["user-minutes", "total-minutes"], UNITS = ["percent-of-fee", "service-days"], COMPARISONS = ["strict-below", "at-or-below"],
-    RULES = ["end-of-next-month", "days-after"], PERIODS = ["calendar-month", "days"];
+    RULES = ["end-of-next-month", "days-after", "days-after-period-end"], PERIODS = ["calendar-month", "calendar-quarter", "days"];
   function sourced(x, where, errs) {          // a fact: quoted clause + source address (+ optional own document date)
     if (!x || typeof x !== "object") { errs.push(where + ": missing"); return; }
     if (!str(x.quote)) errs.push(where + ": no quoted clause");
@@ -135,9 +159,11 @@ var DTC = (function () {
     if (COMPARISONS.indexOf(v.comparison) < 0) errs.push("comparison: unknown");
     if (!v.period || PERIODS.indexOf(v.period.type) < 0) errs.push("period: unknown");
     else if (v.period.type === "days" && (!isWhole(v.period.days) || v.period.days < 1 || v.period.days > 366)) errs.push("period: days 1 to 366");
+    if (v.period && v.period.timeZone !== undefined && v.period.timeZone !== "UTC") errs.push("period: timeZone must be UTC");
     if (!v.deadline || RULES.indexOf(v.deadline.rule) < 0) errs.push("deadline: unknown rule");
-    else if (v.deadline.rule === "days-after" && (!isWhole(v.deadline.days) || v.deadline.days < 1 || v.deadline.days > 3660)) errs.push("deadline: days 1 to 3660");
+    else if ((v.deadline.rule === "days-after" || v.deadline.rule === "days-after-period-end") && (!isWhole(v.deadline.days) || v.deadline.days < 1 || v.deadline.days > 3660)) errs.push("deadline: days 1 to 3660");
     if (v.deadline && v.deadline.from !== undefined && (v.deadline.rule !== "days-after" || (v.deadline.from !== "start" && v.deadline.from !== "end"))) errs.push("deadline: from is start or end, and only for days-after");
+    if (v.deadline && v.deadline.period !== undefined && (v.deadline.rule !== "days-after-period-end" || (v.deadline.period !== "calendar-month" && v.deadline.period !== "calendar-quarter"))) errs.push("deadline: period only for days-after-period-end");
     if (!Array.isArray(v.tiers) || v.tiers.length < 1 || v.tiers.length > 5) errs.push("tiers: 1 to 5");
     else v.tiers.forEach(function (t, i) {
       if (!t || !parseLimit(t.below)) errs.push("tiers[" + i + "]: bad limit");
@@ -230,9 +256,10 @@ var DTC = (function () {
   function compute(v, o) {
     if (!v || !v.tiers) return { error: "no terms" };
     if (!o || typeof o !== "object") return { error: "bad input" };
-    var days = v.period && v.period.type === "days" ? v.period.days : o.periodDays;
-    if (!isWhole(days) || days < 1 || (v.period && v.period.type === "calendar-month" && (days < 28 || days > 31)) || days > 366) return { error: "bad input" };
-    var unit = v.creditUnit, word = v.period && v.period.type === "calendar-month" ? "month" : "period";
+    var pType = v.period && v.period.type;
+    var days = pType === "days" ? v.period.days : o.periodDays;
+    if (!isWhole(days) || days < 1 || (pType === "calendar-month" && (days < 28 || days > 31)) || (pType === "calendar-quarter" && (days < 90 || days > 92)) || days > 366) return { error: "bad input" };
+    var unit = v.creditUnit, word = pType === "calendar-month" ? "month" : pType === "calendar-quarter" ? "quarter" : "period";
     if (unit === "percent-of-fee" && !isWhole(o.feeCents)) return { error: "bad input" };
     var periodMin = BigInt(days) * 1440n, P, D, res = {};
     if (v.formula === "user-minutes") {
@@ -270,7 +297,7 @@ var DTC = (function () {
     // The agreement may name no time zone. A month that holds a clock change is 60 minutes shorter or longer in that zone.
     // Only real changes count (US and EU rules for these months): CLOCK[month]. Plain reading first, then each real variant.
     // Fixed-day periods have none. Own-contract terms get variants only when the visitor ticks that box (o.clockCheck).
-    var offs = (v.period && v.period.type === "calendar-month" && (!v.own || o.clockCheck === true) && CLOCK[o.month]) || [];
+    var offs = (v.period && v.period.type === "calendar-month" && v.period.timeZone !== "UTC" && (!v.own || o.clockCheck === true) && CLOCK[o.month]) || [];
     var users = v.formula === "user-minutes" ? BigInt(o.allUsers) : 1n;
     var maxDown = v.formula === "user-minutes" ? o.groups.reduce(function (m, g) { return BigInt(g.downMinutes) > m ? BigInt(g.downMinutes) : m; }, 0n) : D;
     res.periodChecks = [0].concat(offs).map(function (dm) {
@@ -326,18 +353,49 @@ var DTC = (function () {
     var uid = (str(o.uid) ? o.uid.replace(/[^A-Za-z0-9-]/g, "") : "claim-" + ds) + "@downtimecredit.com";
     var vendor = str(o.vendor) ? o.vendor : "the provider";
     var partner = o.partner && typeof o.partner === "object" ? o.partner : null;
-    var summary = partner ? partner.title : o.supportCase ? (str(o.product) ? o.product : vendor) + " service credit: 30 days end" + (str(o.service) ? " (" + o.service + ")" : "") : "Credit claim must be received by " + vendor + " today" + (str(o.title) ? ": " + o.title : "");
-    var desc = partner ? partner.description : o.supportCase ? "The " + (str(o.product) ? o.product : vendor) + " SLA asks for a support case within thirty days from when you become eligible. It does not say when that is. Counting from the day the downtime started" + (str(o.service) ? " (" + o.service + ")" : "") + ", the 30 days end on " + fullDate(o.deadline) + ". " +
+    var ev = o.event && typeof o.event === "object" ? o.event : null;
+    var summary = ev ? ev.title : partner ? partner.title : o.supportCase ? (str(o.product) ? o.product : vendor) + " service credit: 30 days end" + (str(o.service) ? " (" + o.service + ")" : "") : "Credit claim must be received by " + vendor + " today" + (str(o.title) ? ": " + o.title : "");
+    var desc = ev ? ev.description : partner ? partner.description : o.supportCase ? "The " + (str(o.product) ? o.product : vendor) + " SLA asks for a support case within thirty days from when you become eligible. It does not say when that is. Counting from the day the downtime started" + (str(o.service) ? " (" + o.service + ")" : "") + ", the 30 days end on " + fullDate(o.deadline) + ". " +
       (parseISO(o.sendBy) ? "Send it by " + fullDate(o.sendBy) + " or sooner. " : "") + (str(o.rule) ? o.rule + " " : "") + "Sooner is safer."
       : "The claim" + (str(o.title) ? " for " + o.title : "") + " must be received by " + vendor + " by " + fullDate(o.deadline) + ". " +
       (parseISO(o.sendBy) ? "Send it by " + fullDate(o.sendBy) + " or sooner. " : "") + (str(o.rule) ? o.rule + " " : "") + (o.noTimeZone ? "No time zone is stated. " : "") + "Sooner is safer.";
-    function alarm(n) { return ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-P" + n + "D", "DESCRIPTION:" + icsEscape(n + (partner ? " days left to ask your provider" : o.supportCase ? " days left to open the support case" : " days left to send the credit claim")), "END:VALARM"]; }
+    function alarm(n) { return ["BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:-P" + n + "D", "DESCRIPTION:" + icsEscape(n + (ev ? " " + ev.alarm : partner ? " days left to ask your provider" : o.supportCase ? " days left to open the support case" : " days left to send the credit claim")), "END:VALARM"]; }
     var lines = [].concat(
       ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Downtime Credit//downtimecredit.com//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
        "BEGIN:VEVENT", "UID:" + uid, "DTSTAMP:" + (/^\d{8}T\d{6}Z$/.test(o.stamp || "") ? o.stamp : "20261112T000000Z"),
        "DTSTART;VALUE=DATE:" + ds, "DTEND;VALUE=DATE:" + de, "SUMMARY:" + icsEscape(summary), "DESCRIPTION:" + icsEscape(desc), "TRANSP:TRANSPARENT"],
       alarm(14), alarm(3), ["END:VEVENT", "END:VCALENDAR"]);
     return lines.map(fold).join("\r\n") + "\r\n";
+  }
+  function scIcs(v, d, inputs, uid) {
+    if (!v || !d || !d.date) return "";
+    var rs = inputs && inputs.reseller === true, svc = inputs && inputs.service ? inputs.service : "";
+    if (v.id === "google-workspace" || !v.deadline || v.deadline.rule !== "days-after-period-end") {
+      var gRule = v.id === "google-workspace"
+        ? "This counts 30 days from the day the downtime started, the earliest reading." + (rs ? " Your reseller notifies Google, so tell them sooner." : "")
+        : (v.deadline && v.deadline.ownWords ? v.deadline.ownWords : "");
+      return icsFor({ deadline: d.date, sendBy: d.sendBy, uid: uid, vendor: v.vendor, product: v.service, service: svc, supportCase: true, rule: gRule });
+    }
+    var pw = v.deadline.period === "calendar-quarter" ? "quarter" : "month", sendBy = d.sendBy || d.date;
+    if (scChannel(v) === "microsoft") {
+      var route = rs ? "as a Microsoft support ticket" : "direct to GitHub Support";
+      return icsFor({
+        deadline: d.date, sendBy: d.sendBy, uid: uid,
+        event: {
+          title: v.service + " service credit: " + (rs ? "Microsoft support ticket" : "written request to GitHub Support") + (svc ? " (" + svc + ")" : ""),
+          description: "Send the written request by " + fullDate(sendBy) + " (the agreement allows " + v.deadline.days + " days after the end of the calendar " + pw + "; last day " + fullDate(d.date) + "), " + route + "." + (svc ? " Service: " + svc + "." : "") + " Sooner is safer.",
+          alarm: rs ? "days left to send the written request as a Microsoft support ticket" : "days left to send the written request to GitHub Support"
+        }
+      });
+    }
+    return icsFor({
+      deadline: d.date, sendBy: d.sendBy, uid: uid,
+      event: {
+        title: v.service + " service credit: submit " + v.vendor + " support ticket" + (svc ? " (" + svc + ")" : ""),
+        description: "Submit the " + v.vendor + " support ticket by " + fullDate(sendBy) + " (the agreement allows " + v.deadline.days + " days after the end of the calendar " + pw + " in which the failure occurred; last day " + fullDate(d.date) + ")." + (rs ? " Either you or your reseller may submit the ticket." : "") + (svc ? " Service: " + svc + "." : "") + " Sooner is safer.",
+        alarm: "days left to submit the " + v.vendor + " support ticket"
+      }
+    });
   }
 
 
@@ -353,11 +411,28 @@ var DTC = (function () {
     [{ tier: res.tier, credit: res.creditUnit === "service-days" ? res.creditDays : res.creditCents }].concat(res.periodChecks || []).forEach(function (c) { if (!seen[c.tier]) { seen[c.tier] = 1; out2.push(c); } });
     return out2.sort(function (a, b) { return a.tier - b.tier; });
   }
-  // the result line for Microsoft and own-contract terms: {kind: "plain", text, empty} | {kind: "amt", pre, amt, post} | {kind: "unc", amt, rest}
+  function firstTierBelow(v) {
+    if (!v || !Array.isArray(v.tiers) || !v.tiers.length) return null;
+    var best = null;
+    v.tiers.forEach(function (t) {
+      var l = t && parseLimit(t.below);
+      if (!l) return;
+      if (!best || l.n * best.l.d > best.l.n * l.d) best = { below: t.below, l: l };
+    });
+    return best ? best.below : null;
+  }
+  // the result line for Microsoft, SaaS percent-of-fee vendors, and own-contract terms: {kind: "plain", text, empty} | {kind: "amt", pre, amt, post} | {kind: "unc", amt, rest}
   function resultParts(res, vendorName, o) {
     o = o || {};
     var lv = levelsOf(res), lo = lv[0], hi = lv[lv.length - 1], unc = res.uncertain, accept = ", if " + vendorName + " accepts the claim.";
-    if (!unc && res.tier === 0) return { kind: "plain", text: o.own ? "No credit: the uptime stayed inside the target in the terms you typed." : "No credit: email worked 99.9% of the month or more, so no credit level applies." };
+    if (!unc && res.tier === 0) {
+      var pw = o.periodWord || "month";
+      var noCredText = o.own ? "No credit: the uptime stayed inside the target in the terms you typed."
+        : o.vendorId === "atlassian-cloud" && o.below ? "No credit on a Premium plan: uptime for the " + pw + " was " + o.below + "% or more. On an Enterprise plan the commitment is 99.95%, and uptime from " + o.below + "% up to but not including 99.95% earns a 5% credit; this page does not work out Enterprise credits."
+        : o.below && o.vendorId !== "microsoft-365-exchange" ? "No credit: uptime for the " + (o.periodWord || "quarter") + " was " + o.below + "% or more."
+        : "No credit: email worked 99.9% of the month or more, so no credit level applies.";
+      return { kind: "plain", text: noCredText };
+    }
     if (res.creditUnit === "service-days") {
       if (unc && lo.tier === 0) return { kind: "amt", pre: "Up to ", amt: hi.tier + " days", post: " of service credit, or none" + accept };
       if (unc) return { kind: "amt", pre: "Up to ", amt: lo.tier + " days", post: " of service credit, possibly " + hi.tier + " days" + accept };
@@ -414,6 +489,31 @@ var DTC = (function () {
         : "By this page's count, a support case with Google is due by " + fd(last) + "; " + (rs ? "tell your reseller by " : "send it by ") + fd(ask) + "." + (rs ? " They notify Google." : "");
       m.quiet = state === "last" && !rs ? TEXT.LASTDAY : "";
       m.why = state === "passed" ? "" : String(o.ownWords || "");
+    } else if (kind === "sc") {
+      var msRoute = o.channel === "microsoft";
+      m.lead = state === "passed" ? "The window has closed."
+        : state === "last" ? "Today is the last day."
+        : state === "sendby" ? "Send it today."
+        : (n === 1 ? "1 day left to " : n + " days left to ") + "send it.";
+      if (msRoute && rs) {
+        m.sentence = state === "passed" ? "A written request as a Microsoft support ticket was due by " + fd(last) + ". That date has passed. The agreement gives no right to a late claim. You can still open a Microsoft support ticket."
+          : state === "last" ? "Send your written request today, " + fd(last) + ", as a Microsoft support ticket."
+          : state === "sendby" ? "Send your written request by tomorrow, " + fd(last) + ", as a Microsoft support ticket."
+          : "Send your written request by " + fd(last) + (d.sendBy ? ", so send it by " + shortSend : "") + " as a Microsoft support ticket.";
+      } else if (msRoute) {
+        m.sentence = state === "passed" ? "A written request to " + name + " Support was due by " + fd(last) + ". That date has passed. The agreement gives no right to a late claim. You can still ask " + name + " Support."
+          : state === "last" ? "Send a written request to " + name + " Support today, " + fd(last) + "."
+          : state === "sendby" ? "Send a written request to " + name + " Support by tomorrow, " + fd(last) + "."
+          : "Send a written request to " + name + " Support by " + fd(last) + (d.sendBy ? ", so send it by " + shortSend : "") + ".";
+      } else {
+        m.sentence = state === "passed" ? "A ticket to " + name + " support was due by " + fd(last) + ". That date has passed. The agreement gives no right to a late claim. You can still ask " + name + " support."
+          : state === "last" ? "Submit a ticket to " + name + " support today, " + fd(last) + "."
+          : state === "sendby" ? "Submit a ticket to " + name + " support by tomorrow, " + fd(last) + "."
+          : "Submit a ticket to " + name + " support by " + fd(last) + (d.sendBy ? ", so submit the ticket by " + shortSend : "") + ".";
+        if (rs && state !== "passed") m.sentence += " Either you or your reseller may submit the ticket.";
+      }
+      m.quiet = state === "last" ? TEXT.LASTDAY : state === "passed" ? "" : "Sooner is safer. From the " + (o.slaLabel || (name + " SLA")) + ".";
+      m.why = state === "passed" ? "" : String(o.ownWords || "");
     } else if (rs) {
       var between = state === "sendby" && n < 0;
       m.lead = state === "passed" ? "The window has closed."
@@ -456,7 +556,7 @@ var DTC = (function () {
     }
     var showLast = n < 0, tp = parseISO(showLast ? last : ask);
     m.tile = state === "passed" ? { month: "Window", day: "closed", label: "", closed: true }
-      : { month: MONTHS[tp.m - 1].slice(0, 3) + " " + tp.y, day: String(tp.d), label: (showLast || kind === "own") ? "last day" : rs ? "ask by" : "send by" };
+      : { month: MONTHS[tp.m - 1].slice(0, 3) + " " + tp.y, day: String(tp.d), label: (showLast || kind === "own") ? "last day" : (rs && kind !== "sc") ? "ask by" : "send by" };
     m.text = [m.lead, m.sentence, m.quiet, m.why].filter(Boolean).join(" ");
     return m;
   }
@@ -464,24 +564,35 @@ var DTC = (function () {
 
   // ---------- the hand-off pack: a summary, and a record file (pure text; the page decides what to do with it) ----------
   function esc(x) { return String(x == null ? "" : x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
-  function kindOf(v) { return v.own ? "own" : v.letterStyle === "support-case" ? "g" : "ms"; }
+  function kindOf(v) { return v.own ? "own" : v.letterStyle === "support-case" ? (v.creditUnit === "service-days" ? "g" : "sc") : "ms"; }
   function plainDate(iso) { return parseISO(iso) ? fullDate(iso).replace(/^\w+ /, "") : ""; }
   function clip(x, n) { x = String(x == null ? "" : x); return n && x.length > n ? x.slice(0, n) + "..." : x; }
+  function periodWordOf(v) { return v.period && v.period.type === "calendar-quarter" ? "quarter" : v.period && v.period.type === "calendar-month" ? "month" : "period"; }
   // the numbers the visitor typed, as label/value rows. o: {start, end, fields, nameMax}
   function numberRows(v, inputs, o) {
     o = o || {}; inputs = inputs || {};
-    var k = kindOf(v), rows = [], rs = inputs.reseller === true, nm = o.nameMax;
+    var k = kindOf(v), rows = [], rs = inputs.reseller === true, nm = o.nameMax, sp = parseISO(o.start);
     function put(a, b) { rows.push([a, b]); }
     if (k === "ms") {
       var gs = Array.isArray(inputs.groups) ? inputs.groups : [];
+      var mLabel = sp ? MONTHS[sp.m - 1] : "November";
       put("Users on the plan", isWhole(inputs.allUsers) ? groupText(inputs.allUsers) : "not typed");
       put("Users without email", gs.length ? gs.map(function (g) { return groupText(g.affectedUsers) + " for " + hm(g.downMinutes); }).join("; ") : "not typed");
-      put("Paid for November", isWhole(inputs.feeCents) ? centsText(inputs.feeCents) : "not typed");
+      put("Paid for " + mLabel, isWhole(inputs.feeCents) ? centsText(inputs.feeCents) : "not typed");
       put("Bought", rs ? "through a reseller or provider" : "from Microsoft");
     } else if (k === "g") {
       put("Service", clip(inputs.service, nm)); put("Day the first downtime of the month started", plainDate(o.start));
       put("Time down in the month", isWhole(inputs.downMinutes) ? hm(inputs.downMinutes) : "not typed"); put("Bought", rs ? "through a reseller" : "from Google");
       if (o.fields && has(o.fields.resources)) put("Domain", clip(String(o.fields.resources).trim(), 120));
+    } else if (k === "sc") {
+      var pw = periodWordOf(v);
+      var pLabel = sp ? (v.period.type === "calendar-quarter" ? quarterName(sp.y, sp.m) : MONTHS[sp.m - 1] + " " + sp.y) : ("the " + pw);
+      put("Service", clip(inputs.service, nm));
+      put("Outage date", plainDate(o.start));
+      put("Time down in the " + pw, isWhole(inputs.downMinutes) ? hm(inputs.downMinutes) : "not typed");
+      if (v.creditUnit === "percent-of-fee") put("Paid for " + pLabel, isWhole(inputs.feeCents) ? centsText(inputs.feeCents) : "not typed");
+      put("Bought", rs ? (v.id === "github-enterprise-cloud" ? "through Microsoft" : "through a reseller") : "from " + v.vendor);
+      if (o.fields && has(o.fields.resources)) put("Account or site", clip(String(o.fields.resources).trim(), 120));
     } else {
       put("Provider", clip(v.vendor, nm)); put("Service", clip(v.service, nm)); put("Outage started", plainDate(o.start)); put("Outage ended", o.end ? plainDate(o.end) : "not typed");
       put("Time down", isWhole(inputs.downMinutes) ? hm(inputs.downMinutes) : "not typed"); put("Paid for the period", isWhole(inputs.feeCents) ? centsText(inputs.feeCents) : "not typed");
@@ -490,11 +601,15 @@ var DTC = (function () {
     return rows;
   }
   // the lines "How this was worked out" shows
-  function workingRows(v, res) {
+  function workingRows(v, res, o) {
     var k = kindOf(v), rows = [];
     if (!res || res.error) return rows;
-    if (k === "ms") { rows.push(["All email-minutes in November (users × minutes in the month)", groupText(res.userMinutes)], ["Email-minutes lost", groupText(res.downtimeUserMinutes)]); }
-    else { rows.push([k === "g" ? "Minutes in the month" : "Minutes in the period", groupText(res.periodMinutes)], [k === "g" ? "Minutes of downtime" : "Minutes down", groupText(res.downtimeMinutes)]); }
+    var sp = o && parseISO(o.start), mLabel = sp ? MONTHS[sp.m - 1] : "November";
+    if (k === "ms") { rows.push(["All email-minutes in " + mLabel + " (users × minutes in the month)", groupText(res.userMinutes)], ["Email-minutes lost", groupText(res.downtimeUserMinutes)]); }
+    else if (k === "sc") {
+      var pw = periodWordOf(v);
+      rows.push(["Minutes in the " + pw + (v.period && v.period.timeZone === "UTC" ? " (UTC)" : ""), groupText(res.periodMinutes)], ["Minutes of downtime", groupText(res.downtimeMinutes)]);
+    } else { rows.push([k === "g" ? "Minutes in the month" : "Minutes in the period", groupText(res.periodMinutes)], [k === "g" ? "Minutes of downtime" : "Minutes down", groupText(res.downtimeMinutes)]); }
     rows.push(["Share of the time it worked (uptime, to 4 decimals, never rounded up)", res.uptimePct + "%"]);
     rows.push(["Credit level", res.tier === 0 ? "none" : res.creditUnit === "service-days" ? gdays(res.tier) : res.tier + "%"]);
     if (k === "g") rows.push(["The most the agreement gives (one service, one calendar month)", "15 days"]);
@@ -514,26 +629,33 @@ var DTC = (function () {
     var k = kindOf(v), rs = inputs && inputs.reseller === true;
     if (noCredit) return "Nothing to file: by this count the uptime stays at or above the first credit level.";
     if (k === "g") return rs ? "You tell your reseller; the agreement says the reseller must notify Google." : "You create a support case with Google.";
+    if (k === "sc") {
+      if (v.id === "github-enterprise-cloud") return rs ? "You send a written request as a Microsoft support ticket." : "You send a written request to GitHub Support.";
+      return rs ? "Either you or your reseller may submit a ticket to " + vn + " support; " + vn + " issues any credit to the reseller, who is responsible for issuing the appropriate amounts to you." : "You submit a ticket to " + vn + " support.";
+    }
     if (k === "own") return "You send the request to the vendor named in your contract, the way the contract says; this page has not read it.";
     return rs ? "Your provider, or the partner they buy from, requests it from Microsoft. You ask them." : "You send the request to Microsoft support.";
   }
   function agreementTitle(v) { return v.own ? "contract terms typed on the page" : v.document.title + ", dated " + plainDate(v.document.date); }
+  function scChannel(v) { return v && v.id === "github-enterprise-cloud" ? "microsoft" : "reseller"; }
   // summaryText(vendor, inputs, result, deadline, opts): opts {today, example, start, end, noFee, fields, drop: ["why","numbers"], nameMax, shortened}
   function summaryText(v, inputs, res, d, o) {
     o = o || {}; inputs = inputs || {};
     var k = kindOf(v), drop = o.drop || [], L = [], rs = inputs.reseller === true, nm = o.nameMax;
     var vn = nm ? clip(v.vendor, nm) : v.vendor;      // a shortened mail clips typed names everywhere
-    var parts = k === "g" ? googleResultParts(res) : resultParts(res, vn, { noFee: o.noFee, own: k === "own" }), none = !res.uncertain && res.tier === 0;
-    var what = k === "g" ? v.vendor + " " + clip(inputs.service, nm) + ", down from " + plainDate(o.start) + "."
+    var rOpts = { noFee: o.noFee, own: k === "own" };
+    if (k === "sc") { rOpts.vendorId = v.id; rOpts.service = v.service; rOpts.below = firstTierBelow(v); rOpts.periodWord = periodWordOf(v); }
+    var parts = k === "g" ? googleResultParts(res) : resultParts(res, vn, rOpts), none = !res.uncertain && res.tier === 0;
+    var what = (k === "g" || k === "sc") ? v.vendor + " " + clip(inputs.service, nm) + ", down from " + plainDate(o.start) + "."
       : k === "own" ? clip(v.vendor, nm) + " " + clip(v.service, nm) + ", outage from " + plainDate(o.start) + (o.end ? " to " + plainDate(o.end) : "") + "."
       : v.vendor + " " + v.service + ", outage reported on " + plainDate(o.start) + ".";
     if (o.example) L.push("EXAMPLE ONLY: Harbor & Pine Dental is a made-up company.");
     L.push("What happened: " + what);
-    if (drop.indexOf("numbers") < 0) L.push("Numbers as typed: " + numberRows(v, inputs, { start: o.start, end: o.end, nameMax: nm }).filter(function (r) { return !/^(Provider|Service|Outage|Day the|Credit table|Domain)/.test(r[0]); }).map(function (r) { return r[0] + " " + r[1]; }).join("; ") + ".");
-    L.push("Result: " + partsText(parts));
+    if (drop.indexOf("numbers") < 0) L.push("Numbers as typed: " + numberRows(v, inputs, { start: o.start, end: o.end, nameMax: nm }).filter(function (r) { return !/^(Provider|Service|Outage|Day the|Credit table|Domain|Account)/.test(r[0]); }).map(function (r) { return r[0] + " " + r[1]; }).join("; ") + ".");
+    L.push("Result: " + partsText(parts) + (v.id === "atlassian-cloud" && !none ? " This uses Premium tiers; Enterprise credits differ: see the note above." : ""));
     if (drop.indexOf("why") < 0) L.push("Why: " + whyLine(v, res));
     L.push("Who asks: " + whoLine(v, inputs, none, vn));
-    if (!none && d && d.date) L.push("Date: " + countdownText(k, d, { today: o.today, reseller: rs, name: vn, product: v.product, start: o.start, ownWords: v.deadline && v.deadline.ownWords }));
+    if (!none && d && d.date) L.push("Date: " + countdownText(k, d, { today: o.today, reseller: rs, name: vn, product: v.product, start: o.start, ownWords: v.deadline && v.deadline.ownWords, channel: scChannel(v), slaLabel: v.document && v.document.label }));
     L.push(none ? "Next step: Keep this as a record. If your own figures differ, enter them at downtimecredit.com." : "Next step: Open downtimecredit.com, enter the same numbers, and copy the request.");
     if (o.shortened) L.push("(shortened: download the record for the full text)");
     L.push("Worked out by downtimecredit.com from the " + agreementTitle(v) + ". Not legal advice. " + vn + " decides.");
@@ -549,8 +671,8 @@ var DTC = (function () {
     if (o.example) h.push("<p class=\"ex\">EXAMPLE ONLY: Harbor &amp; Pine Dental is a made-up company.</p>");
     h.push("<h2>Summary</h2><pre>" + esc(summaryText(v, inputs, res, d, Object.assign({}, o, { example: false }))) + "</pre>");
     h.push("<h2>The numbers, as typed</h2>" + table(numberRows(v, inputs, o)));
-    h.push("<h2>How this was worked out</h2>" + table(workingRows(v, res)));
-    if (!none && d && d.date) h.push("<h2>The date</h2><p>" + esc(countdownText(k, d, { today: o.today, reseller: rs, name: v.vendor, product: v.product, start: o.start, ownWords: v.deadline && v.deadline.ownWords })) + "</p>");
+    h.push("<h2>How this was worked out</h2>" + table(workingRows(v, res, o)));
+    if (!none && d && d.date) h.push("<h2>The date</h2><p>" + esc(countdownText(k, d, { today: o.today, reseller: rs, name: v.vendor, product: v.product, start: o.start, ownWords: v.deadline && v.deadline.ownWords, channel: scChannel(v), slaLabel: v.document && v.document.label })) + "</p>");
     h.push("<h2>The request</h2>" + (none ? "<p>No credit level applies at this uptime, so there is no request to send.</p>" : "<pre>" + esc(o.letter || "") + "</pre>"));
     h.push("<h2>The agreement</h2><p>" + esc(v.own ? "The contract terms typed on the page. Check them against your agreement." : v.document.title + ", dated " + plainDate(v.document.date) + ". " + v.document.url) + "</p>");
     h.push("<p class=\"foot\">Made on " + esc(plainDate(o.today)) + " with downtimecredit.com. Not legal advice.</p></body></html>");
@@ -580,7 +702,42 @@ var DTC = (function () {
   }
   // A support-case request (Google Workspace): domain, service, start date, minutes down, uptime, days asked for. No money, no user count.
   // inc: {fields:{resources: the domain}, inputs:{downMinutes, service, reseller}, result, start, deadline, example}
+  function claimTextSupportCaseFee(v, inc) {
+    var f = inc.fields || {}, inp = inc.inputs || {}, r = inc.result && !inc.result.error ? inc.result : null, reseller = inp.reseller === true;
+    var ghMs = v.id === "github-enterprise-cloud" && reseller;
+    var acctLabel = v.id === "github-enterprise-cloud" ? "Organization or enterprise account" : "Cloud site URL";
+    var acctDefault = v.id === "github-enterprise-cloud" ? "[your GitHub Enterprise organization or enterprise slug]" : "[your " + v.service + " site URL, such as yourcompany.atlassian.net]";
+    var acct = has(f.resources) ? String(f.resources).trim().slice(0, 2000) : acctDefault;
+    var service = str(inp.service) ? inp.service : "[the affected " + v.service + " product or feature]";
+    var started = parseISO(inc.start) ? fullDate(inc.start).replace(/^\w+ /, "") : "[the date the downtime occurred]";
+    var agreement = "the " + v.document.title + " (dated " + fullDate(v.document.date).replace(/^\w+ /, "") + ")";
+    var pWord = v.period && v.period.type === "calendar-quarter" ? "calendar quarter" : "calendar month" + (v.period && v.period.timeZone === "UTC" ? " (UTC)" : "");
+    var pShort = periodWordOf(v);
+    var cs = [];
+    cs.push("Subject: Service Credit request, " + v.service + ", " + service + ", downtime on " + started, "");
+    cs.push(ghMs ? "Hello Microsoft support," : reseller ? "Hello " + v.vendor + " support (or [your reseller's name])," : "Hello " + v.vendor + " support,", "");
+    cs.push(ghMs ? "We purchased " + v.service + " through Microsoft. Under " + agreement + ", we submit this written request for a Service Credit through a Microsoft support ticket. Our details:"
+      : reseller ? "We purchased " + v.service + " through a Reseller. Under " + agreement + ", Customer or the Reseller may submit a Service Credit request, and " + v.vendor + " issues any Service Credit to the Reseller, who is solely responsible for issuing the appropriate amounts to Customer. Our details:"
+      : "We ask for a Service Credit under " + agreement + ". Our details:", "");
+    cs.push(acctLabel + ": " + acct, "Service: " + service, "Date of downtime: " + started);
+    if (r) {
+      cs.push("Total minutes of downtime in that " + pWord + ": " + groupText(r.downtimeMinutes) + " of " + groupText(r.periodMinutes) + " minutes", "Uptime as we count it: " + r.uptimePct + "%");
+      if (r.tier === 0) cs.push("Service Credit asked for: none at this uptime");
+      else if (isWhole(inp.feeCents)) cs.push("Service Credit asked for: up to " + r.tier + "% of the " + centsText(inp.feeCents) + " we paid for the " + pShort + ", about " + centsText(r.creditCents) + ", if " + v.vendor + " accepts the claim");
+      else cs.push("Service Credit asked for: up to " + r.tier + "% of the fee for the affected service for that " + pShort + ", if " + v.vendor + " accepts the claim");
+    } else cs.push("Total minutes of downtime in that " + pWord + ": [minutes] of [minutes in the " + pShort + "] minutes", "Uptime as we count it: [uptime %]", "Service Credit asked for: up to [credit %] of the fee for that " + pShort + ", if " + v.vendor + " accepts the claim");
+    cs.push("");
+    cs.push("The downtime count is our own. We understand that " + v.vendor + " measures availability and error rates from its own monitoring and logging systems.");
+    var sla = v.document.label || "SLA";
+    if (parseISO(inc.deadline) && v.deadline && v.deadline.days) {
+      cs.push("", "Under the " + sla + ", requests are due within " + v.deadline.days + " days after the end of the " + (v.period && v.period.type === "calendar-quarter" ? "calendar quarter" : "calendar month") + " (" + fullDate(inc.deadline) + ").");
+    }
+    cs.push("", "Please confirm you have received this request.");
+    cs.push("", "[your name], [your company], [the email address you use for this account]");
+    return cs.join("\n");
+  }
   function claimTextSupportCase(v, inc) {
+    if (v.creditUnit === "percent-of-fee") return claimTextSupportCaseFee(v, inc);
     var f = inc.fields || {}, inp = inc.inputs || {}, r = inc.result && !inc.result.error ? inc.result : null, reseller = inp.reseller === true;
     var domain = has(f.resources) ? String(f.resources).trim().slice(0, 2000) : "[your Google Workspace domain, such as yourcompany.com]";
     var service = str(inp.service) ? inp.service : "[the Google service, such as Gmail]";
@@ -677,10 +834,10 @@ var DTC = (function () {
   }
 
   return {
-    isLeap: isLeap, daysInMonth: daysInMonth, parseISO: parseISO, addDays: addDays, localToday: localToday, daysLeft: daysLeft, fullDate: fullDate, countdown: countdown,
+    isLeap: isLeap, daysInMonth: daysInMonth, daysInQuarter: daysInQuarter, quarterName: quarterName, parseISO: parseISO, addDays: addDays, localToday: localToday, daysLeft: daysLeft, fullDate: fullDate, countdown: countdown,
     deadline: deadline, resellerDeadline: resellerDeadline, partnerDeadline: partnerDeadline, deadlineFor: deadlineFor, parseLimit: parseLimit, validateVendor: validateVendor, loadVendors: loadVendors, ownVendor: ownVendor,
-    summaryText: summaryText, recordHtml: recordHtml, numberRows: numberRows, workingRows: workingRows, esc: esc, TEXT: TEXT, levelsOf: levelsOf, resultParts: resultParts, googleResultParts: googleResultParts, partsText: partsText, deadlineLine: deadlineLine, googleDateLine: googleDateLine, countdownText: countdownText, countdownModel: countdownModel,
-    compute: compute, CLOCK: CLOCK, parseDollars: parseDollars, parseDuration: parseDuration, centsText: centsText, icsFor: icsFor, claimText: claimText, BLANKS: BLANKS
+    summaryText: summaryText, recordHtml: recordHtml, numberRows: numberRows, workingRows: workingRows, esc: esc, TEXT: TEXT, levelsOf: levelsOf, resultParts: resultParts, googleResultParts: googleResultParts, partsText: partsText, deadlineLine: deadlineLine, googleDateLine: googleDateLine, countdownText: countdownText, countdownModel: countdownModel, kindOf: kindOf, periodWordOf: periodWordOf, firstTierBelow: firstTierBelow, scChannel: scChannel,
+    compute: compute, CLOCK: CLOCK, parseDollars: parseDollars, parseDuration: parseDuration, centsText: centsText, icsFor: icsFor, scIcs: scIcs, claimText: claimText, BLANKS: BLANKS
   };
 })();
 if (typeof module !== "undefined" && module.exports) module.exports = DTC;
