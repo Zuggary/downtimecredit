@@ -108,8 +108,18 @@ def shared_css(font_prefix: str) -> str:
   .cta-sec, .cta-sec:visited {{ display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }}
   .sheet {{ background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }}
   .table-wrap {{ width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }}
+  @media (max-width: 640px) {{
+    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] {{ display: block; width: 100%; min-width: 0; }}
+    .table-wrap thead {{ display: none; }}
+    .table-wrap tr {{ padding: 12px 14px; border-bottom: 1px solid var(--hairline); }}
+    .table-wrap td {{ display: flex; justify-content: space-between; gap: 14px; padding: 4px 0; border: 0; text-align: right; }}
+    .table-wrap td::before {{ content: attr(data-label); font-weight: 700; text-align: left; flex: 0 0 40%; }}
+    .table-wrap th[scope=row] {{ padding: 0 0 4px; border: 0; }}
+    .table-wrap {{ overflow-x: visible; }}
+  }}
+  hr {{ max-width: 46em; margin-left: 0; }}
   .swipe {{ display: none; margin: 0 0 6px; font: 400 13px/1.3 var(--text); color: var(--graphite); }}
-  @media (max-width: 767px) {{ .swipe {{ display: block; }} .table-wrap {{ box-shadow: inset -14px 0 10px -10px rgba(0,0,0,.18); }} }}
+
   table {{ border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }}
   thead th {{ background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }}
   tbody td, tbody th {{ padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }}
@@ -405,7 +415,7 @@ def build_vendor_page(v: dict) -> str:
   <div class="hero">
     <p class="crumb"><a href="../">Vendor SLA directory</a> / {esc(service)}</p>
     <h1>{esc(service)} SLA credits: tiers, downtime and the claim deadline</h1>
-    <p class="lede">Read from the primary {esc(doc["title"])} (dated {esc(fmt_date(doc["date"]))}, last checked {esc(fmt_date(doc["lastChecked"]))}). Work out the credit, draft the support request, and export a calendar reminder locally in your browser.</p>
+    <p class="lede">The clauses below are quoted word for word from the {esc(doc["title"])} (dated {esc(fmt_date(doc["date"]))}, last checked {esc(fmt_date(doc["lastChecked"]))}). The summary cards and the downtime minutes are this site's reading and arithmetic. {esc(vendor)} decides every claim, and a credit lowers a later bill or adds days of service; it is not cash. Not legal advice.</p>
     {scope_p}
     <div class="cta-row">
       <a class="cta" href="../../?vendor={esc(vid)}">Open interactive {esc(service)} calculator &rarr;</a>
@@ -455,7 +465,7 @@ def build_vendor_page(v: dict) -> str:
 
   <div class="sheet" style="margin-top:32px">
     <h3 style="margin-top:0">Ready to calculate your {esc(service)} credit?</h3>
-    <p style="margin:6px 0 14px">Enter your outage minutes{"" if is_days else " and invoice fee"} in the browser calculator to generate a ready-to-send claim request and deadline `.ics` reminder.</p>
+    <p style="margin:6px 0 14px">Enter your outage minutes{"" if is_days else " and invoice fee"} in the browser calculator to generate a ready-to-send claim request and a deadline reminder you can add to your calendar.</p>
     <a class="cta" href="../../?vendor={esc(vid)}">Open interactive {esc(service)} calculator &rarr;</a>
   </div>
 </main>
@@ -653,7 +663,29 @@ def update_airlines_page(flights_js_text: str) -> None:
         path.write_text(updated, encoding="utf-8")
 
 
+def label_tables(content: str) -> str:
+    """Give every body cell a data-label from its column heading, so narrow screens can stack each row."""
+    def one(m):
+        t = m.group(0)
+        heads = [re.sub(r"<[^>]+>", "", h).strip() for h in re.findall(r"<th[^>]*scope=\"col\"[^>]*>(.*?)</th>", t, re.S)]
+        if not heads:
+            return t
+        def row(rm):
+            r = rm.group(0); n = [0]
+            def cell(cm):
+                k = n[0]; n[0] += 1
+                if cm.group(1) == "td" and k < len(heads) and "data-label" not in cm.group(0):
+                    return f'<td data-label="{html.escape(heads[k], quote=True)}"' + cm.group(2) + ">"
+                return cm.group(0)
+            return re.sub(r"<(td|th)((?:\s[^>]*)?)>", cell, r)
+        head_end = t.find("</thead>")
+        return t[:head_end] + re.sub(r"<tr>.*?</tr>", row, t[head_end:], flags=re.S) if head_end >= 0 else t
+    return re.sub(r"<table.*?</table>", one, content, flags=re.S)
+
+
 def write_if_changed(path: Path, content: str) -> None:
+    if "<table" in content:
+        content = label_tables(content)
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists() and path.read_text(encoding="utf-8") == content:
         return

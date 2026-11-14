@@ -70,8 +70,18 @@
   .cta-sec, .cta-sec:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
+  @media (max-width: 640px) {
+    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td, .table-wrap th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap thead { display: none; }
+    .table-wrap tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap td { display: flex; justify-content: space-between; gap: 14px; padding: 4px 0; border: 0; text-align: right; }
+    .table-wrap td::before { content: attr(data-label); font-weight: 700; text-align: left; flex: 0 0 40%; }
+    .table-wrap th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap { overflow-x: visible; }
+  }
+  hr { max-width: 46em; margin-left: 0; }
   .swipe { display: none; margin: 0 0 6px; font: 400 13px/1.3 var(--text); color: var(--graphite); }
-  @media (max-width: 767px) { .swipe { display: block; } .table-wrap { box-shadow: inset -14px 0 10px -10px rgba(0,0,0,.18); } }
+
   table { border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }
   thead th { background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }
   tbody td, tbody th { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
@@ -133,7 +143,7 @@
 <h3><a href="../../sla/atlassian-cloud/">Atlassian: Atlassian Cloud</a></h3><dl class="who"><dt>Free, Standard, sandbox, or Beta products</dt><dd>Only Eligible Cloud Products on Premium or Enterprise plans are covered.</dd><dt>Accounts in breach or with overdue payments</dt><dd>Account must be paid up and product provisioned.</dd><dt>Routine scheduled or emergency maintenance</dt><dd>Excluded under the Atlassian Maintenance Policy.</dd><dt>Force majeure or internet access problems outside Atlassian&#x27;s control</dt><dd>Not covered.</dd><dt>Customer equipment, network connections, or third-party products</dt><dd>Not covered.</dd></dl>
 <h3><a href="../../sla/github-enterprise-cloud/">GitHub: GitHub Enterprise Cloud</a></h3><dl class="who"><dt>Previews or purchases made with a subscription credit</dt><dd>Not covered.</dd><dt>Rate limits, performance degradation, or latency without unavailability</dt><dd>Not covered.</dd><dt>Factors outside GitHub&#x27;s reasonable control, including external network failures</dt><dd>Not covered.</dd><dt>Third-party software, hardware, or inadequate bandwidth</dt><dd>Not covered.</dd><dt>Throttling of suspected abuse or compromised accounts</dt><dd>Not covered.</dd></dl>
 
-  <h2>Sources</h2><ul class="clean"><li><a href="https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services" rel="noopener">Service Level Agreement for Microsoft Online Services</a>, dated 1 November 2026, read 12 November 2026</li><li><a href="https://workspace.google.com/terms/sla/" rel="noopener">Google Workspace Service Level Agreement</a>, dated 31 August 2026, read 13 November 2026</li><li><a href="https://www.atlassian.com/legal/sla" rel="noopener">Atlassian Cloud Service Level Agreement</a>, dated 30 April 2026, read 13 November 2026</li><li><a href="https://github.com/customer-terms/github-online-services-sla" rel="noopener">GitHub Online Services SLA</a>, dated 1 June 2026, read 13 November 2026</li></ul>
+  <h2>Sources</h2><ul class="clean"><li><a href="https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services" rel="noopener">Service Level Agreement for Microsoft Online Services</a>, dated 1 November 2026, read 12 November 2026</li><li><a href="https://workspace.google.com/terms/sla/" rel="noopener">Google Workspace Service Level Agreement</a>, dated 31 August 2026, read 13 November 2026</li><li><a href="https://www.atlassian.com/legal/sla" rel="noopener">Atlassian Cloud Service Level Agreement</a>, dated 30 April 2026, read 13 November 2026</li><li><a href="https://github.com/customer-terms/github-online-services-sla" rel="noopener">GitHub Online Services SLA</a>, dated 1 June 2026, read 13 November 2026</li><li><a href="https://learn.microsoft.com/en-us/partner-center/billing/request-credit" rel="noopener">Microsoft Partner Center: request a credit</a>, dated 16 June 2026, read 12 November 2026</li></ul>
   <p class="fine">Quotations are copied word for word from the agreement named under each one. Text outside a quotation is this site's reading. A vendor decides every claim. This is not legal advice.</p>
   <h2>More</h2>
   <ul class="clean"><li><a href="../how-service-credits-work/">How service credits work</a></li><li><a href="../how-to-ask-for-a-service-credit/">How to ask for a service credit</a></li><li><a href="../../sla/">Vendor SLA directory</a></li></ul>

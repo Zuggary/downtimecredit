@@ -20,15 +20,24 @@ def cite_of(v):
 
 
 def vendor_block(v, quotes, heading_level=3):
-    d = v["document"]
+    """quotes: strings (cited to the vendor's agreement) or (text, citation) pairs. A quote already shown is not shown twice."""
     out = [f'<h{heading_level}><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></h{heading_level}>']
+    seen = []
     for q in quotes:
-        out.append(bp.render_quote_block(q, cite_of(v)))
+        text, cite = (q if isinstance(q, tuple) else (q, cite_of(v)))
+        if any(text in o or o in text for o in seen):
+            continue
+        seen.append(text)
+        out.append(bp.render_quote_block(text, cite))
     return "\n".join(out)
 
 
 def sources_list():
     items = "".join(f'<li><a href="{esc(v["document"]["url"])}" rel="noopener">{esc(v["document"]["title"])}</a>, dated {esc(bp.fmt_date(v["document"]["date"]))}, read {esc(bp.fmt_date(v["document"]["lastChecked"]))}</li>' for v in VENDORS)
+    for v in VENDORS:
+        rd = v.get("resellerDeadline")
+        if rd:
+            items += f'<li><a href="{esc(rd["source"])}" rel="noopener">Microsoft Partner Center: request a credit</a>, dated {esc(bp.fmt_date(rd["documentDate"]))}, read {esc(bp.fmt_date(v["document"]["lastChecked"]))}</li>'
     return f'<h2>Sources</h2><ul class="clean">{items}</ul>'
 
 
@@ -148,7 +157,8 @@ def guide_ask():
     for v in VENDORS:
         qs = [v["deadline"]["quote"]]
         if v.get("resellerDeadline"):
-            qs.append(v["resellerDeadline"]["quote"])
+            rd = v["resellerDeadline"]
+            qs.append((rd["quote"], f"Microsoft Partner Center, dated {bp.fmt_date(rd['documentDate'])}, last checked {bp.fmt_date(v['document']['lastChecked'])}. For customers who buy through a reseller."))
         if v.get("resellerClause"):
             qs.append(v["resellerClause"]["quote"])
         q.append(vendor_block(v, qs))
