@@ -373,6 +373,14 @@
   .deadline details:not([open]) > :not(summary) { display: none; }
 
   /* Statement Card & Hairline Rule */
+  .sheet { display: flex; flex-direction: column; }
+  .sheet > .sh { order: -5; }
+  .sheet > .sub, .sheet > .exflag, .sheet > .own-note { order: -4; }
+  .sheet > .result, .sheet > .resact { order: -3; }
+  .flightcard { margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--hairline); }
+  .flightcard h2 { font: 400 24px/1.2 var(--head); margin: 0 0 var(--s2); }
+  .flightcard p { margin: 0; max-width: 46em; }
+  .flightcard a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
   .sheet {
     --pad: 20px;
     background: var(--sheet);
@@ -885,16 +893,9 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="./">Downtime Credit</a>
-    <nav aria-label="Sections"><a href="#incidents">Your incidents</a> <a href="#who-runs">Who runs this</a></nav></div>
+    <nav aria-label="Sections"><a href="sla/">Vendor SLAs</a> <a href="guides/">Guides</a> <a href="#incidents">Your incidents</a> <a href="about.html">Who runs this</a></nav></div>
   <div class="trustbar"><p id="trust">Not legal advice. Not run by or linked to Microsoft or any vendor. Nothing you type leaves your browser. A credit is not cash.</p></div>
 </header>
-<nav class="doors" aria-label="What happened">
-  <div class="in">
-    <a href="./" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
-    <a href="flights/"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
-  </div>
-</nav>
-
 <main>
 <div class="in hero">
   <div class="intro">
@@ -1034,8 +1035,8 @@
     <div class="wfields" id="claim-fields">
       <p data-nog class="span2 small" style="margin:0">Fields marked <b>asked for</b> are items the agreement lists; leave any blank and fill it in later in the letter.</p>
       <div data-nog class="f span2"><label for="c-id">Incident ID <small>(helps, not required)</small></label><small id="c-id-help"></small><input id="c-id" autocomplete="off" placeholder="e.g. EX0000000"></div>
-      <div data-nog class="f"><label for="c-start">Started (date, time, time zone) <small class="ask">asked for</small></label><input id="c-start" autocomplete="off" placeholder="e.g. 12 Nov 2026, 8:15 am Pacific"></div>
-      <div data-nog class="f"><label for="c-end">Ended, or "still down" <small class="ask">asked for</small></label><input id="c-end" autocomplete="off" placeholder="e.g. 13 Nov 2026, 9:00 am Pacific"></div>
+      <div data-nog class="f"><label for="c-start">Started (date, time, time zone) <small class="ask">asked for</small></label><input id="c-start" autocomplete="off" placeholder="e.g. 12 Nov, 8:15 am PST"></div>
+      <div data-nog class="f"><label for="c-end">Ended, or "still down" <small class="ask">asked for</small></label><input id="c-end" autocomplete="off" placeholder="e.g. 13 Nov, 9:00 am PST"></div>
       <div data-nog class="f span2"><label for="c-desc">What happened, in your words <small class="ask">asked for</small></label><textarea id="c-desc" placeholder="e.g. Nobody in the office could send or receive email."></textarea></div>
       <div class="f span2"><label for="c-res"><span id="c-res-l">Your email domain and the affected mailboxes</span> <small class="ask" id="c-res-ask">asked for</small></label><input id="c-res" autocomplete="off" placeholder="e.g. harborpine.example, all mailboxes"></div>
       <div data-nog class="f"><label for="c-loc">Where your users are <small class="ask">asked for</small></label><input id="c-loc" autocomplete="off" placeholder="e.g. Portland, USA"></div>
@@ -1142,13 +1143,17 @@
   <p class="fine" id="io-msg" aria-live="polite"></p>
   <div id="io-choice" hidden><button type="button" class="second" id="imp-add">Add to my list</button><button type="button" class="second" id="imp-replace">Replace my list</button><button type="button" class="second" id="imp-cancel">Cancel</button></div>
 </div></section>
+<section class="in flightcard" aria-labelledby="fc-h">
+  <h2 id="fc-h">Flight cancelled or delayed?</h2>
+  <p>See what you can ask for, and what 9 US airlines have promised. <a href="flights/" data-to-flights>Check a flight &rarr;</a></p>
+</section>
 </main>
 
 <footer><div class="in"><div>
   <section>
     <h2 id="who-runs">Who runs this</h2>
     <p id="who-runs-p">Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. A free tool that may show ads, which pay for it. It is not legal advice, and it files nothing for you.</p>
-    <p><a href="sla/">Vendor SLAs</a> &middot; <a href="guides/">Guides</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
+    <p><a href="sla/">Vendor SLAs</a> &middot; <a href="guides/">Guides</a> &middot; <a href="flights/" data-to-flights>Flight refunds</a> &middot; <a href="about.html">Who runs this</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
   </section>
   <section>
     <h2>Sources</h2>

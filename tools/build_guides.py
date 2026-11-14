@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
 
 ROOT = bp.ROOT
+TRUST = "Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim."
 AIRLINE_IDS = sorted(p.parent.name for p in (bp.ROOT / "flights" / "airlines").glob("*/index.html"))
 LASTMOD = "2026-11-14"
 VENDORS = [json.loads((ROOT / "vendors" / f).read_text(encoding="utf-8")) for f in json.loads((ROOT / "vendors" / "index.json").read_text(encoding="utf-8"))["vendors"]]
@@ -81,12 +82,7 @@ def page(slug, title, meta, h1, lede, body, related):
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
-<nav class="doors" aria-label="What happened">
-  <div class="in">
-    <a href="../../" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
-    <a href="../../flights/"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
-  </div>
-</nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">Who runs this</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / {esc(h1)}</p>
@@ -240,14 +236,73 @@ def index_page():
 """
 
 
+def about_page():
+    rows = "".join(f'<tr><th scope="row">{esc(v["vendor"])}: {esc(v["service"])}</th><td><a href="{esc(v["document"]["url"])}" rel="noopener">{esc(v["document"]["title"])}</a></td><td>{esc(bp.fmt_date(v["document"]["date"]))}</td><td>{esc(bp.fmt_date(v["document"]["lastChecked"]))}</td></tr>' for v in VENDORS)
+    table = '<div class="table-wrap" tabindex="0" role="region" aria-label="Sources and dates read"><table><thead><tr><th scope="col">Service</th><th scope="col">Agreement</th><th scope="col">Dated</th><th scope="col">Last read</th></tr></thead><tbody>' + rows + '<tr><th scope="row">US airlines</th><td><a href="https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard" rel="noopener">DOT Airline Cancellation and Delay Dashboard</a></td><td>11 September 2025</td><td>13 November 2026</td></tr></tbody></table></div>'
+    body = f"""
+  <h2>Who runs this</h2>
+  <p>Downtime Credit is an independent project run by one developer. It is not a law firm, it gives no legal advice, and it has no link to any vendor or airline. The tool is free. The site may show ads, which pay for it.</p>
+  <h2>How the quotes are sourced</h2>
+  <p>Every quotation comes from the agreement it names. We open the agreement in a real browser, copy the clause word for word, and save the text. A test checks every quotation on the site against the saved text before a page goes live. Each page shows the date we last read the source.</p>
+  <h2>What is our reading</h2>
+  <p>Text outside a quotation is this site's reading. That includes the summaries, the minutes of downtime that reach each credit tier, the deadlines we compute, and the steps in the guides. Each page says so. The vendor decides every claim.</p>
+  <h2>Sources and when we read them</h2>
+  {table}
+  <h2>Report an error</h2>
+  <p>If a quotation, a date or a figure is wrong, write to <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. Give the page address and what is wrong. We check the source again, fix the page and update the date it was read.</p>
+  <h2>What this site does not do</h2>
+  <ul class="clean"><li>It does not file a claim for you. You send the request.</li><li>It does not store what you type on a server. See the <a href="privacy.html">privacy page</a>.</li><li>It does not promise a credit. A credit is up to the vendor.</li></ul>
+"""
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who runs Downtime Credit and how we work</title>
+<meta name="description" content="Downtime Credit is an independent project. How its quotes are sourced and checked, which agreements it has read and when, and how to report an error.">
+<link rel="canonical" href="{bp.SITE_ORIGIN}/about.html">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+{bp.shared_css("")}
+  .guide h2 {{ margin-top: 36px; }}
+  .guide p, .guide li {{ max-width: 46em; }}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="./">Downtime Credit</a></div>
+  <div class="trustbar"><p>{TRUST}</p></div>
+</header>
+<main class="in guide">
+  <div class="hero">
+    <p class="crumb"><a href="./">Downtime Credit</a> / Who runs this</p>
+    <h1>Who runs this and how we work</h1>
+    <p class="fine">Last updated 14 November 2026.</p>
+{body}
+  </div>
+</main>
+<footer>
+  <div class="in">
+    <p>Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. Not a law firm. No link to any vendor.</p>
+    <p><a href="./">Calculator</a> &middot; <a href="guides/">Guides</a> &middot; <a href="sla/">Vendor SLAs</a> &middot; <a href="flights/">Flight refunds</a> &middot; <a href="privacy.html">Privacy</a></p>
+  </div>
+</footer>
+</body>
+</html>
+"""
+
+
 def sitemap():
-    paths = ["/", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/flights/airlines/"] + [f"/flights/airlines/{a}/" for a in AIRLINE_IDS] + ["/privacy.html"]
+    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/flights/airlines/"] + [f"/flights/airlines/{a}/" for a in AIRLINE_IDS] + ["/privacy.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith(('/guides', '/flights/airlines/')) and p != '/flights/airlines/' else bp.LASTMOD}</lastmod></url>" for p in paths]
     return "\n".join(lines + ["</urlset>", ""])
 
 
 def main():
+    bp.write_if_changed(ROOT / "about.html", about_page())
     bp.write_if_changed(ROOT / "guides" / "index.html", index_page())
     for s, t, d, fn in GUIDES:
         bp.write_if_changed(ROOT / "guides" / s / "index.html", fn())

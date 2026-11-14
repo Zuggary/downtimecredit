@@ -24,7 +24,8 @@ for d in ["sla", "guides", "flights/airlines"]:
     for r, _, fs in os.walk(os.path.join(ROOT, d)):
         for f in fs:
             if f == "index.html": pages.append(os.path.join(r, f))
-ok(len(pages) >= 18, f"{len(pages)} pages found")
+pages.append(os.path.join(ROOT, "about.html"))
+ok(len(pages) >= 19, f"{len(pages)} pages found")
 for a in FL["a"].values():
     if a.get("values"):
         t = open(os.path.join(ROOT, "flights", "airlines", a["id"], "index.html"), encoding="utf-8").read()
@@ -34,11 +35,11 @@ for a in FL["a"].values():
 sm = open(os.path.join(ROOT, "sitemap.xml")).read()
 titles = {}
 for p in pages:
-    s = open(p, encoding="utf-8").read(); rel = os.path.relpath(p, ROOT); url = "/" + os.path.dirname(rel) + "/"
+    s = open(p, encoding="utf-8").read(); rel = os.path.relpath(p, ROOT); url = "/" + os.path.dirname(rel) + "/" if os.path.dirname(rel) else "/" + rel
     t = re.search(r"<title>(.*?)</title>", s, re.S); ok(bool(t) and len(t.group(1)) > 15, rel + ": title")
     if t: ok(t.group(1) not in titles, rel + ": title is unique"); titles[t.group(1)] = rel
     ok(bool(re.search(r'<meta name="description" content="[^"]{60,}', s)), rel + ": description")
-    ok(("https://www.downtimecredit.com" + url) in s and ('<link rel="canonical" href="https://www.downtimecredit.com' + url + '"') in s, rel + ": canonical")
+    ok(('<link rel="canonical" href="https://www.downtimecredit.com' + url + '"') in s, rel + ": canonical")
     ok(("<loc>https://www.downtimecredit.com" + url + "</loc>") in sm, rel + ": in the sitemap")
     ok("<h1" in s and s.count("<h1") == 1, rel + ": one h1")
     if rel != os.path.join("flights", "airlines", "index.html"): ok(not re.search(r"<script[^>]+src=|<link[^>]+href=\"https?:(?!//www\.downtimecredit)|<img[^>]+src=\"https?:", s), rel + ": no outside file")

@@ -52,8 +52,7 @@
   }
   window.countStep = countStep;      // the counter loader in index.html calls it once, for "arrived"
   ["click", "input", "change"].forEach(function (t) { document.addEventListener(t, function (ev) { actor = ev.isTrusted === true; setTimeout(function () { actor = false; }, 0); }, true); });
-  var toFlights = document.querySelector('.doors a[href="flights/"]');
-  if (toFlights) toFlights.addEventListener("click", function (ev) { if (ev.isTrusted) countStep("to-flights"); });
+  document.querySelectorAll("a[data-to-flights]").forEach(function (a) { a.addEventListener("click", function (ev) { if (ev.isTrusted) countStep("to-flights"); }); });
   function noteResult(m, res, noFee) {       // a result built from the visitor's own inputs, never the example
     var scEx = isSCMode(m) && ensureSCState(m).example;
     if (!actor || (m === "ms" && example) || scEx) return;
@@ -664,6 +663,7 @@
         if (rsl) $("send-left").textContent = (cd.state === "passed" ? "" : cd.text.replace(/\.$/, "") + " to ask your provider. ") + deadlineSentence(c.name, c.d, cd, true) + (cd.state === "passed" ? "" : " Sooner is safer.") + " " + MS.resellerDeadline.ownWords;
       }
     } else { $("send-date").textContent = sc ? "Fill in the credit statement first." : "Fill in your contract's terms first."; $("send-left").textContent = ""; $("s-cal-m").textContent = "\u00a0"; $("s-cal-d").textContent = "\u00a0"; }
+    $("send-left").textContent = $("send-left").textContent.replace(/^(\d+ days? left)\. /, "$1 until the deadline. ");   // the lead says days left to send it; this line says days to the deadline
     $("ics-btn").disabled = !(c && c.d && c.d.date);
     $("save-ms").disabled = (sc && ensureSCState(mode).bad) || (mode === "own" && OWNBAD);
   }
