@@ -568,7 +568,7 @@ with sync_playwright() as pw:
     hp = ctxM.new_page(); hp.on("request", lambda r: reqs.append(r.url))
     hp.goto(BASE.replace("index.html", "") + "guides/car-towed-lien-sale-money-california/"); hp.wait_for_selector("#h-go"); n0 = len(reqs)
     hp.fill("#h-name", "Rivera, Ana M"); hp.fill("#h-addr", "12 Oak Street"); hp.fill("#h-city", "Fresno, CA 93701"); hp.fill("#h-plate", "7ABC123"); hp.fill("#h-vin", "4F2"); hp.fill("#h-amt", "1,250.00"); hp.fill("#h-email", "a@example.com"); hp.fill("#h-phone", "555-0100")
-    hp.click("#h-go"); txt = hp.input_value("#h-text")
+    hp.click("#h-go"); txt = hp.input_value("#h-text"); ok(hp.evaluate("document.getElementById(\"h-text\").scrollTop") == 0, "TF6: the notes open at the first line")
     ok("2. Name or company name: Rivera, Ana M" in txt and "8. Refund amount requested" in txt and "$1,250.00" in txt and "10. VIN/HIN (last 3 characters): 4F2" in txt and "12. License plate number: 7ABC123" in txt, "TF6: the helper puts the typed details on the DMV form items")
     with hp.expect_download() as dlh: hp.click("#h-dl")
     ok(dlh.value.suggested_filename == "lien-sale-refund-notes.txt", "TF6: the helper saves a text file")

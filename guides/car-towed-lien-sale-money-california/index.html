@@ -146,18 +146,19 @@
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of the DMV and every agency named here. This site cannot look up your car. The DMV decides every claim.</span></p></div>
+  <div class="trustbar"><p>Not legal advice. Not affiliated with any agency named here. This site cannot look up your car or file a claim. The agency decides every claim.</p></div>
 </header>
 <nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">SLAs</a><a href="../">Guides</a><a href="../../about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / Car towed and sold at a lien sale? Money may be held for you</p>
     <h1>Car towed and sold at a lien sale? Money may be held for you</h1>
-    <p class="lede">In California, a tow yard that sells a car at a lien sale keeps what it is owed and a capped processing cost. The law sends the rest to the DMV, and an owner or other interested person may claim it within three years. Here are the steps.</p>
+    <p class="lede">When a California tow yard or storage lot sells an unclaimed car to cover what it is owed, that is called a lien sale. The yard keeps what it is owed and a capped processing cost. If the car sold for more than that, the law sends the rest to the DMV, and an owner or other interested person may claim it within three years. If the sale brought in no more than the bill, nothing is left.</p>
   </div>
 
   <div class="callout">
-    <p><b>Start here.</b> The California DMV runs an official lookup. Enter your plate number or the last 5 digits of the VIN to see if money is held for your car.</p>
+    <p><b>Start here.</b> The California DMV runs an official lookup, which it calls Lien Sale Excess Fees. Enter your plate number or the last 5 digits of the VIN to see if money is held for your car.</p>
+    <p>Sold recently? The lienholder has 5 or 15 days after the sale to forward the money, and the DMV says its lookup data is refreshed on the 2nd business day of every month. If nothing shows yet, try again next month.</p>
     <p><a class="cta" href="https://www.dmv.ca.gov/portal/vehicle-registration/titles/lien-sales-for-vehicles/lien-sale-excess-fees-lookup/" rel="noopener" target="_blank">Open the DMV lookup &rarr;</a></p>
     <p class="fine">This site cannot look up your car and does not see what you type at the DMV. The DMV decides every claim. This page is information, not legal advice.</p>
   </div>
@@ -213,8 +214,8 @@
 
 
 <section id="helper" aria-labelledby="h-help">
-  <h2 id="h-help">Prepare your refund notes</h2>
-  <p>This tool runs in your browser. Nothing you type is sent anywhere. Use it after the DMV lookup shows an amount for your car. It puts your details in the order the DMV's refund form asks for them, so you can copy them onto the form.</p>
+  <h2 id="h-help">Optional worksheet: line up your details for DMV form ADM 399</h2>
+  <p>Use this only after the DMV lookup shows money for your car. It runs in your browser. Nothing you type is sent anywhere, and it does not file a claim. It puts your details in the order the DMV's refund form asks for them, so you can copy them onto the form.</p>
   <form id="hf" class="hform" novalidate>
     <div class="f"><label for="h-name">Your name (last, first, middle initial) or company name</label><input id="h-name" autocomplete="off"></div>
     <div class="f"><label for="h-addr">Mailing address</label><input id="h-addr" autocomplete="off"></div>
@@ -230,9 +231,9 @@
   </form>
   <div id="h-out" hidden>
     <h3>Your notes</h3>
-    <p class="fine">Select all the text below to copy it. Check every line against the DMV's own steps before you send anything.</p>
-    <textarea id="h-text" readonly rows="18" aria-label="Your refund notes"></textarea>
-    <div class="cta-row"><button type="button" class="cta-sec" id="h-dl">Save as a text file</button><button type="button" class="cta-sec" id="h-print">Print</button></div>
+    <p class="fine">Check every line against the DMV's own steps before you mail anything.</p>
+    <textarea id="h-text" readonly rows="26" aria-label="Your refund notes"></textarea>
+    <div class="cta-row"><button type="button" class="cta-sec" id="h-copy">Copy notes</button><button type="button" class="cta-sec" id="h-dl">Save as a text file</button><button type="button" class="cta-sec" id="h-print">Print</button></div>
   </div>
 </section>
 <script>
@@ -268,7 +269,8 @@
   }
   var go = document.getElementById("h-go"), out = document.getElementById("h-out"), ta = document.getElementById("h-text");
   if (!go) { return; }
-  go.addEventListener("click", function () { ta.value = build(); out.hidden = false; ta.focus(); ta.select(); });
+  go.addEventListener("click", function () { ta.value = build(); out.hidden = false; ta.scrollTop = 0; });
+  document.getElementById("h-copy").addEventListener("click", function () { ta.focus(); ta.select(); try { if (navigator.clipboard) { navigator.clipboard.writeText(ta.value); } else { document.execCommand("copy"); } } catch (e) { document.execCommand("copy"); } });
   document.getElementById("h-dl").addEventListener("click", function () {
     var b = new Blob([ta.value], { type: "text/plain" }), a = document.createElement("a");
     a.href = URL.createObjectURL(b); a.download = "lien-sale-refund-notes.txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a);

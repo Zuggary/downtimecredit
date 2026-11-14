@@ -19,7 +19,7 @@ VEH22851_8 = "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtm
 WA_RCW = "https://app.leg.wa.gov/RCW/default.aspx?cite=46.55.130"
 WA_DEF = "https://app.leg.wa.gov/RCW/default.aspx?cite=46.04.162"
 ARTICLE = "https://valleywidenewspaper.com/the-dmv-makes-millions-from-auctioned-cars-doesnt-tell-owners/"
-TRUST = 'Not legal advice.<span class="tb-more"> Independent of the DMV and every agency named here. This site cannot look up your car. The DMV decides every claim.</span>'
+TRUST = 'Not legal advice. Not affiliated with any agency named here. This site cannot look up your car or file a claim. The agency decides every claim.'
 
 
 def q(text, cite_html):
@@ -56,8 +56,8 @@ QSTEPS = q(["To request a refund for Lien Sale Excess Fees, complete and submit 
 
 HELPER = r"""
 <section id="helper" aria-labelledby="h-help">
-  <h2 id="h-help">Prepare your refund notes</h2>
-  <p>This tool runs in your browser. Nothing you type is sent anywhere. Use it after the DMV lookup shows an amount for your car. It puts your details in the order the DMV's refund form asks for them, so you can copy them onto the form.</p>
+  <h2 id="h-help">Optional worksheet: line up your details for DMV form ADM 399</h2>
+  <p>Use this only after the DMV lookup shows money for your car. It runs in your browser. Nothing you type is sent anywhere, and it does not file a claim. It puts your details in the order the DMV's refund form asks for them, so you can copy them onto the form.</p>
   <form id="hf" class="hform" novalidate>
     <div class="f"><label for="h-name">Your name (last, first, middle initial) or company name</label><input id="h-name" autocomplete="off"></div>
     <div class="f"><label for="h-addr">Mailing address</label><input id="h-addr" autocomplete="off"></div>
@@ -73,9 +73,9 @@ HELPER = r"""
   </form>
   <div id="h-out" hidden>
     <h3>Your notes</h3>
-    <p class="fine">Select all the text below to copy it. Check every line against the DMV's own steps before you send anything.</p>
-    <textarea id="h-text" readonly rows="18" aria-label="Your refund notes"></textarea>
-    <div class="cta-row"><button type="button" class="cta-sec" id="h-dl">Save as a text file</button><button type="button" class="cta-sec" id="h-print">Print</button></div>
+    <p class="fine">Check every line against the DMV's own steps before you mail anything.</p>
+    <textarea id="h-text" readonly rows="26" aria-label="Your refund notes"></textarea>
+    <div class="cta-row"><button type="button" class="cta-sec" id="h-copy">Copy notes</button><button type="button" class="cta-sec" id="h-dl">Save as a text file</button><button type="button" class="cta-sec" id="h-print">Print</button></div>
   </div>
 </section>
 <script>
@@ -111,7 +111,8 @@ HELPER = r"""
   }
   var go = document.getElementById("h-go"), out = document.getElementById("h-out"), ta = document.getElementById("h-text");
   if (!go) { return; }
-  go.addEventListener("click", function () { ta.value = build(); out.hidden = false; ta.focus(); ta.select(); });
+  go.addEventListener("click", function () { ta.value = build(); out.hidden = false; ta.scrollTop = 0; });
+  document.getElementById("h-copy").addEventListener("click", function () { ta.focus(); ta.select(); try { if (navigator.clipboard) { navigator.clipboard.writeText(ta.value); } else { document.execCommand("copy"); } } catch (e) { document.execCommand("copy"); } });
   document.getElementById("h-dl").addEventListener("click", function () {
     var b = new Blob([ta.value], { type: "text/plain" }), a = document.createElement("a");
     a.href = URL.createObjectURL(b); a.download = "lien-sale-refund-notes.txt"; document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -198,7 +199,8 @@ def shell(slug, title, meta, h1, lede, body, canonical_extra=""):
 def page_california():
     body = f"""
   <div class="callout">
-    <p><b>Start here.</b> The California DMV runs an official lookup. Enter your plate number or the last 5 digits of the VIN to see if money is held for your car.</p>
+    <p><b>Start here.</b> The California DMV runs an official lookup, which it calls Lien Sale Excess Fees. Enter your plate number or the last 5 digits of the VIN to see if money is held for your car.</p>
+    <p>Sold recently? The lienholder has 5 or 15 days after the sale to forward the money, and the DMV says its lookup data is refreshed on the 2nd business day of every month. If nothing shows yet, try again next month.</p>
     <p><a class="cta" href="{DMV_LOOKUP}" rel="noopener" target="_blank">Open the DMV lookup &rarr;</a></p>
     <p class="fine">This site cannot look up your car and does not see what you type at the DMV. The DMV decides every claim. This page is information, not legal advice.</p>
   </div>
@@ -292,16 +294,17 @@ def page_california():
                  "Car towed and sold? Money may be held for you at the California DMV",
                  "If a California tow yard sold your car at a lien sale, leftover money may be held at the DMV. What the law says, the three-year deadline, the DMV lookup and the steps to claim.",
                  "Car towed and sold at a lien sale? Money may be held for you",
-                 "In California, a tow yard that sells a car at a lien sale keeps what it is owed and a capped processing cost. The law sends the rest to the DMV, and an owner or other interested person may claim it within three years. Here are the steps.",
+                 "When a California tow yard or storage lot sells an unclaimed car to cover what it is owed, that is called a lien sale. The yard keeps what it is owed and a capped processing cost. If the car sold for more than that, the law sends the rest to the DMV, and an owner or other interested person may claim it within three years. If the sale brought in no more than the bill, nothing is left.",
                  body)
 
 
 def page_states():
     body = f"""
+  <p>When a tow yard sells a towed car to cover unpaid charges, that is a lien sale. Car towed in California? Go straight to the <a href="../car-towed-lien-sale-money-california/">California guide, with the DMV lookup and claim steps</a>.</p>
   <p>This page lists a state only when this site opened the statute and read the sentence about leftover money. The list is short. A state that is missing is not a state with no rule. It means we have not checked it yet.</p>
-  <div class="table-wrap keep" tabindex="0" role="region" aria-label="States and where the leftover money goes">
+  <div class="table-wrap" tabindex="0" role="region" aria-label="States and where the leftover money goes">
     <table><thead><tr><th scope="col">State</th><th scope="col">Where the leftover money goes</th><th scope="col">Claim window</th><th scope="col">Source</th></tr></thead><tbody>
-      <tr><th scope="row">California</th><td>To the DMV, after the lien and a capped processing cost.</td><td>Three years from the date the funds were deposited.</td><td><a href="{CIV3073}" rel="noopener">Civil Code §3073</a></td></tr>
+      <tr><th scope="row">California (<a href="../car-towed-lien-sale-money-california/">guide</a>)</th><td>To the DMV, after the lien and a capped processing cost.</td><td>Three years from the date the funds were deposited.</td><td><a href="{CIV3073}" rel="noopener">Civil Code §3073</a></td></tr>
       <tr><th scope="row">Washington</th><td>To the Department of Licensing, for tow truck operator auctions, within thirty days.</td><td>The statute says the money goes to the registered owner of record who makes a valid claim within one year of the auction.</td><td><a href="{WA_RCW}" rel="noopener">RCW 46.55.130</a></td></tr>
     </tbody></table>
   </div>
@@ -320,6 +323,13 @@ def page_states():
   <h2>Other states</h2>
   <p>Rules differ by state and by type of sale. If your car was sold in another state, search that state's motor vehicle agency for lien sale surplus, or ask the tow yard in writing where the leftover money went. We will add a state here after we read its statute.</p>
 
+  <h2>What this site cannot do</h2>
+  <ul class="clean">
+    <li>It cannot check whether money is held for your car. Only your state agency can.</li>
+    <li>It does not send forms or claims to any agency. You file directly.</li>
+    <li>It cannot promise a payout or say whether a tow or sale broke the law. A lawyer or legal aid office can.</li>
+  </ul>
+
   <h2>Sources</h2>
   <ul class="clean">
     <li><a href="{CIV3073}" rel="noopener">California Civil Code §3073</a>, read {READ}</li>
@@ -331,8 +341,8 @@ def page_states():
     return shell("lien-sale-surplus-other-states",
                  "How states handle leftover money from lien sales",
                  "Where the leftover money from a vehicle lien sale goes, and how long a claim can wait, for the states this site has checked against the statute: California and Washington.",
-                 "How states handle leftover money from vehicle lien sales",
-                 "Two states checked so far, each against its statute. Where the money goes and how long you have differ.",
+                 "Towed car sold at auction? Leftover money in California and Washington",
+                 "When a tow yard sells a towed car to cover unpaid charges, some states hold the leftover money for the former owner. Two states are checked so far, each against its statute.",
                  body)
 
 
