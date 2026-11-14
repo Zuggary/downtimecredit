@@ -369,9 +369,9 @@ def page_states():
       <tr><th scope="row">Michigan</th><td>To the Treasury's unclaimed property division, after towing and storage, police or custodian expenses and a $40 fee. The secured party is paid first, then the owner. If the remainder cannot be delivered, it becomes the property of the local government unit.</td><td>This site found no time limit in the section.</td><td><a href="{MI_URL}" rel="noopener">MCL 257.252g</a></td></tr>
       <tr><th scope="row">Nevada</th><td>Delivered on demand to the person the lien claimant would have had to deliver the property to. The rule covers vehicles and other property under the lien chapter.</td><td>This site found no time limit for vehicle liens in the text it read.</td><td><a href="{NV_URL}" rel="noopener">NRS chapter 108</a></td></tr>
       <tr><th scope="row">Pennsylvania</th><td>After the salvor's costs, to "the department" (the statute does not name it here) and then the State Treasurer's Motor License Fund, for a salvor's sale of an abandoned vehicle.</td><td>This section describes no claim process.</td><td><a href="{PA_URL}" rel="noopener">75 Pa.C.S. \u00a77308</a></td></tr>
-      <tr><th scope="row">Colorado</th><td>For an abandoned vehicle towed under the state's towing part: after fees and agency costs, to the state department, which pays the lienholder of record, then the owner of record. Unpaid after 120 days, it goes to the state treasurer.</td><td>120 days after the sale, per the statute.</td><td><a href="{CO_URL}" rel="noopener">C.R.S. \u00a742-4-1809</a></td></tr>
-      <tr><th scope="row">New York</th><td>Held by the lienor for the owner or others entitled to notice, then deposited with a local treasurer if unclaimed after thirty days.</td><td>Thirty days with the lienor; five years with the local treasurer before it goes to the municipality's general funds.</td><td><a href="{NY_URL}" rel="noopener">Lien Law \u00a7204</a></td></tr>
-      <tr><th scope="row">Texas</th><td>For an abandoned vehicle sold by a law enforcement agency: after the agency's costs, held for 90 days for the owner or lienholder, then put in an account for other towing costs.</td><td>90 days.</td><td><a href="{TX_URL}" rel="noopener">Transp. Code \u00a7683.015</a></td></tr>
+      <tr><th scope="row">Colorado</th><td>For an abandoned motor vehicle sold under part 18 of the statute's article: after the operator's fee, towing and storage, agency costs and some state fees, the balance goes to the state department. It pays the lienholder of record, then the owner of record, then any person who submits proof of an interest. If not requested and paid within 120 days of the sale, it goes to the state treasurer for the highway users tax fund.</td><td>120 days from the sale, after which the statute sends the money to the treasurer.</td><td><a href="{CO_URL}" rel="noopener">C.R.S. \u00a742-4-1809</a></td></tr>
+      <tr><th scope="row">New York</th><td>For a sale under Article 9 of the Lien Law (enforcement of liens on personal property): held by the lienor for the owner, the owner's assignee or legal representative, or anyone entitled to notice of the sale. If unclaimed in thirty days, deposited with the treasurer, chamberlain, commissioner of finance or town supervisor where the sale was held.</td><td>The officer pays a person entitled on demand. After five years with the officer, unclaimed money goes to the municipality's general funds.</td><td><a href="{NY_URL}" rel="noopener">Lien Law \u00a7204</a></td></tr>
+      <tr><th scope="row">Texas</th><td>For an abandoned vehicle sold by a law enforcement agency: after the agency's costs, held for 90 days for the owner or lienholder. Unclaimed money then goes into an account that may pay towing and storage costs on other vehicles, and amounts over $1,000 may be moved to the city or county's general revenue.</td><td>Held for 90 days. The statute does not say when the 90 days start.</td><td><a href="{TX_URL}" rel="noopener">Transp. Code \u00a7683.015</a></td></tr>
       <tr><th scope="row">Washington</th><td>To the Department of Licensing, for tow truck operator auctions, within thirty days.</td><td>The statute says the money goes to the registered owner of record who makes a valid claim within one year of the auction.</td><td><a href="{WA_RCW}" rel="noopener">RCW 46.55.130</a></td></tr>
     </tbody></table>
   </div>
@@ -406,22 +406,22 @@ def page_states():
   <p>This site's reading: in this kind of sale the salvor is paid its fee and costs first, and the remainder goes to the state. This site read only this section.</p>
 
   <h2 id="s-colorado">Colorado</h2>
-  <p>This section covers an abandoned motor vehicle sold under the state's towing part for abandoned vehicles. The first payments go to the operator's fee, towing and storage, and the law enforcement agency's costs. This site read the statute in the 2024 printout.</p>
+  <p>This section covers an abandoned motor vehicle sold under part 18 of the article. The first payments go to the operator's fee, towing and storage, and the law enforcement agency's costs. The statute says some of its paragraphs do not apply to a law enforcement agency operating under a towing contract. This site read the statute in the 2024 printout.</p>
   {S_CO}
-  <p>This site's reading: the money moves through the state department, with the lienholder of record paid first and the owner of record second. The 120 days is short. If your car may have been sold in Colorado, ask the department how to claim, and do it soon.</p>
+  <p>This site's reading: the money moves through a state department, with the lienholder of record paid first, the owner of record second, and then anyone who submits proof of an interest. The 120 days is short, and the leftover then goes to a highway fund. If your car may have been sold in Colorado, ask the state agency that handles vehicle titles how to claim, and do it soon.</p>
 
   <h2 id="s-newyork">New York</h2>
   <p>This is Article 9 of the Lien Law, which covers enforcement of liens on personal property. It sets what the person who holds the lien does with the money after a sale under that article.</p>
   {S_NY1}
   {S_NY2}
   {S_NY3}
-  <p>This site's reading: in a sale under this article, the leftover money may end up with a city, village or town treasurer. A person legally entitled can claim it from that officer. This site did not read the separate New York rules for vehicles held by local authorities.</p>
+  <p>This site's reading: in a sale under this article, the leftover money may end up with a city, village or town treasurer. A person legally entitled can claim it from that officer. This site read only this section.</p>
 
   <h2 id="s-texas">Texas</h2>
   <p>This section covers an abandoned vehicle that a law enforcement agency sells at auction. It is not a rule for every tow yard sale in Texas.</p>
   {S_TX1}
   {S_TX2}
-  <p>This site's reading: the owner or lienholder has 90 days after the agency's costs are taken out. After that, unclaimed money goes into an account for other towing costs. This site read only this section.</p>
+  <p>This site's reading: after the agency's costs are taken out, the proceeds are held for 90 days for the owner or lienholder. The statute does not say when the 90 days start. After that, unclaimed money goes into an account, and a city or county may move amounts over $1,000 to its general revenue. This site read only this section and did not read the sections on notice to owners.</p>
 
   <h2 id="s-washington">Washington</h2>
   <p>Washington's tow truck operator law sends surplus auction money to the state. The statute's word for the agency is "the department".</p>
@@ -579,11 +579,11 @@ ASK_HELPER = r"""
     ca: "I understand that California Civil Code section 3073 provides that, after the lien and a capped processing cost are paid, the balance of the sale money is forwarded to the Department of Motor Vehicles.",
     fl: "I understand that Florida Statutes section 713.78 provides that the proceeds of the sale, after payment of reasonable towing and storage charges and costs of the sale, are deposited with the clerk of the circuit court if the owner or lienholder is absent.",
     ga: "I understand that the Georgia Department of Revenue says a business that sold an abandoned or unclaimed vehicle at public sale under a court order must remit the remaining proceeds to the Department of Revenue.",
-    mi: "I understand that Michigan Compiled Laws section 257.252g provides that any extra money from a public sale of this kind is sent to the Department of Treasury's unclaimed property division.",
+    mi: "I understand that Michigan Compiled Laws section 257.252g provides that, for a public sale of a vehicle determined abandoned or removed under its towing rules, any extra money is sent to the Department of Treasury's unclaimed property division.",
     nv: "I understand that the Nevada lien statutes provide that the balance of the sale proceeds must be delivered, on demand, to the person entitled to it.",
     pa: "I understand that 75 Pennsylvania Consolidated Statutes section 7308 provides that, after the salvor's costs, the remainder of the proceeds of a sale of an abandoned vehicle is paid to the department and transmitted to the State Treasurer.",
-    co: "I understand that Colorado Revised Statutes section 42-4-1809 provides that, for an abandoned motor vehicle sold under the towing part of the statutes, the remaining balance is paid through the state department to the lienholder of record, then the owner of record, and is transmitted to the state treasurer if not requested within 120 days of the sale.",
-    ny: "I understand that New York Lien Law section 204 provides that the balance of the proceeds is held by the lienor subject to the demand of the owner, and is deposited with the local treasurer if it is not claimed within thirty days of the sale.",
+    co: "I understand that Colorado Revised Statutes section 42-4-1809 provides that, for an abandoned motor vehicle sold under part 18, the remaining balance is paid through the state department to the lienholder of record, then the owner of record, then any person who submits proof of an interest, and is transmitted to the state treasurer if the payments are not requested and made within 120 days of the sale.",
+    ny: "I understand that New York Lien Law section 204 provides that, for a sale under Article 9, the balance of the proceeds is held by the lienor subject to the demand of the owner or others entitled to notice, and is deposited with a local officer if it is not claimed within thirty days of the sale.",
     tx: "I understand that Texas Transportation Code section 683.015 provides that, for an abandoned vehicle sold by a law enforcement agency, the proceeds after the agency's costs are held for 90 days for the owner or lienholder.",
     wa: "I understand that Revised Code of Washington 46.55.130 provides that surplus money from a registered tow truck operator's auction is remitted within thirty days to the department of licensing."
   };
@@ -635,7 +635,7 @@ def page_ask():
   </div>
 
   <h2>Why ask in writing</h2>
-  <p>A written request gives you a record. It asks the tow yard for the facts you need: what it charged, what the car sold for, and whether any money was left over and where it went. The laws this site has read say leftover money goes to an agency, a court clerk or the person entitled, depending on the state.</p>
+  <p>A written request gives you a record. It asks the tow yard for the facts you need: what it charged, what the car sold for, and whether any money was left over and where it went. The laws this site has read say leftover money goes to a state agency, a court clerk, a local treasurer, a holding account or the person entitled, depending on the state and the kind of sale.</p>
   <p>The <a href="../lien-sale-surplus-other-states/">states page</a> shows the sentence for each state this site has checked: California, Colorado, Florida, Georgia, Michigan, Nevada, New York, Pennsylvania, Texas and Washington. The letter uses a short plain-words version of that sentence for the state you choose. Which sentence applies depends on the kind of sale. The yard's answer will show which kind it was.</p>
 
   <h2>What the letter asks for</h2>
