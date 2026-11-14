@@ -39,6 +39,8 @@
   .brand, .brand:visited { font: 400 30px/1 var(--head); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; min-height: 44px; padding: 7px 0; display: inline-block; }
   .brand::after { content: ""; display: inline-block; width: 0.16em; height: 0.16em; margin-left: 0.06em; background: var(--crimson); clip-path: circle(50%); vertical-align: baseline; }
   .trustbar p { margin: 0 auto; width: calc(100% - 2 * var(--gut)); max-width: 1120px; padding: 10px 0 8px; font: 400 13px/1.4 var(--text); color: var(--graphite); }
+  .subnav .in { display: flex; flex-wrap: wrap; gap: 4px 22px; border-bottom: 1px solid var(--hairline); }
+  .subnav a, .subnav a:visited { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--ink); }
   .doors { padding: 0; }
   .doors .in { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--ink); }
   .doors a, .doors a:visited { min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 12px 8px 0; border-top: 4px solid transparent; color: var(--graphite); text-decoration: none; font: 400 16px/1.25 var(--text); }
@@ -60,8 +62,22 @@
   .cta-sec, .cta-sec:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
+  @media (max-width: 640px) {
+    .table-wrap:not(.keep) table, .table-wrap:not(.keep) tbody, .table-wrap:not(.keep) tr, .table-wrap:not(.keep) td, .table-wrap:not(.keep) th[scope=row] { display: block; width: 100%; min-width: 0; }
+    .table-wrap:not(.keep) thead { display: none; }
+    .table-wrap:not(.keep) tr { padding: 12px 14px; border-bottom: 1px solid var(--hairline); }
+    .table-wrap:not(.keep) td { display: block; padding: 4px 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+    .table-wrap:not(.keep) td::before { content: attr(data-label); display: block; font-size: 13px; font-weight: 700; color: var(--graphite); }
+    .table-wrap:not(.keep) th[scope=row] { padding: 0 0 4px; border: 0; }
+    .table-wrap { overflow-x: visible; }
+  }
+  .table-wrap.keep table { width: 100%; min-width: 0; table-layout: auto; }
+  .table-wrap.keep td, .table-wrap.keep th { white-space: normal; overflow-wrap: anywhere; }
+  .yes { font-weight: 700; color: #14532d; background: #eaf5ee; border: 1px solid #86efac; padding: 1px 8px; }
+  .no { font-weight: 500; color: var(--graphite); }
+  hr { max-width: 46em; margin-left: 0; }
   .swipe { display: none; margin: 0 0 6px; font: 400 13px/1.3 var(--text); color: var(--graphite); }
-  @media (max-width: 767px) { .swipe { display: block; } .table-wrap { box-shadow: inset -14px 0 10px -10px rgba(0,0,0,.18); } }
+
   table { border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }
   thead th { background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }
   tbody td, tbody th { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
@@ -90,6 +106,7 @@
   <div class="in"><a class="brand" href="./">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Nothing you type leaves your browser.</p></div>
 </header>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="./">Calculator</a><a href="sla/">Vendor SLAs</a><a href="guides/">Guides</a><a href="about.html">Who runs this</a></div></nav>
 <main class="in guide">
   <div class="hero">
 <h1>Privacy</h1>

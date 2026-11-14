@@ -30,7 +30,7 @@ def page(a):
     canonical = f"{bp.SITE_ORIGIN}/flights/airlines/{aid}/"
     title = f"{name}: what it has promised for cancellations and delays"
     meta = f"What {name} has told the US Department of Transportation it will do when it causes a cancellation or delay: rebooking, meals, hotel, transport, cash, vouchers and miles. Quoted from the dashboard and the airline's plan."
-    rows = "".join(f'<tr><th scope="row">{esc(k["label"])}</th><td><b>{"Yes" if a["values"][k["key"]] else "No"}</b></td></tr>' for k in D["k"])
+    rows = "".join(f'<tr><th scope="row">{esc(k["label"])}</th><td><b class="{"yes" if a["values"][k["key"]] else "no"}">{"Yes" if a["values"][k["key"]] else "No"}</b></td></tr>' for k in D["k"])
     plan = a.get("plan")
     if plan:
         qs = "".join(f'<blockquote><p>“{esc(q)}”</p><cite>{esc(name)} customer service plan, read {esc(D["r"])}. <a href="{esc(plan["url"])}" rel="noopener">Open the plan</a></cite></blockquote>' for q in plan["quotes"])

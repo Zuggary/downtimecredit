@@ -111,7 +111,7 @@ def page(slug, title, meta, h1, lede, body, related):
 def deadline_rows():
     rows = []
     for v in VENDORS:
-        rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></th><td>{esc(bp.describe_deadline(v))}</td></tr>')
+        rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["service"] if v["service"].startswith(v["vendor"]) else v["vendor"] + ": " + v["service"])}</a></th><td>{esc(bp.describe_deadline(v))}</td></tr>')
     return '<p class="swipe">Swipe sideways to see every column.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Claim deadline by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Claim deadline, from the agreement</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
 
 
@@ -121,7 +121,7 @@ def unit_rows():
         days = v["creditUnit"] == "service-days"
         tiers = "; ".join(f"uptime {'below' if v['comparison'] == 'strict-below' else 'at or below'} {t['below']}%: {t['credit']} {'days of service' if days else '% of the fee'}" for t in v["tiers"])
         per = "calendar quarter" if v["period"]["type"] == "calendar-quarter" else "calendar month"
-        rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></th><td>{esc(per)}</td><td>{esc(tiers)}</td></tr>')
+        rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["service"] if v["service"].startswith(v["vendor"]) else v["vendor"] + ": " + v["service"])}</a></th><td>{esc(per)}</td><td>{esc(tiers)}</td></tr>')
     return '<p class="swipe">Swipe sideways to see every column.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Credit tiers by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Uptime counted over</th><th scope="col">Credit tiers</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
 
 
@@ -237,7 +237,7 @@ def index_page():
 
 
 def about_page():
-    rows = "".join(f'<tr><th scope="row">{esc(v["vendor"])}: {esc(v["service"])}</th><td><a href="{esc(v["document"]["url"])}" rel="noopener">{esc(v["document"]["title"])}</a></td><td>{esc(bp.fmt_date(v["document"]["date"]))}</td><td>{esc(bp.fmt_date(v["document"]["lastChecked"]))}</td></tr>' for v in VENDORS)
+    rows = "".join(f'<tr><th scope="row">{esc(v["service"] if v["service"].startswith(v["vendor"]) else v["vendor"] + ": " + v["service"])}</th><td><a href="{esc(v["document"]["url"])}" rel="noopener">{esc(v["document"]["title"])}</a></td><td>{esc(bp.fmt_date(v["document"]["date"]))}</td><td>{esc(bp.fmt_date(v["document"]["lastChecked"]))}</td></tr>' for v in VENDORS)
     table = '<div class="table-wrap" tabindex="0" role="region" aria-label="Sources and dates read"><table><thead><tr><th scope="col">Service</th><th scope="col">Agreement</th><th scope="col">Dated</th><th scope="col">Last read</th></tr></thead><tbody>' + rows + '<tr><th scope="row">US airlines</th><td><a href="https://www.transportation.gov/airconsumer/airline-cancellation-delay-dashboard" rel="noopener">DOT Airline Cancellation and Delay Dashboard</a></td><td>11 September 2025</td><td>13 November 2026</td></tr></tbody></table></div>'
     body = f"""
   <h2>Who runs this</h2>
@@ -275,6 +275,7 @@ def about_page():
   <div class="in"><a class="brand" href="./">Downtime Credit</a></div>
   <div class="trustbar"><p>{TRUST}</p></div>
 </header>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="./">Calculator</a><a href="sla/">Vendor SLAs</a><a href="guides/">Guides</a><a href="about.html">Who runs this</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="./">Downtime Credit</a> / Who runs this</p>

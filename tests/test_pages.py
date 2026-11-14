@@ -31,7 +31,7 @@ for a in FL["a"].values():
         t = open(os.path.join(ROOT, "flights", "airlines", a["id"], "index.html"), encoding="utf-8").read()
         for k in FL["k"]:
             want = "Yes" if a["values"][k["key"]] else "No"
-            ok(re.search(re.escape(html.escape(k["label"], quote=True)) + r"</th><td[^>]*><b>" + want + "</b>", t) is not None, a["id"] + ": " + k["key"] + " is " + want + " as in FLIGHTS")
+            ok(re.search(re.escape(html.escape(k["label"], quote=True)) + r"</th><td[^>]*><b[^>]*>" + want + "</b>", t) is not None, a["id"] + ": " + k["key"] + " is " + want + " as in FLIGHTS")
 sm = open(os.path.join(ROOT, "sitemap.xml")).read()
 titles = {}
 for p in pages:
