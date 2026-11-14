@@ -67,5 +67,14 @@ for p in sorted(set(allpages)):
     if rel.startswith(os.path.join("flights", "airlines")): 
         ok('<meta name="robots" content="noindex">' in t, rel + ": noindex while the site is first reviewed")
 ok("/flights/airlines/" not in sm, "sitemap: airline pages left out")
+# TF9: each guide page links to at least 3 other guides and carries breadcrumb data that matches its address
+import re as _re
+for p in sorted(set(allpages)):
+    rel = os.path.relpath(p, ROOT)
+    if not rel.startswith("guides" + os.sep) or rel == os.path.join("guides", "index.html"): continue
+    t = open(p, encoding="utf-8").read(); slug = rel.split(os.sep)[1]
+    others = {m for m in _re.findall(r'href="\.\./([a-z0-9-]+)/"', t) if m != slug}
+    ok(len(others) >= 3, rel + f": links to {len(others)} other guides (need 3)")
+    ok('"@type":"BreadcrumbList"' in t and ('https://www.downtimecredit.com/guides/' + slug + '/') in t.split('"BreadcrumbList"')[1].split("</script>")[0], rel + ": breadcrumb data names its own address")
 print(f"pages: {checks - fails} passed, {fails} failed")
 sys.exit(1 if fails else 0)

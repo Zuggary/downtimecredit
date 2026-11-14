@@ -6,6 +6,7 @@ import html, json, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
+import guide_meta as gm
 
 ROOT = bp.ROOT
 TRUST = 'Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site\'s reading; the vendor decides every claim.</span>'
@@ -47,6 +48,8 @@ def page(slug, title, meta, h1, lede, body, related):
     ld = json.dumps({"@context": "https://schema.org", "@type": "Article", "headline": h1, "description": meta, "url": canonical,
                      "dateModified": LASTMOD, "inLanguage": "en", "publisher": {"@type": "Organization", "name": "Downtime Credit", "url": bp.SITE_ORIGIN + "/"}},
                     ensure_ascii=False, separators=(",", ":"))
+    have = {x for x, _ in related}
+    related = list(related) + [(x, gm.TITLES[x]) for x in gm.RELATED.get(slug, []) if x not in have]
     rel = "".join(f'<li><a href="../{s}/">{esc(t)}</a></li>' for s, t in related)
     return f"""<!doctype html>
 <html lang="en">
@@ -69,6 +72,9 @@ def page(slug, title, meta, h1, lede, body, related):
 <link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 {ld}
+</script>
+<script type="application/ld+json">
+{gm.breadcrumb(slug, bp.SITE_ORIGIN)}
 </script>
 <style>
 {bp.shared_css("../../")}

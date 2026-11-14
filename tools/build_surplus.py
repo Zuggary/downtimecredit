@@ -6,6 +6,7 @@ import html, json, re, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
+import guide_meta as gm
 
 ROOT = bp.ROOT
 esc = bp.esc
@@ -186,6 +187,9 @@ def shell(slug, title, meta, h1, lede, body, canonical_extra=""):
 <script type="application/ld+json">
 {ld}
 </script>
+<script type="application/ld+json">
+{gm.breadcrumb(slug, bp.SITE_ORIGIN)}
+</script>
 <style>
 {bp.shared_css("../../")}
 {CSS_EXTRA}
@@ -204,7 +208,7 @@ def shell(slug, title, meta, h1, lede, body, canonical_extra=""):
     <p class="lede">{lede}</p>
   </div>
 {body}
-</main>
+{gm.related_html(slug)}</main>
 <footer>
   <div class="in">
     <p>Who runs this: one independent developer. Not a law firm. No affiliation with any agency or vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
