@@ -212,17 +212,15 @@ def page_california():
   <h2>Steps</h2>
   <ol>
     <li><b>Find your plate number or VIN.</b> Use the plate or VIN of the car that was towed. The lookup takes the plate number, or the last 5 digits of the VIN.</li>
-    <li><b>Use the DMV lookup.</b> The DMV describes what it does.</li>
-  </ol>
-  {Q8}
-  {QSTEPS}
-  <ol start="3">
-    <li><b>Follow the steps the lookup shows.</b> When the lookup finds your car, it shows the date of sale, the amount and the date fees were paid, and tells you what to do. The DMV's results page says this:</li>
+    <li><b>Use the DMV lookup.</b> The DMV describes what it does.
+      {Q8}</li>
+    <li><b>Follow the steps the lookup shows.</b> When the lookup finds your car, it shows the date of sale, the amount and the date fees were paid, and tells you what to do. The DMV's results page says this:
+      {QSTEPS}</li>
     <li><b>Open the form and read its instructions.</b> <a href="{DMV_FORM}" rel="noopener">Application for Refund (ADM 399), PDF</a>. Collect the documents in the checklist below.</li>
     <li><b>Sign the form yourself and mail it as the DMV's results page says.</b> The address is in the DMV's steps above. The form itself also allows you to submit it at a DMV office.</li>
-    <li><b>Wait for the DMV to decide.</b> The DMV decides every claim. The form says you will be told what it decided.</li>
+    <li><b>Wait for the DMV to decide.</b> The DMV decides every claim. The form says you will be told what it decided.
+      {Q9}</li>
   </ol>
-  {Q9}
   <p>Questions the page does not answer go to the DMV Lien Sale Unit.</p>
   {Q10}
 
@@ -299,7 +297,7 @@ def page_california():
                  "Car towed and sold? Money may be held for you at the California DMV",
                  "If a California tow yard sold your car at a lien sale, leftover money may be held at the DMV. What the law says, the three-year deadline, the DMV lookup and the steps to claim.",
                  "Car towed and sold at a lien sale? Money may be held for you",
-                 "When a California tow yard or storage lot sells an unclaimed car to cover what it is owed, that is called a lien sale. The yard keeps what it is owed and a capped processing cost. If the car sold for more than that, the law sends the rest to the DMV, and an owner or other interested person may claim it within three years. If the sale brought in no more than the bill, nothing is left.",
+                 "When a California tow yard or storage lot sells an unclaimed car to cover what it is owed, that is a lien sale. If the car sold for more than the bill and a capped cost, the law sends the rest to the DMV, and an owner or other interested person may claim it within three years.",
                  body)
 
 
