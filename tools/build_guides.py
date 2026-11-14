@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
 
 ROOT = bp.ROOT
+AIRLINE_IDS = sorted(p.parent.name for p in (bp.ROOT / "flights" / "airlines").glob("*/index.html"))
 LASTMOD = "2026-11-14"
 VENDORS = [json.loads((ROOT / "vendors" / f).read_text(encoding="utf-8")) for f in json.loads((ROOT / "vendors" / "index.json").read_text(encoding="utf-8"))["vendors"]]
 esc = bp.esc
@@ -230,9 +231,9 @@ def index_page():
 
 
 def sitemap():
-    paths = ["/", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/flights/airlines/", "/privacy.html"]
+    paths = ["/", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/flights/airlines/"] + [f"/flights/airlines/{a}/" for a in AIRLINE_IDS] + ["/privacy.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith('/guides') else bp.LASTMOD}</lastmod></url>" for p in paths]
+    lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith(('/guides', '/flights/airlines/')) and p != '/flights/airlines/' else bp.LASTMOD}</lastmod></url>" for p in paths]
     return "\n".join(lines + ["</urlset>", ""])
 
 

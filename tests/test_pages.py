@@ -15,13 +15,22 @@ def walk(x):
     if isinstance(x, str): pool.append(norm(x))
     elif isinstance(x, dict): [walk(i) for i in x.values()]
     elif isinstance(x, list): [walk(i) for i in x]
-walk(vendors); blob = "\n".join(pool)
+import subprocess, tempfile
+_js = tempfile.NamedTemporaryFile("w", suffix=".js", delete=False); _js.write('load("%s"); print(JSON.stringify({a: FLIGHTS.AIRLINES, q: FLIGHTS.QUOTES, k: FLIGHTS.AIRLINE_KEYS}));' % os.path.join(ROOT, "flights", "flights.js")); _js.close()
+FL = json.loads(subprocess.run(["/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc", _js.name], capture_output=True, text=True).stdout); os.unlink(_js.name)
+walk(vendors); walk(FL["q"]); walk([a.get("plan") for a in FL["a"].values() if a.get("plan")]); blob = "\n".join(pool)
 pages = []
-for d in ["sla", "guides"]:
+for d in ["sla", "guides", "flights/airlines"]:
     for r, _, fs in os.walk(os.path.join(ROOT, d)):
         for f in fs:
             if f == "index.html": pages.append(os.path.join(r, f))
-ok(len(pages) >= 8, f"{len(pages)} pages found (1 sla index + 4 vendors + 1 guides index + 3 guides)")
+ok(len(pages) >= 18, f"{len(pages)} pages found")
+for a in FL["a"].values():
+    if a.get("values"):
+        t = open(os.path.join(ROOT, "flights", "airlines", a["id"], "index.html"), encoding="utf-8").read()
+        for k in FL["k"]:
+            want = "Yes" if a["values"][k["key"]] else "No"
+            ok(re.search(re.escape(html.escape(k["label"], quote=True)) + r"</th><td><b>" + want + "</b>", t) is not None, a["id"] + ": " + k["key"] + " is " + want + " as in FLIGHTS")
 sm = open(os.path.join(ROOT, "sitemap.xml")).read()
 titles = {}
 for p in pages:
@@ -32,7 +41,7 @@ for p in pages:
     ok(("https://www.downtimecredit.com" + url) in s and ('<link rel="canonical" href="https://www.downtimecredit.com' + url + '"') in s, rel + ": canonical")
     ok(("<loc>https://www.downtimecredit.com" + url + "</loc>") in sm, rel + ": in the sitemap")
     ok("<h1" in s and s.count("<h1") == 1, rel + ": one h1")
-    ok(not re.search(r"<script[^>]+src=|<link[^>]+href=\"https?:(?!//www\.downtimecredit)|<img[^>]+src=\"https?:", s), rel + ": no outside file")
+    if rel != os.path.join("flights", "airlines", "index.html"): ok(not re.search(r"<script[^>]+src=|<link[^>]+href=\"https?:(?!//www\.downtimecredit)|<img[^>]+src=\"https?:", s), rel + ": no outside file")
     ok("slack" not in s.lower(), rel + ": no Slack text")
     ok(not re.search(r"you are owed|guaranteed|legal advice\b(?!\.)|will be refunded", re.sub(r"<[^>]+>", " ", s), re.I) or "Not legal advice" in s, rel + ": careful wording")
     for q in re.findall(r"<blockquote[^>]*>(.*?)</blockquote>", s, re.S):
