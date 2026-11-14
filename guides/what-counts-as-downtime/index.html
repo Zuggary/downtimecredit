@@ -70,6 +70,8 @@
   .cta-sec, .cta-sec:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
+  .swipe { display: none; margin: 0 0 6px; font: 400 13px/1.3 var(--text); color: var(--graphite); }
+  @media (max-width: 767px) { .swipe { display: block; } .table-wrap { box-shadow: inset -14px 0 10px -10px rgba(0,0,0,.18); } }
   table { border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }
   thead th { background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }
   tbody td, tbody th { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
@@ -117,12 +119,12 @@
 <h3><a href="../../sla/microsoft-365-exchange/">Microsoft: Exchange Online</a></h3>
 <blockquote><p>“Downtime: Any period of time when users are unable to send or receive email with Outlook Web Access. There is no Scheduled Downtime for this service.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
 <h3><a href="../../sla/google-workspace/">Google: Google Workspace</a></h3>
-<blockquote><p>“&quot;Downtime&quot; means, for a domain, a period of time during which the user web interface for the applicable Covered Services used by Customer has more than a five percent user error rate. Downtime is measured based on server side error rate.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
+<blockquote><p>&quot;Downtime&quot; means, for a domain, a period of time during which the user web interface for the applicable Covered Services used by Customer has more than a five percent user error rate. Downtime is measured based on server side error rate.</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
 <h3><a href="../../sla/atlassian-cloud/">Atlassian: Atlassian Cloud</a></h3>
-<blockquote><p>““Downtime Minute” occurs when the Error Rate in a given minute is greater than 5%.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
-<blockquote><p>““Error Rate” means, over a given 1-minute period, the percentage of Customer’s requests to Covered Experiences resulting in an error out of Customer’s total requests to those Covered Experiences.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+<blockquote><p>“Downtime Minute” occurs when the Error Rate in a given minute is greater than 5%.</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+<blockquote><p>“Error Rate” means, over a given 1-minute period, the percentage of Customer’s requests to Covered Experiences resulting in an error out of Customer’s total requests to those Covered Experiences.</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
 <h3><a href="../../sla/github-enterprise-cloud/">GitHub: GitHub Enterprise Cloud</a></h3>
-<blockquote><p>““Downtime” is a period of time where either (i) the error rate exceeds five percent (5%) in a given minute for a Service feature or (ii) the Service was unavailable as determined by a combination of GitHub’s internal and external monitoring systems.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+<blockquote><p>“Downtime” is a period of time where either (i) the error rate exceeds five percent (5%) in a given minute for a Service feature or (ii) the Service was unavailable as determined by a combination of GitHub’s internal and external monitoring systems.</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <blockquote><p>“In addition to these Service-specific definitions, Downtime does not include Scheduled Downtime, and Downtime does not include unavailability of a Service due to limitations or exclusions identified in Section 4 (“Limitations and Exclusions”).”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
 <h2>What each agreement leaves out</h2>
 <p>The lists below summarise the exclusions this site found in each agreement. The agreement itself is the final word.</p>

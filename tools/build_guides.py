@@ -106,7 +106,7 @@ def deadline_rows():
     rows = []
     for v in VENDORS:
         rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></th><td>{esc(bp.describe_deadline(v))}</td></tr>')
-    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Claim deadline by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Claim deadline, from the agreement</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
+    return '<p class="swipe">Swipe sideways to see every column.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Claim deadline by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Claim deadline, from the agreement</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
 
 
 def unit_rows():
@@ -116,7 +116,7 @@ def unit_rows():
         tiers = "; ".join(f"uptime {'below' if v['comparison'] == 'strict-below' else 'at or below'} {t['below']}%: {t['credit']} {'days of service' if days else '% of the fee'}" for t in v["tiers"])
         per = "calendar quarter" if v["period"]["type"] == "calendar-quarter" else "calendar month"
         rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></th><td>{esc(per)}</td><td>{esc(tiers)}</td></tr>')
-    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Credit tiers by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Uptime counted over</th><th scope="col">Credit tiers</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
+    return '<p class="swipe">Swipe sideways to see every column.</p><div class="table-wrap" tabindex="0" role="region" aria-label="Credit tiers by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Uptime counted over</th><th scope="col">Credit tiers</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
 
 
 def guide_credits():

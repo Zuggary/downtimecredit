@@ -108,6 +108,8 @@ def shared_css(font_prefix: str) -> str:
   .cta-sec, .cta-sec:visited {{ display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }}
   .sheet {{ background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }}
   .table-wrap {{ width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }}
+  .swipe {{ display: none; margin: 0 0 6px; font: 400 13px/1.3 var(--text); color: var(--graphite); }}
+  @media (max-width: 767px) {{ .swipe {{ display: block; }} .table-wrap {{ box-shadow: inset -14px 0 10px -10px rgba(0,0,0,.18); }} }}
   table {{ border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }}
   thead th {{ background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }}
   tbody td, tbody th {{ padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }}
@@ -177,10 +179,10 @@ def describe_top_credit(v: dict) -> str:
 
 
 def render_quote_block(quote_text: str, cite_text: str) -> str:
-    return (
-        f"<blockquote><p>\u201c{esc(quote_text)}\u201d</p>"
-        f"<cite>{esc(cite_text)}</cite></blockquote>"
-    )
+    body = esc(quote_text)
+    if quote_text[:1] not in ("\u201c", '"'):
+        body = "\u201c" + body + "\u201d"
+    return f"<blockquote><p>{body}</p><cite>{esc(cite_text)}</cite></blockquote>"
 
 
 def build_vendor_page(v: dict) -> str:
@@ -402,7 +404,7 @@ def build_vendor_page(v: dict) -> str:
 <main class="in">
   <div class="hero">
     <p class="crumb"><a href="../">Vendor SLA directory</a> / {esc(service)}</p>
-    <h1>{esc(service)}: SLA credit tiers, allowed downtime &amp; claim deadline</h1>
+    <h1>{esc(service)} SLA credits: tiers, downtime and the claim deadline</h1>
     <p class="lede">Read from the primary {esc(doc["title"])} (dated {esc(fmt_date(doc["date"]))}, last checked {esc(fmt_date(doc["lastChecked"]))}). Work out the credit, draft the support request, and export a calendar reminder locally in your browser.</p>
     {scope_p}
     <div class="cta-row">
@@ -420,6 +422,7 @@ def build_vendor_page(v: dict) -> str:
 
   <h2>Credit tiers &amp; minimum downtime minutes</h2>
   <div class="sheet">
+    <p class="swipe">Swipe sideways to see every column.</p>
     <div class="table-wrap" tabindex="0" role="region" aria-label="{esc(service)} SLA credit table">
       <table>
         <thead>
@@ -545,7 +548,7 @@ def build_sla_index(vendors: list[dict]) -> str:
   <div class="hero">
     <p class="crumb"><a href="../">Downtime Credit</a> / Vendor SLA directory</p>
     <h1>SaaS SLA credit rules, allowed downtime &amp; deadlines</h1>
-    <p class="lede">Every figure and quotation in this directory comes directly from the vendor's published Service Level Agreement. Open any vendor guide for the verbatim contract text, or launch its calculator directly.</p>
+    <p class="lede">Quotations are copied word for word from each vendor's published agreement. The minutes, the credit summaries and the deadline column are this site's reading of it. The vendor decides every claim. Open any vendor page for the clauses, or launch its calculator directly.</p>
     <div class="cta-row">
       <a class="cta" href="../">Open the interactive calculator &rarr;</a>
       <a class="cta-sec" href="../?vendor=own">Enter your own contract or MSA</a>
@@ -554,6 +557,7 @@ def build_sla_index(vendors: list[dict]) -> str:
 
   <h2>Public SaaS SLAs with service credits</h2>
   <div class="sheet">
+    <p class="swipe">Swipe sideways to see every column.</p>
     <div class="table-wrap" tabindex="0" role="region" aria-label="SaaS vendor SLAs">
       <table>
         <thead>

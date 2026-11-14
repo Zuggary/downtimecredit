@@ -70,6 +70,8 @@
   .cta-sec, .cta-sec:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
   .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
   .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
+  .swipe { display: none; margin: 0 0 6px; font: 400 13px/1.3 var(--text); color: var(--graphite); }
+  @media (max-width: 767px) { .swipe { display: block; } .table-wrap { box-shadow: inset -14px 0 10px -10px rgba(0,0,0,.18); } }
   table { border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }
   thead th { background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }
   tbody td, tbody th { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
@@ -106,7 +108,7 @@
 <main class="in">
   <div class="hero">
     <p class="crumb"><a href="../">Vendor SLA directory</a> / Exchange Online</p>
-    <h1>Exchange Online: SLA credit tiers, allowed downtime &amp; claim deadline</h1>
+    <h1>Exchange Online SLA credits: tiers, downtime and the claim deadline</h1>
     <p class="lede">Read from the primary Service Level Agreement for Microsoft Online Services (dated 1 November 2026, last checked 12 November 2026). Work out the credit, draft the support request, and export a calendar reminder locally in your browser.</p>
     
     <div class="cta-row">
@@ -124,6 +126,7 @@
 
   <h2>Credit tiers &amp; minimum downtime minutes</h2>
   <div class="sheet">
+    <p class="swipe">Swipe sideways to see every column.</p>
     <div class="table-wrap" tabindex="0" role="region" aria-label="Exchange Online SLA credit table">
       <table>
         <thead>
@@ -153,13 +156,13 @@
   <div>
       <h3>Uptime &amp; availability formula</h3>
       <blockquote><p>“where Downtime is measured in user-minutes; that is, for each Applicable Period, Downtime is the sum of the length (in minutes) of each Incident that occurs during that Applicable Period multiplied by the number of users impacted by that Incident.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
-      <blockquote><p>““User Minutes” means the total number of minutes in an Applicable Period, less all Scheduled Downtime, multiplied by the total number of users.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
+      <blockquote><p>“User Minutes” means the total number of minutes in an Applicable Period, less all Scheduled Downtime, multiplied by the total number of users.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“For other services, (e.g. M365 E3) “Applicable Period” means the calendar month in which a Service Credit is owed.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <h3>Downtime definition</h3>
       <blockquote><p>“Downtime: Any period of time when users are unable to send or receive email with Outlook Web Access. There is no Scheduled Downtime for this service.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <h3>Service credit terms &amp; caps</h3>
-      <blockquote><p>““Service Credit” is the percentage of the Applicable Service Fees credited to you following Microsoft’s claim approval.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
-      <blockquote><p>““Applicable Service Fees” means the total fees actually paid by you for a Service that are applied to the Applicable Period in which a Service Credit is owed.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
+      <blockquote><p>“Service Credit” is the percentage of the Applicable Service Fees credited to you following Microsoft’s claim approval.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
+      <blockquote><p>“Applicable Service Fees” means the total fees actually paid by you for a Service that are applied to the Applicable Period in which a Service Credit is owed.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“Service Credits apply only to fees paid for the particular Service, Service Resource, or Service tier for which a Service Level has not been met.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“The Service Credits awarded in any billing month for a particular Service or Service Resource will not, under any circumstance, exceed your monthly service fees for that Service or Service Resource, as applicable, in the Applicable Period.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“If we determine that a Service Credit is owed to you, we will apply the Service Credit to your Applicable Service Fees.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
