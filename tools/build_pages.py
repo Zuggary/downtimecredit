@@ -119,6 +119,8 @@ def shared_css(font_prefix: str) -> str:
     .table-wrap:not(.keep) th[scope=row] {{ padding: 0 0 4px; border: 0; }}
     .table-wrap {{ overflow-x: visible; }}
   }}
+  .sheet .table-wrap {{ border: 0; }}
+  main h2 {{ max-width: 46em; }}
   .table-wrap.keep table {{ width: 100%; min-width: 0; table-layout: auto; }}
   .table-wrap.keep td, .table-wrap.keep th {{ white-space: normal; overflow-wrap: anywhere; }}
   .table-wrap.keep thead th:last-child {{ white-space: nowrap; overflow-wrap: normal; }}

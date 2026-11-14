@@ -266,7 +266,7 @@ def about_page():
 <link rel="preload" href="fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 {bp.shared_css("")}
-  .guide h2 {{ margin-top: 36px; }}
+  .guide h2 {{ margin-top: 36px; max-width: 46em; }}
   .guide .hero {{ padding-bottom: 0; margin-bottom: 0; }}
   .guide p, .guide li {{ max-width: 46em; }}
 </style>
