@@ -15,6 +15,7 @@ DMV_LOOKUP = "https://www.dmv.ca.gov/portal/vehicle-registration/titles/lien-sal
 DMV_LIEN = "https://www.dmv.ca.gov/portal/vehicle-registration/titles/lien-sales-for-vehicles/"
 DMV_FORM = "https://www.dmv.ca.gov/portal/file/application-for-refund-adm-399-pdf/"
 CIV3073 = "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=3073"
+CIV3072 = "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=3072"
 VEH22851_8 = "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22851.8"
 WA_RCW = "https://app.leg.wa.gov/RCW/default.aspx?cite=46.55.130"
 WA_DEF = "https://app.leg.wa.gov/RCW/default.aspx?cite=46.04.162"
@@ -33,8 +34,11 @@ C_CIV = f'California Civil Code §3073, <a href="{CIV3073}" rel="noopener">legin
 C_VEH = f'California Vehicle Code §22851.8, <a href="{VEH22851_8}" rel="noopener">leginfo.legislature.ca.gov</a>, read {READ}.'
 C_LOOK = f'California DMV, <a href="{DMV_LOOKUP}" rel="noopener">Lien Sale Excess Fees Lookup</a>, read {READ}.'
 C_LIEN = f'California DMV, <a href="{DMV_LIEN}" rel="noopener">Lien Sales For Vehicles</a>, read {READ}.'
+C_CIV72 = f'California Civil Code \u00a73072, <a href="{CIV3072}" rel="noopener">leginfo.legislature.ca.gov</a>, read {READ}.'
+C_DMVFAQ = f'California DMV, <a href="{DMV_LIEN}" rel="noopener">Lien Sales For Vehicles, frequently asked questions</a>, read {READ}.'
 C_WA = f'Revised Code of Washington 46.55.130, <a href="{WA_RCW}" rel="noopener">app.leg.wa.gov</a>, read {READ}.'
 
+QCIV72A = q("For vehicles with a value determined to be four thousand dollars ($4,000) or less, the lienholder shall apply to the department for the names and addresses of the registered and legal owners of record.", C_CIV72)
 Q0 = q("The amount necessary to discharge the lien and the cost of processing the vehicle shall be paid to the lienholder. The cost of processing shall not exceed seventy dollars ($70) for each vehicle valued at four thousand dollars ($4,000) or less, or one hundred dollars ($100) for each vehicle valued over four thousand dollars ($4,000).", C_CIV)
 Q1 = q("The balance, if any, shall be forwarded to the Department of Motor Vehicles within 15 days of any sale conducted pursuant to Section 3071 or within five days of any sale conducted pursuant to Section 3072 and deposited in the Motor Vehicle Account in the State Transportation Fund, unless federal law requires these funds to be disposed in a different manner.", C_CIV)
 Q2 = q("Excess lien fees are monies received in excess of the lien amount, when a towed vehicle is sold at auction.", C_LOOK)
@@ -257,7 +261,8 @@ def page_california():
 {HELPER}
 
   <h2>What to do if you were not notified</h2>
-  <p>Before a lien sale, the law tells the tow yard or lot to find the owners through the DMV and write to them.</p>
+  <p>Before a lien sale, California law tells the tow yard or lot to find the owners through the DMV and write to them. Different sections cover different kinds of sales. Two of them are quoted here. Your sale may fall under another rule. If you have a notice, see <a href="../california-notice-of-pending-lien-sale/">what a notice of pending lien sale must say</a>.</p>
+  {QCIV72A}
   {Q11}
   {Q12}
   <p>The notice goes to the address the DMV has on record. If you moved and did not update it, the notice may not have reached you.</p>
@@ -346,9 +351,90 @@ def page_states():
                  body)
 
 
+N0 = q("The notice is to let you know that a lien sale is pending for the vehicle. The lien sale allows the business (lienholder) to recover the money owed for repairs, towing, and/or storage of the vehicle.", C_DMVFAQ)
+N1 = q("The lienholder shall, immediately upon receipt of the names and addresses, send, by certified mail with return receipt requested or by United States Postal Service Certificate of Mailing, a completed Notice of Pending Lien Sale form, a blank Declaration of Opposition form, and a return envelope preaddressed to the department, to the registered owner and legal owner at their addresses of record with the department, and to any other person known to have an interest in the vehicle.", C_CIV72)
+N2 = q("All notices to persons having an interest in the vehicle shall be signed under penalty of perjury and shall include all of the following information and statements:", C_CIV72)
+N3 = q("The specific date, exact time, and place of sale, which shall be set not less than 31 days, but not more than 41 days, from the date of mailing.", C_CIV72)
+N4 = q("The amount of the lien and the facts concerning the claim which gives rise to the lien.", C_CIV72)
+N5 = q("The person has a right to a hearing in court.", C_CIV72)
+N6 = q("If a court hearing is desired, a Declaration of Opposition form, signed under penalty of perjury, shall be signed and returned to the department within 10 days of the date the Notice of Pending Lien Sale form was mailed.", C_CIV72)
+N7 = q("The person may be liable for court costs if a judgment is entered in favor of the lienholder.", C_CIV72)
+N8 = q("When the window to oppose the lien sale has past, it becomes a civil matter between the parties involved. You may want to seek legal advice if you are unsure of your options, the consequences, or of what you want to do.", C_DMVFAQ)
+N9 = q("You received the notice because DMV records indicate you still have an interest in this vehicle.", C_DMVFAQ)
+
+
+def page_notice():
+    body = f"""
+  <div class="callout">
+    <p><b>Short on time?</b> The statute below gives 10 days to return the Declaration of Opposition, counted from the date the notice was mailed. Read the date on your notice today.</p>
+    <p class="fine">This page covers sales of vehicles valued at $4,000 or less (Civil Code \u00a73072). It is information, not legal advice. A lawyer or a legal aid office can tell you your options.</p>
+  </div>
+
+  <h2>What the notice is</h2>
+  {N0}
+  <p>The notice goes to the people the DMV lists for the car. The DMV says why a seller of the car may still get one.</p>
+  {N9}
+
+  <h2>What the lienholder must send</h2>
+  {N1}
+
+  <h2>What the notice must say</h2>
+  {N2}
+  <ul class="clean">
+    <li>The car: make, year, model, VIN, plate number and state of registration.</li>
+    <li>The date, time and place of the sale. The statute sets the sale 31 to 41 days after the mailing date.</li>
+    <li>The names and addresses of the registered and legal owners and anyone else known to have an interest.</li>
+    <li>The amount of the lien and the facts behind the claim.</li>
+    <li>That you have a right to a hearing in court, and how to ask for one.</li>
+    <li>That you may be liable for court costs if the lienholder wins.</li>
+  </ul>
+  <p>The statute words these items this way.</p>
+  {N3}
+  {N4}
+  {N5}
+  {N6}
+  {N7}
+
+  <h2>Checklist when a notice arrives</h2>
+  <ol>
+    <li><b>Find the mailing date.</b> The 10 days run from the date the notice was mailed, which can be before you receive it. This site's reading: if the date is unclear, act at once.</li>
+    <li><b>Check the car and the amount.</b> Is it your car? Does the amount of the lien and the reason match what happened?</li>
+    <li><b>Check the sale date.</b> The sale should be 31 to 41 days after the mailing date.</li>
+    <li><b>Decide whether to ask for a hearing.</b> The Declaration of Opposition form comes with the notice. The statute says to return it within 10 days.</li>
+    <li><b>Call the lienholder and the DMV Lien Sale Unit, (916) 657-7617,</b> if something does not add up.</li>
+    <li><b>Keep every paper.</b> Keep the notice, the envelope and any receipt.</li>
+  </ol>
+
+  <h2>If the 10 days have passed</h2>
+  {N8}
+  <p>If the car is sold for more than the lien and the allowed cost, the leftover money may be held for you at the DMV. See <a href="../car-towed-lien-sale-money-california/">the guide to claiming it</a>.</p>
+
+  <h2>What this site cannot do</h2>
+  <ul class="clean">
+    <li>It cannot tell you whether your notice is valid or whether the lien is right.</li>
+    <li>It does not send anything to the DMV or the lienholder.</li>
+    <li>It is not the DMV and not a law firm. This page is information, not legal advice.</li>
+  </ul>
+
+  <h2>Sources</h2>
+  <ul class="clean">
+    <li><a href="{CIV3072}" rel="noopener">California Civil Code \u00a73072</a>, read {READ}</li>
+    <li><a href="{DMV_LIEN}" rel="noopener">California DMV, Lien Sales For Vehicles</a>, frequently asked questions, read {READ}</li>
+  </ul>
+  <p class="fine">Quotations are copied word for word. Text outside a quotation is this site's reading. This is not legal advice.</p>
+"""
+    return shell("california-notice-of-pending-lien-sale",
+                 "Got a notice of pending lien sale in California? What it must say",
+                 "What a California notice of pending lien sale must contain for a vehicle valued at $4,000 or less, the 10-day window to return the Declaration of Opposition, and a checklist for when it arrives.",
+                 "Got a notice of pending lien sale? What it must say",
+                 "In California, a tow yard or shop that plans to sell your car for unpaid bills must send you a notice first. This page shows what the statute says the notice must contain and the 10-day window.",
+                 body)
+
+
 def main():
     bp.write_if_changed(ROOT / "guides" / "car-towed-lien-sale-money-california" / "index.html", page_california())
     bp.write_if_changed(ROOT / "guides" / "lien-sale-surplus-other-states" / "index.html", page_states())
+    bp.write_if_changed(ROOT / "guides" / "california-notice-of-pending-lien-sale" / "index.html", page_notice())
     print("Built 2 surplus guides.")
 
 

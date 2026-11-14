@@ -40,7 +40,7 @@
   // address to a fixed step path and straight back, in one synchronous block. Only the names in STEPS exist; every call below passes one as a
   // string literal. Nothing the visitor types or picks is ever part of a path. Off the live host this does nothing at all.
   var LIVE = /(^|\.)downtimecredit\.com$/.test(location.hostname);
-  var STEPS = { "mail-result": 1, "image-result": 1, "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-atlassian": 1, "start-github": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-atlassian": 1, "result-github": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1, "summary-copied": 1, "mail-it": 1, "mail-self": 1, "record": 1, "to-flights": 1 };
+  var STEPS = { "lien-card": 1, "mail-result": 1, "image-result": 1, "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-atlassian": 1, "start-github": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-atlassian": 1, "result-github": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1, "summary-copied": 1, "mail-it": 1, "mail-self": 1, "record": 1, "to-flights": 1 };
   var counted = Object.create(null), actor = false;     // actor: the event being handled right now is a real visitor action
   function countStep(name) {
     if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) return;   // live host only, fixed names only, once per page load
@@ -52,6 +52,7 @@
   }
   window.countStep = countStep;      // the counter loader in index.html calls it once, for "arrived"
   ["click", "input", "change"].forEach(function (t) { document.addEventListener(t, function (ev) { actor = ev.isTrusted === true; setTimeout(function () { actor = false; }, 0); }, true); });
+  document.querySelectorAll("a[data-lien-card]").forEach(function (a) { a.addEventListener("click", function (ev) { if (ev.isTrusted) countStep("lien-card"); }); });
   document.querySelectorAll("a[data-to-flights]").forEach(function (a) { a.addEventListener("click", function (ev) { if (ev.isTrusted) countStep("to-flights"); }); });
   function noteResult(m, res, noFee) {       // a result built from the visitor's own inputs, never the example
     var scEx = isSCMode(m) && ensureSCState(m).example;
