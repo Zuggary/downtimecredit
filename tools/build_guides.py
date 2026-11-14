@@ -188,6 +188,7 @@ def guide_downtime():
 
 
 EXTRA_GUIDES = [("car-towed-lien-sale-money-california", "Car towed and sold at a lien sale? Money may be held for you", "California: where the leftover money goes, the three-year deadline, the DMV lookup and the steps to claim."),
+                ("lost-retirement-money", "Lost 401(k) or pension? Where to search", "The Labor Department and PBGC searches for old job-based retirement benefits, and what each says."),
                 ("federal-tax-refund-deadline", "Federal tax refund deadline: the 3-year and 2-year rule", "The IRS time limit for claiming a refund, quoted, with a date calculator."),
                 ("final-paycheck-deadlines", "Final paycheck deadlines in six states", "When final wages are due in California, Michigan, New York, North Carolina, Texas and Washington, and a letter to ask."),
                 ("security-deposit-return-deadlines", "Security deposit return deadlines in seven states", "The main return rule in California, Florida, Michigan, New York, North Carolina, Ohio and Texas, and a letter to ask."),
