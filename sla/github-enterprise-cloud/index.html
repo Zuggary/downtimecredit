@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Enterprise Cloud SLA Credit Calculator, Uptime Tiers &amp; Filing Deadline | Downtime Credit</title>
+<meta name="description" content="GitHub Enterprise Cloud SLA credits pay 5% to 25% of your quarterly fee when quarterly uptime falls below 99.9% (133+ minutes down in a 92-day quarter). Within 30 days after the end of the calendar quarter. Free browser calculator with quotes from the agreement.">
+<link rel="canonical" href="https://www.downtimecredit.com/sla/github-enterprise-cloud/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.downtimecredit.com/sla/github-enterprise-cloud/">
+<meta property="og:site_name" content="Downtime Credit">
+<meta property="og:title" content="GitHub Enterprise Cloud SLA Credit Tiers, Allowed Downtime &amp; Calculator">
+<meta property="og:description" content="GitHub Enterprise Cloud SLA credits pay 5% to 25% of your quarterly fee when quarterly uptime falls below 99.9% (133+ minutes down in a 92-day quarter). Within 30 days after the end of the calendar quarter. Free browser calculator with quotes from the agreement.">
+<meta property="og:image" content="https://www.downtimecredit.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+[{"@context":"https://schema.org","@type":"WebApplication","name":"GitHub Enterprise Cloud SLA Credit Calculator","url":"https://www.downtimecredit.com/sla/github-enterprise-cloud/","applicationCategory":"BusinessApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"GitHub Enterprise Cloud SLA credits pay 5% to 25% of your quarterly fee when quarterly uptime falls below 99.9% (133+ minutes down in a 92-day quarter). Within 30 days after the end of the calendar quarter. Free browser calculator with quotes from the agreement."},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much outage credit does the GitHub Enterprise Cloud SLA pay?","acceptedAnswer":{"@type":"Answer","text":"Under the GitHub Online Services SLA (dated 1 June 2026), GitHub provides 5% to 25% of your quarterly fee when uptime falls below 99.9% over the calendar quarter (90 to 92 days). In a 92-day quarter, 133 minutes of covered downtime triggers the first credit tier."}},{"@type":"Question","name":"What is the deadline to file a GitHub Enterprise Cloud SLA credit request?","acceptedAnswer":{"@type":"Answer","text":"Within 30 days after the end of the calendar quarter. Primary clause: \"Customer may redeem Service Credits only upon written request within thirty (30) days of the end of the Applicable Period. Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft.\""}},{"@type":"Question","name":"Can reseller customers claim a GitHub Enterprise Cloud SLA service credit?","acceptedAnswer":{"@type":"Answer","text":"Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft."}}]}]
+</script>
+<style>
+  @font-face { font-family: "DM Serif DC"; src: url("../../fonts/dm-serif-display-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Hanken DC"; src: url("../../fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+
+  :root {
+    --paper: #FBFAF7;
+    --sheet: #FFFFFF;
+    --tint: #EEF1F5;
+    --ink: #14110F;
+    --graphite: #4A4640;
+    --hairline: rgba(20, 17, 15, .28);
+    --crimson: #B3161B;
+    --cobalt: #163F7A;
+    --head: "DM Serif DC", Georgia, "Times New Roman", serif;
+    --text: "Hanken DC", Arial, Helvetica, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --gut: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 400 16px/1.55 var(--text); overflow-x: clip; }
+  a, a:visited { color: var(--cobalt); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
+  .in { max-width: 1120px; width: calc(100% - 2 * var(--gut)); margin: 0 auto; }
+  .top .in { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding-top: 12px; padding-bottom: 8px; border-bottom: 3px solid var(--ink); position: relative; }
+  .top .in::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: var(--ink); }
+  .brand, .brand:visited { font: 400 30px/1 var(--head); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; min-height: 44px; padding: 7px 0; display: inline-block; }
+  .brand::after { content: ""; display: inline-block; width: 0.16em; height: 0.16em; margin-left: 0.06em; background: var(--crimson); clip-path: circle(50%); vertical-align: baseline; }
+  .trustbar p { margin: 0 auto; width: calc(100% - 2 * var(--gut)); max-width: 1120px; padding: 10px 0 8px; font: 400 13px/1.4 var(--text); color: var(--graphite); }
+  .doors { padding: 0; }
+  .doors .in { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--ink); }
+  .doors a, .doors a:visited { min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 12px 8px 0; border-top: 4px solid transparent; color: var(--graphite); text-decoration: none; font: 400 16px/1.25 var(--text); }
+  .doors a + a { padding-left: 12px; padding-right: 0; border-left: 1px solid var(--hairline); }
+  .doors a b { font-weight: 600; display: block; color: var(--graphite); }
+  .doors a span { display: block; font: 400 13px/1.35 var(--text); color: var(--graphite); }
+  .doors a[aria-current="page"], .doors a[aria-current="page"]:visited { color: var(--ink); border-top-color: var(--crimson); }
+  .doors a[aria-current="page"] b { font-weight: 700; color: var(--ink); }
+  @media (max-width: 559px) { .doors a span { display: none; } }
+  .hero { padding: 20px 0 24px; }
+  .crumb { margin: 0 0 8px; font: 600 13px/1.4 var(--text); color: var(--graphite); }
+  h1 { font: 400 clamp(32px, 5vw, 52px)/1.05 var(--head); letter-spacing: -0.02em; margin: 0 0 12px; max-width: 24em; }
+  h2 { font: 400 clamp(23px, 3.2vw, 30px)/1.15 var(--head); letter-spacing: -0.015em; margin: 36px 0 12px; padding-top: 16px; border-top: 2px solid var(--ink); }
+  h3 { font: 700 17px/1.3 var(--text); margin: 22px 0 6px; }
+  .lede { margin: 0 0 18px; font: 400 18px/1.45 var(--text); max-width: 44em; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 16px 0 8px; }
+  .cta, .cta:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 10px 18px; background: var(--crimson); color: #FFFFFF; font: 700 16px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
+  .cta:hover { filter: brightness(0.92); }
+  .cta-sec, .cta-sec:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
+  .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
+  .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
+  table { border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }
+  thead th { background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }
+  tbody td, tbody th { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin: 16px 0; }
+  .fact { background: var(--sheet); border: 1px solid var(--hairline); border-top: 2px solid var(--ink); padding: 14px 16px; }
+  .fact span { display: block; font: 600 12.5px/1.3 var(--text); text-transform: uppercase; letter-spacing: 0.04em; color: var(--graphite); margin-bottom: 4px; }
+  .fact b { font: 700 16px/1.35 var(--text); color: var(--ink); }
+  blockquote { margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--ink); background: var(--sheet); max-width: 52em; }
+  blockquote p { margin: 0; font: 400 15.5px/1.5 Georgia, "Times New Roman", serif; }
+  blockquote cite { display: block; margin-top: 6px; font: 400 13px/1.4 var(--text); color: var(--graphite); }
+  ul.clean, dl.who { max-width: 50em; }
+  dl.who dt { font-weight: 700; margin-top: 10px; }
+  dl.who dd { margin: 2px 0 0 0; color: var(--ink); }
+  .fine { font: 400 13.5px/1.45 var(--text); color: var(--graphite); max-width: 54em; }
+  footer { margin-top: 48px; padding: 24px 0 48px; border-top: 3px solid var(--ink); }
+  footer p { margin: 6px 0; font: 400 14.5px/1.45 var(--text); color: var(--graphite); max-width: 54em; }
+  @media (min-width: 900px) { :root { --gut: 28px; } .brand, .brand:visited { font-size: 38px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to GitHub or any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+</header>
+<nav class="doors" aria-label="What happened">
+  <div class="in">
+    <a href="../../" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
+    <a href="../../flights/"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
+  </div>
+</nav>
+
+<main class="in">
+  <div class="hero">
+    <p class="crumb"><a href="../">Vendor SLA directory</a> / GitHub Enterprise Cloud</p>
+    <h1>GitHub Enterprise Cloud: SLA credit tiers, allowed downtime &amp; claim deadline</h1>
+    <p class="lede">Read from the primary GitHub Online Services SLA (dated 1 June 2026, last checked 13 November 2026). Work out the credit, draft the support request, and export a calendar reminder locally in your browser.</p>
+    <p class="fine">Applies to GitHub Enterprise Cloud paid accounts (uptime measured per calendar quarter). Customers who purchased through Microsoft submit requests via a Microsoft support ticket.</p>
+    <div class="cta-row">
+      <a class="cta" href="../../?vendor=github-enterprise-cloud">Open interactive GitHub Enterprise Cloud calculator &rarr;</a>
+      <a class="cta-sec" href="../">Compare all vendor SLAs</a>
+    </div>
+  </div>
+
+  <div class="facts" aria-label="SLA summary">
+    <div class="fact"><span>Measurement period</span><b>Calendar quarter (90 to 92 days)</b></div>
+    <div class="fact"><span>Credit payout</span><b>5% to 25% of fee (below 99.9% uptime)</b></div>
+    <div class="fact"><span>Claim filing window</span><b>Within 30 days after the end of the calendar quarter</b></div>
+    <div class="fact"><span>Primary agreement</span><b><a href="https://github.com/customer-terms/github-online-services-sla" rel="noopener">GitHub Online Services SLA</a></b></div>
+  </div>
+
+  <h2>Credit tiers &amp; minimum downtime minutes</h2>
+  <div class="sheet">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="GitHub Enterprise Cloud SLA credit table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">SLA uptime tier</th>
+            <th scope="col">Service credit</th>
+            <th scope="col">90-day quarter (Q1)</th>
+            <th scope="col">91-day quarter (Q2 / leap Q1)</th>
+            <th scope="col">92-day quarter (Q3 / Q4)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Uptime below 99.9%</strong><br><span class="fine">“99.5% &lt;= Uptime &lt; 99.9%”</span></td><td class="num"><strong>5% of fee</strong></td><td class="num">130 min (2h 10m)</td><td class="num">132 min (2h 12m)</td><td class="num">133 min (2h 13m)</td></tr><tr><td><strong>Uptime below 99.5%</strong><br><span class="fine">“99.0% &lt;= Uptime &lt; 99.5%”</span></td><td class="num"><strong>10% of fee</strong></td><td class="num">649 min (10h 49m)</td><td class="num">656 min (10h 56m)</td><td class="num">663 min (11h 3m)</td></tr><tr><td><strong>Uptime below 99%</strong><br><span class="fine">“Uptime &lt; 99.0%”</span></td><td class="num"><strong>25% of fee</strong></td><td class="num">1,297 min (21h 37m)</td><td class="num">1,311 min (21h 51m)</td><td class="num">1,325 min (22h 5m)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine" style="margin:12px 0 0">Total-minutes formula over calendar quarter (90 to 92 days) (132,480 minutes in a 92-day quarter). Uptime is truncated to 4 decimals and compared below each threshold.</p>
+  </div>
+
+  <h2>Covered GitHub Enterprise Cloud services</h2><ul class="clean"><li>git Operations</li><li>Issues</li><li>Pages</li><li>Pull Requests</li><li>Webhooks</li><li>API requests</li></ul>
+
+  <h2>Who cannot claim &amp; what is excluded</h2>
+  <dl class="who"><dt>Previews or purchases made with a subscription credit</dt><dd>Not covered.</dd><dt>Rate limits, performance degradation, or latency without unavailability</dt><dd>Not covered.</dd><dt>Factors outside GitHub&#x27;s reasonable control, including external network failures</dt><dd>Not covered.</dd><dt>Third-party software, hardware, or inadequate bandwidth</dt><dd>Not covered.</dd><dt>Throttling of suspected abuse or compromised accounts</dt><dd>Not covered.</dd></dl>
+
+  <h2>Verbatim clauses from the agreement</h2>
+  <p class="fine">Every quotation below is reproduced word-for-word from <a href="https://github.com/customer-terms/github-online-services-sla" rel="noopener">GitHub Online Services SLA</a> (dated 1 June 2026, last checked 13 November 2026).</p>
+  <div>
+      <h3>Uptime &amp; availability formula</h3>
+      <blockquote><p>““Uptime” means the percentage a Service was available out of the total possible availability for the Service in a calendar quarter. Uptime is calculated using the formula specified for each Service below.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“GitHub commits to maintain at least 99.9% Uptime for the applicable GitHub service.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>““Applicable Period” means the calendar quarter in which a Service Credit is owed.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Downtime definition</h3>
+      <blockquote><p>““Downtime” is a period of time where either (i) the error rate exceeds five percent (5%) in a given minute for a Service feature or (ii) the Service was unavailable as determined by a combination of GitHub’s internal and external monitoring systems.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“In addition to these Service-specific definitions, Downtime does not include Scheduled Downtime, and Downtime does not include unavailability of a Service due to limitations or exclusions identified in Section 4 (“Limitations and Exclusions”).”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>““Scheduled Downtime” means periods of Downtime related to network, hardware, or Service maintenance or upgrades. We will publish notice or notify you at least five (5) days prior to the commencement of such Downtime, unless a bona fide emergency prevents us from doing so.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Service credit terms &amp; caps</h3>
+      <blockquote><p>““Service Credit” is the percentage of the Applicable Service Fees credited to Customer following GitHub’s claim approval.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>““Applicable Service Fees” means the total fees paid by Customer for a Service that are applied to the Applicable Period in which a Service Credit is owed.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“Service Credits may be in the form of a refund or a credit to Customer’s account. Service Credits cannot be exchanged into cash, and are limited to a maximum of ninety (90) days of paid service per calendar quarter. Customer must have paid all outstanding invoices to receive Service Credits. Service Credits expire upon termination of Customer’s agreement with GitHub.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Claim filing deadline</h3>
+      <blockquote><p>“Customer may redeem Service Credits only upon written request within thirty (30) days of the end of the Applicable Period. Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Reseller &amp; partner filing rule</h3>
+      <blockquote><p>“Written requests for Service Credits should be sent either (a) to GitHub Support if Customer purchases directly from GitHub, or (b) through a Microsoft support ticket if Customer purchases SLA-covered Services through Microsoft.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Covered services clause</h3>
+      <blockquote><p>““Service Feature” is one of the following components of GitHub Enterprise Cloud: git Operations, Issues, Pages, Pull Requests, Webhooks, and API requests to these components.”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Exclusions &amp; eligibility clauses</h3>
+      <blockquote><p>“B. For a Preview, or a purchase made with a subscription credit;”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“J. That result from rate limits, performance degradation, or other latency issues without actual service unavailability (except for services which explicitly include a performance-based Service Level); or”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“A. Due to factors outside our reasonable control (for example, natural disaster, war, acts of terrorism, riots, government action, or a network or device failure external to our data centers, including at your site or between your site and our data center);”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“C. That result from the use of services, hardware, or software not provided by us, including, but not limited to, issues resulting from inadequate bandwidth or related to third-party software or services;”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“I. That result from our throttling of suspected abusive behavior or hacked accounts;”</p><cite>GitHub Online Services SLA, dated 1 June 2026, last checked 13 November 2026.</cite></blockquote>
+  </div>
+
+  <div class="sheet" style="margin-top:32px">
+    <h3 style="margin-top:0">Ready to calculate your GitHub Enterprise Cloud credit?</h3>
+    <p style="margin:6px 0 14px">Enter your outage minutes and invoice fee in the browser calculator to generate a ready-to-send claim request and deadline `.ics` reminder.</p>
+    <a class="cta" href="../../?vendor=github-enterprise-cloud">Open interactive GitHub Enterprise Cloud calculator &rarr;</a>
+  </div>
+</main>
+
+<footer>
+  <div class="in">
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p><a href="../../">Calculator</a> &middot; <a href="../">Vendor SLA directory</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="../../privacy.html">Privacy</a></p>
+  </div>
+</footer>
+<script data-counter>
+  if (/(^|\.)downtimecredit\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "fec45b1ba4b9475991fe78db751e9bbc"}'); document.head.appendChild(s); })(); }
+</script>
+</body>
+</html>

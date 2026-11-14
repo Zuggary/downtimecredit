@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlassian Cloud SLA Credit Calculator, Uptime Tiers &amp; Filing Deadline | Downtime Credit</title>
+<meta name="description" content="Atlassian Cloud SLA credits pay 10% to 50% of your monthly fee when monthly uptime falls below 99.9% (44+ minutes down in a 30-day month). Within 15 days after the end of the calendar month. Free browser calculator with quotes from the agreement.">
+<link rel="canonical" href="https://www.downtimecredit.com/sla/atlassian-cloud/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.downtimecredit.com/sla/atlassian-cloud/">
+<meta property="og:site_name" content="Downtime Credit">
+<meta property="og:title" content="Atlassian Cloud SLA Credit Tiers, Allowed Downtime &amp; Calculator">
+<meta property="og:description" content="Atlassian Cloud SLA credits pay 10% to 50% of your monthly fee when monthly uptime falls below 99.9% (44+ minutes down in a 30-day month). Within 15 days after the end of the calendar month. Free browser calculator with quotes from the agreement.">
+<meta property="og:image" content="https://www.downtimecredit.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+[{"@context":"https://schema.org","@type":"WebApplication","name":"Atlassian Cloud SLA Credit Calculator","url":"https://www.downtimecredit.com/sla/atlassian-cloud/","applicationCategory":"BusinessApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Atlassian Cloud SLA credits pay 10% to 50% of your monthly fee when monthly uptime falls below 99.9% (44+ minutes down in a 30-day month). Within 15 days after the end of the calendar month. Free browser calculator with quotes from the agreement."},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much outage credit does the Atlassian Cloud SLA pay?","acceptedAnswer":{"@type":"Answer","text":"Under the Atlassian Cloud Service Level Agreement (dated 30 April 2026), Atlassian provides 10% to 50% of your monthly fee when uptime falls below 99.9% over the calendar month (utc) (28 to 31 days). In a 30-day month, 44 minutes of covered downtime triggers the first credit tier."}},{"@type":"Question","name":"What is the deadline to file a Atlassian Cloud SLA credit request?","acceptedAnswer":{"@type":"Answer","text":"Within 15 days after the end of the calendar month. Primary clause: \"To be eligible to receive a service credit for Atlassian’s failure to meet the Service Level Commitment (“Service Credit”), Customer must submit a ticket at https://support.atlassian.com with all fields fully and accurately completed within fifteen (15) days after the end of the calendar month in which the alleged failure occurred and provide any other reasonably requested information or documentation (for instance, as described here). Atlassian’s monitoring and logging infrastructure is the sole source of truth for determining whether Atlassian has met the Service Level Commitment.\""}},{"@type":"Question","name":"Can reseller customers claim a Atlassian Cloud SLA service credit?","acceptedAnswer":{"@type":"Answer","text":"If Customer purchased the affected Cloud Product through a Reseller, (a) Customer or the Reseller may submit a ticket as described in Section 2.1 above; and (b) any Service Credit will be based on the fees invoiced by Atlassian to the Reseller for Customer’s use of the affected Cloud Product under the Reseller’s applicable order(s) with Atlassian. Atlassian will issue any associated Service Credits to the Reseller (and not directly to Customer), and the Reseller will be solely responsible for issuing the appropriate amounts to Customer."}}]}]
+</script>
+<style>
+  @font-face { font-family: "DM Serif DC"; src: url("../../fonts/dm-serif-display-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Hanken DC"; src: url("../../fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+
+  :root {
+    --paper: #FBFAF7;
+    --sheet: #FFFFFF;
+    --tint: #EEF1F5;
+    --ink: #14110F;
+    --graphite: #4A4640;
+    --hairline: rgba(20, 17, 15, .28);
+    --crimson: #B3161B;
+    --cobalt: #163F7A;
+    --head: "DM Serif DC", Georgia, "Times New Roman", serif;
+    --text: "Hanken DC", Arial, Helvetica, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --gut: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+  html, body { margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 400 16px/1.55 var(--text); overflow-x: clip; }
+  a, a:visited { color: var(--cobalt); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
+  .in { max-width: 1120px; width: calc(100% - 2 * var(--gut)); margin: 0 auto; }
+  .top .in { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding-top: 12px; padding-bottom: 8px; border-bottom: 3px solid var(--ink); position: relative; }
+  .top .in::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: var(--ink); }
+  .brand, .brand:visited { font: 400 30px/1 var(--head); letter-spacing: -0.02em; color: var(--ink); text-decoration: none; min-height: 44px; padding: 7px 0; display: inline-block; }
+  .brand::after { content: ""; display: inline-block; width: 0.16em; height: 0.16em; margin-left: 0.06em; background: var(--crimson); clip-path: circle(50%); vertical-align: baseline; }
+  .trustbar p { margin: 0 auto; width: calc(100% - 2 * var(--gut)); max-width: 1120px; padding: 10px 0 8px; font: 400 13px/1.4 var(--text); color: var(--graphite); }
+  .doors { padding: 0; }
+  .doors .in { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--ink); }
+  .doors a, .doors a:visited { min-height: 44px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 12px 8px 0; border-top: 4px solid transparent; color: var(--graphite); text-decoration: none; font: 400 16px/1.25 var(--text); }
+  .doors a + a { padding-left: 12px; padding-right: 0; border-left: 1px solid var(--hairline); }
+  .doors a b { font-weight: 600; display: block; color: var(--graphite); }
+  .doors a span { display: block; font: 400 13px/1.35 var(--text); color: var(--graphite); }
+  .doors a[aria-current="page"], .doors a[aria-current="page"]:visited { color: var(--ink); border-top-color: var(--crimson); }
+  .doors a[aria-current="page"] b { font-weight: 700; color: var(--ink); }
+  @media (max-width: 559px) { .doors a span { display: none; } }
+  .hero { padding: 20px 0 24px; }
+  .crumb { margin: 0 0 8px; font: 600 13px/1.4 var(--text); color: var(--graphite); }
+  h1 { font: 400 clamp(32px, 5vw, 52px)/1.05 var(--head); letter-spacing: -0.02em; margin: 0 0 12px; max-width: 24em; }
+  h2 { font: 400 clamp(23px, 3.2vw, 30px)/1.15 var(--head); letter-spacing: -0.015em; margin: 36px 0 12px; padding-top: 16px; border-top: 2px solid var(--ink); }
+  h3 { font: 700 17px/1.3 var(--text); margin: 22px 0 6px; }
+  .lede { margin: 0 0 18px; font: 400 18px/1.45 var(--text); max-width: 44em; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 16px 0 8px; }
+  .cta, .cta:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 10px 18px; background: var(--crimson); color: #FFFFFF; font: 700 16px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
+  .cta:hover { filter: brightness(0.92); }
+  .cta-sec, .cta-sec:visited { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 16px; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--ink); font: 600 15px/1.2 var(--text); text-decoration: none; border-radius: 2px; }
+  .sheet { background: var(--sheet); border: 1px solid var(--hairline); border-top: 3px solid var(--ink); padding: 20px; margin: 16px 0 24px; }
+  .table-wrap { width: 100%; overflow-x: auto; background: var(--sheet); border: 1px solid var(--hairline); }
+  table { border-collapse: collapse; width: 100%; min-width: 580px; font: 400 15px/1.4 var(--text); }
+  thead th { background: var(--tint); font: 700 14px/1.3 var(--text); text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--ink); }
+  tbody td, tbody th { padding: 10px 12px; border-bottom: 1px solid var(--hairline); text-align: left; vertical-align: top; }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin: 16px 0; }
+  .fact { background: var(--sheet); border: 1px solid var(--hairline); border-top: 2px solid var(--ink); padding: 14px 16px; }
+  .fact span { display: block; font: 600 12.5px/1.3 var(--text); text-transform: uppercase; letter-spacing: 0.04em; color: var(--graphite); margin-bottom: 4px; }
+  .fact b { font: 700 16px/1.35 var(--text); color: var(--ink); }
+  blockquote { margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--ink); background: var(--sheet); max-width: 52em; }
+  blockquote p { margin: 0; font: 400 15.5px/1.5 Georgia, "Times New Roman", serif; }
+  blockquote cite { display: block; margin-top: 6px; font: 400 13px/1.4 var(--text); color: var(--graphite); }
+  ul.clean, dl.who { max-width: 50em; }
+  dl.who dt { font-weight: 700; margin-top: 10px; }
+  dl.who dd { margin: 2px 0 0 0; color: var(--ink); }
+  .fine { font: 400 13.5px/1.45 var(--text); color: var(--graphite); max-width: 54em; }
+  footer { margin-top: 48px; padding: 24px 0 48px; border-top: 3px solid var(--ink); }
+  footer p { margin: 6px 0; font: 400 14.5px/1.45 var(--text); color: var(--graphite); max-width: 54em; }
+  @media (min-width: 900px) { :root { --gut: 28px; } .brand, .brand:visited { font-size: 38px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to Atlassian or any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+</header>
+<nav class="doors" aria-label="What happened">
+  <div class="in">
+    <a href="../../" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
+    <a href="../../flights/"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
+  </div>
+</nav>
+
+<main class="in">
+  <div class="hero">
+    <p class="crumb"><a href="../">Vendor SLA directory</a> / Atlassian Cloud</p>
+    <h1>Atlassian Cloud: SLA credit tiers, allowed downtime &amp; claim deadline</h1>
+    <p class="lede">Read from the primary Atlassian Cloud Service Level Agreement (dated 30 April 2026, last checked 13 November 2026). Work out the credit, draft the support request, and export a calendar reminder locally in your browser.</p>
+    <p class="fine">Applies to Eligible Cloud Products on Premium and Enterprise plans. This calculator uses Premium Plan tiers (below 99.9%); Enterprise Plan adds a 5% credit tier between 99.9% and 99.95%.</p>
+    <div class="cta-row">
+      <a class="cta" href="../../?vendor=atlassian-cloud">Open interactive Atlassian Cloud calculator &rarr;</a>
+      <a class="cta-sec" href="../">Compare all vendor SLAs</a>
+    </div>
+  </div>
+
+  <div class="facts" aria-label="SLA summary">
+    <div class="fact"><span>Measurement period</span><b>Calendar month (UTC) (28 to 31 days)</b></div>
+    <div class="fact"><span>Credit payout</span><b>10% to 50% of fee (below 99.9% uptime)</b></div>
+    <div class="fact"><span>Claim filing window</span><b>Within 15 days after the end of the calendar month</b></div>
+    <div class="fact"><span>Primary agreement</span><b><a href="https://www.atlassian.com/legal/sla" rel="noopener">Atlassian Cloud Service Level Agreement</a></b></div>
+  </div>
+
+  <h2>Credit tiers &amp; minimum downtime minutes</h2>
+  <div class="sheet">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Atlassian Cloud SLA credit table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">SLA uptime tier</th>
+            <th scope="col">Service credit</th>
+            <th scope="col">28-day month (Feb)</th>
+            <th scope="col">30-day month (Apr/Jun/Sep/Nov)</th>
+            <th scope="col">31-day month (Jan/Mar/May/...)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Uptime below 99.9%</strong><br><span class="fine">“Less than 99.9% but greater than or equal to 99.0%”</span></td><td class="num"><strong>10% of fee</strong></td><td class="num">41 min</td><td class="num">44 min</td><td class="num">45 min</td></tr><tr><td><strong>Uptime below 99%</strong><br><span class="fine">“Less than 99.0% but greater than or equal to 95.0%”</span></td><td class="num"><strong>25% of fee</strong></td><td class="num">404 min (6h 44m)</td><td class="num">433 min (7h 13m)</td><td class="num">447 min (7h 27m)</td></tr><tr><td><strong>Uptime below 95%</strong><br><span class="fine">“Less than 95.0%”</span></td><td class="num"><strong>50% of fee</strong></td><td class="num">2,017 min (33h 37m)</td><td class="num">2,161 min (36h 1m)</td><td class="num">2,233 min (37h 13m)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine" style="margin:12px 0 0">Total-minutes formula over calendar month (utc) (28 to 31 days) (43,200 minutes in a 30-day month). Uptime is truncated to 4 decimals and compared below each threshold.</p>
+  </div>
+
+  <h2>Covered Atlassian Cloud services</h2><ul class="clean"><li>Jira (Premium and Enterprise)</li><li>Confluence (Premium and Enterprise)</li><li>Jira Service Management (Premium and Enterprise)</li><li>Bitbucket (Premium)</li><li>Compass (Premium)</li><li>Loom (Business + AI and Enterprise)</li><li>Jira Product Discovery (Premium and Enterprise)</li></ul>
+
+  <h2>Who cannot claim &amp; what is excluded</h2>
+  <dl class="who"><dt>Free, Standard, sandbox, or Beta products</dt><dd>Only Eligible Cloud Products on Premium or Enterprise plans are covered.</dd><dt>Accounts in breach or with overdue payments</dt><dd>Account must be paid up and product provisioned.</dd><dt>Routine scheduled or emergency maintenance</dt><dd>Excluded under the Atlassian Maintenance Policy.</dd><dt>Force majeure or internet access problems outside Atlassian&#x27;s control</dt><dd>Not covered.</dd><dt>Customer equipment, network connections, or third-party products</dt><dd>Not covered.</dd></dl>
+
+  <h2>Verbatim clauses from the agreement</h2>
+  <p class="fine">Every quotation below is reproduced word-for-word from <a href="https://www.atlassian.com/legal/sla" rel="noopener">Atlassian Cloud Service Level Agreement</a> (dated 30 April 2026, last checked 13 November 2026).</p>
+  <div>
+      <h3>Uptime &amp; availability formula</h3>
+      <blockquote><p>“The monthly uptime percentage indicated in the above tables is determined by subtracting from 100% the percentage of Downtime Minutes (as defined below) out of the total minutes in the relevant calendar month. This calculation is done independently for each Eligible Cloud Product. All calendar months are measured in the UTC time zone.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“All calendar months are measured in the UTC time zone.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Downtime definition</h3>
+      <blockquote><p>““Downtime Minute” occurs when the Error Rate in a given minute is greater than 5%.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>““Error Rate” means, over a given 1-minute period, the percentage of Customer’s requests to Covered Experiences resulting in an error out of Customer’s total requests to those Covered Experiences.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“Customer attempted no requests to any of the Covered Experiences over a minute, the Error Rate for that minute is 0%. It does not count as a Downtime Minute for the affected Eligible Cloud Product.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Service credit terms &amp; caps</h3>
+      <blockquote><p>“If Atlassian confirms a failure to meet the Service Level Commitment, Atlassian will apply the Service Credit, which will be calculated as described in Appendix B, against a future payment due from Customer for the affected Cloud Product, provided that Customer’s account is fully paid up, without any overdue payments or disputes. No refunds or cash value will be given for unused Service Credits. Service Credits may not be transferred or applied to any other Atlassian account or Product. The aggregate maximum Service Credit applied to an invoice will not exceed 100% of the amount invoiced for the affected Cloud Product in that invoice billing period (which, since Service Credits are applied to future payments, is not the month in which the affected Cloud Product was unavailable).”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“Notes:* Percentage of the monthly fees attributed to the affected Eligible Cloud Product. The percentage of monthly fees attributable to an Eligible Cloud Product when purchased together with other Products under one SKU will be determined by Atlassian.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Claim filing deadline</h3>
+      <blockquote><p>“To be eligible to receive a service credit for Atlassian’s failure to meet the Service Level Commitment (“Service Credit”), Customer must submit a ticket at https://support.atlassian.com with all fields fully and accurately completed within fifteen (15) days after the end of the calendar month in which the alleged failure occurred and provide any other reasonably requested information or documentation (for instance, as described here). Atlassian’s monitoring and logging infrastructure is the sole source of truth for determining whether Atlassian has met the Service Level Commitment.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Reseller &amp; partner filing rule</h3>
+      <blockquote><p>“If Customer purchased the affected Cloud Product through a Reseller, (a) Customer or the Reseller may submit a ticket as described in Section 2.1 above; and (b) any Service Credit will be based on the fees invoiced by Atlassian to the Reseller for Customer’s use of the affected Cloud Product under the Reseller’s applicable order(s) with Atlassian. Atlassian will issue any associated Service Credits to the Reseller (and not directly to Customer), and the Reseller will be solely responsible for issuing the appropriate amounts to Customer.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Covered services clause</h3>
+      <blockquote><p>“For Eligible Cloud Products (as listed in the table in Appendix A) Atlassian must provide the following monthly uptime percentage to Customer (the “Service Level Commitment”):”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“* Except for Bitbucket GIT transactions and Jira Service Management &#x27;Receive Alert&#x27;, Covered Experiences include browser-based experiences only (not, e.g., integrations, API calls or mobile versions).”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“*** For purposes of this Service Level Agreement, Loom Business + AI will be considered a Premium Plan Cloud Product.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <h3>Exclusions &amp; eligibility clauses</h3>
+      <blockquote><p>“The Service Level Commitment does not apply to (i) sandbox instances or Free or Beta Products (or similar concepts in the Agreement) or (ii) features excluded from the Service Level Commitment in the applicable Documentation.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“Customer is not entitled to Service Credits if Customer is in breach of the Agreement (as defined below) or has not provisioned the relevant Cloud Product.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“routine scheduled maintenance or reasonable emergency maintenance as stated in the Atlassian Maintenance Policy.”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“force majeure events or other factors outside of Atlassian’s reasonable control, including internet access or related problems;”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+      <blockquote><p>“Customer equipment, software, network connections or other infrastructure;”</p><cite>Atlassian Cloud Service Level Agreement, dated 30 April 2026, last checked 13 November 2026.</cite></blockquote>
+  </div>
+
+  <div class="sheet" style="margin-top:32px">
+    <h3 style="margin-top:0">Ready to calculate your Atlassian Cloud credit?</h3>
+    <p style="margin:6px 0 14px">Enter your outage minutes and invoice fee in the browser calculator to generate a ready-to-send claim request and deadline `.ics` reminder.</p>
+    <a class="cta" href="../../?vendor=atlassian-cloud">Open interactive Atlassian Cloud calculator &rarr;</a>
+  </div>
+</main>
+
+<footer>
+  <div class="in">
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p><a href="../../">Calculator</a> &middot; <a href="../">Vendor SLA directory</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="../../privacy.html">Privacy</a></p>
+  </div>
+</footer>
+<script data-counter>
+  if (/(^|\.)downtimecredit\.com$/.test(location.hostname)) { (function () { var s = document.createElement("script"); s.type = "module"; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.setAttribute("data-cf-beacon", '{"token": "fec45b1ba4b9475991fe78db751e9bbc"}'); document.head.appendChild(s); })(); }
+</script>
+</body>
+</html>

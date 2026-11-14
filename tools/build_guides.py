@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""Builds /guides/ from vendors/*.json. Every quotation comes from those files, which tests check against the saved source texts.
+Run after tools/build_pages.py. Writes guides/index.html and guides/<slug>/index.html, then the sitemap."""
+from __future__ import annotations
+import html, json, sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import build_pages as bp
+
+ROOT = bp.ROOT
+LASTMOD = "2026-11-14"
+VENDORS = [json.loads((ROOT / "vendors" / f).read_text(encoding="utf-8")) for f in json.loads((ROOT / "vendors" / "index.json").read_text(encoding="utf-8"))["vendors"]]
+esc = bp.esc
+
+
+def cite_of(v):
+    d = v["document"]
+    return f"{d['title']}, dated {bp.fmt_date(d['date'])}, last checked {bp.fmt_date(d['lastChecked'])}."
+
+
+def vendor_block(v, quotes, heading_level=3):
+    d = v["document"]
+    out = [f'<h{heading_level}><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></h{heading_level}>']
+    for q in quotes:
+        out.append(bp.render_quote_block(q, cite_of(v)))
+    return "\n".join(out)
+
+
+def sources_list():
+    items = "".join(f'<li><a href="{esc(v["document"]["url"])}" rel="noopener">{esc(v["document"]["title"])}</a>, dated {esc(bp.fmt_date(v["document"]["date"]))}, read {esc(bp.fmt_date(v["document"]["lastChecked"]))}</li>' for v in VENDORS)
+    return f'<h2>Sources</h2><ul class="clean">{items}</ul>'
+
+
+def page(slug, title, meta, h1, lede, body, related):
+    canonical = f"{bp.SITE_ORIGIN}/guides/{slug}/"
+    ld = json.dumps({"@context": "https://schema.org", "@type": "Article", "headline": h1, "description": meta, "url": canonical,
+                     "dateModified": LASTMOD, "inLanguage": "en", "publisher": {"@type": "Organization", "name": "Downtime Credit", "url": bp.SITE_ORIGIN + "/"}},
+                    ensure_ascii=False, separators=(",", ":"))
+    rel = "".join(f'<li><a href="../{s}/">{esc(t)}</a></li>' for s, t in related)
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(title)} | Downtime Credit</title>
+<meta name="description" content="{esc(meta)}">
+<link rel="canonical" href="{esc(canonical)}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{esc(canonical)}">
+<meta property="og:site_name" content="Downtime Credit">
+<meta property="og:title" content="{esc(title)}">
+<meta property="og:description" content="{esc(meta)}">
+<meta property="og:image" content="{bp.SITE_ORIGIN}/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{ld}
+</script>
+<style>
+{bp.shared_css("../../")}
+  .guide h2 {{ margin-top: 40px; }}
+  .guide p, .guide li {{ max-width: 46em; }}
+  .guide ol {{ padding-left: 1.3em; }}
+  .guide ol li {{ margin: 0 0 12px; }}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+</header>
+<nav class="doors" aria-label="What happened">
+  <div class="in">
+    <a href="../../" aria-current="page"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
+    <a href="../../flights/"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
+  </div>
+</nav>
+<main class="in guide">
+  <div class="hero">
+    <p class="crumb"><a href="../">Guides</a> / {esc(h1)}</p>
+    <h1>{esc(h1)}</h1>
+    <p class="lede">{lede}</p>
+  </div>
+{body}
+  {sources_list()}
+  <p class="fine">Quotations are copied word for word from the agreement named under each one. Text outside a quotation is this site's reading. A vendor decides every claim. This is not legal advice.</p>
+  <h2>More</h2>
+  <ul class="clean">{rel}<li><a href="../../sla/">Vendor SLA directory</a></li></ul>
+  <div class="cta-row"><a class="cta" href="../../">Work out your credit &rarr;</a></div>
+</main>
+<footer>
+  <div class="in">
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p><a href="../../">Calculator</a> &middot; <a href="../">Guides</a> &middot; <a href="../../sla/">Vendor SLAs</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; <a href="../../privacy.html">Privacy</a></p>
+  </div>
+</footer>
+{bp.counter_snippet()}
+</body>
+</html>
+"""
+
+
+def deadline_rows():
+    rows = []
+    for v in VENDORS:
+        rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></th><td>{esc(bp.describe_deadline(v))}</td></tr>')
+    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Claim deadline by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Claim deadline, from the agreement</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
+
+
+def unit_rows():
+    rows = []
+    for v in VENDORS:
+        days = v["creditUnit"] == "service-days"
+        tiers = "; ".join(f"uptime {'below' if v['comparison'] == 'strict-below' else 'at or below'} {t['below']}%: {t['credit']} {'days of service' if days else '% of the fee'}" for t in v["tiers"])
+        per = "calendar quarter" if v["period"]["type"] == "calendar-quarter" else "calendar month"
+        rows.append(f'<tr><th scope="row"><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></th><td>{esc(per)}</td><td>{esc(tiers)}</td></tr>')
+    return '<div class="table-wrap" tabindex="0" role="region" aria-label="Credit tiers by vendor"><table><thead><tr><th scope="col">Agreement</th><th scope="col">Uptime counted over</th><th scope="col">Credit tiers</th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div>"
+
+
+def guide_credits():
+    body = "<h2>What the agreements say a credit is</h2>\n<p>These are the credit clauses, copied word for word.</p>\n" + "\n".join(vendor_block(v, [v["creditClause"]["quote"]] + v["creditClause"].get("also", [])[:1]) for v in VENDORS)
+    body += "\n<h2>The tiers in each agreement</h2>\n<p>The size of the credit depends on how far uptime fell. The tiers below come from the vendor files this site checks against each agreement.</p>\n" + unit_rows()
+    body += "\n<h2>What to take from this</h2>\n<ul class=\"clean\"><li>Read the credit clause in your own agreement. It says how the credit is applied.</li><li>The agreements above talk about fees, invoices or days of service. Check whether yours does the same before you count on money back.</li><li>The credit is not automatic. Each agreement above asks you to make a request, and the Microsoft, GitHub and Atlassian clauses say the vendor approves or confirms it.</li></ul>"
+    return page("how-service-credits-work", "How service credits work: what four SaaS agreements say",
+                "What a service credit is, how it is counted and what the vendor decides, with quotes from the Microsoft 365, Google Workspace, Atlassian and GitHub agreements.",
+                "How service credits work",
+                "A service credit is what an agreement says a vendor gives back when a service misses its uptime target. This guide quotes four agreements and shows where they differ.",
+                body, [("how-to-ask-for-a-service-credit", "How to ask for a service credit"), ("what-counts-as-downtime", "What counts as downtime")])
+
+
+def guide_ask():
+    body = """<h2>Six steps</h2>
+<p>These steps are this site's reading of the four agreements below. Your own contract can differ.</p>
+<ol>
+<li><b>Find the agreement that applies to you.</b> The sources at the end of this page link to the four agreements this site has read. If you bought through a reseller, ask the reseller which one applies.</li>
+<li><b>Check who files.</b> Some agreements let you file with the vendor. Others send you to your reseller. The quotes below say which.</li>
+<li><b>Write down what happened.</b> Note the start time, the end time, the service and the vendor's incident number if it gave one.</li>
+<li><b>Work out the period and the downtime.</b> Each agreement counts uptime over a month or a quarter. <a href="../../">The calculator</a> does the sums in your browser.</li>
+<li><b>Check the deadline.</b> The deadline is different in each agreement. See the table below.</li>
+<li><b>Send the request and keep a record.</b> Save the request text, the numbers and the date you sent it.</li>
+</ol>
+<h2>Claim deadline in each agreement</h2>
+""" + deadline_rows()
+    q = []
+    for v in VENDORS:
+        qs = [v["deadline"]["quote"]]
+        if v.get("resellerDeadline"):
+            qs.append(v["resellerDeadline"]["quote"])
+        if v.get("resellerClause"):
+            qs.append(v["resellerClause"]["quote"])
+        q.append(vendor_block(v, qs))
+    body += "\n<h2>Where to send it: the clauses</h2>\n<p>Each agreement says how and when to ask. The clauses are copied word for word.</p>\n" + "\n".join(q)
+    ms = [v for v in VENDORS if v.get("claimItemsClause")]
+    if ms:
+        body += "\n<h2>What Microsoft asks a claim to include</h2>\n" + "\n".join(bp.render_quote_block(v["claimItemsClause"]["quote"], cite_of(v)) for v in ms)
+    return page("how-to-ask-for-a-service-credit", "How to ask for a service credit: steps and deadlines",
+                "Six steps to ask a SaaS vendor for a service credit, the claim deadline in the Microsoft 365, Google Workspace, Atlassian and GitHub agreements, and where each says to send the request.",
+                "How to ask for a service credit",
+                "A request goes to the vendor or to your reseller, before a deadline that depends on the agreement. This guide lists the steps and quotes the deadline clauses.",
+                body, [("how-service-credits-work", "How service credits work"), ("what-counts-as-downtime", "What counts as downtime")])
+
+
+def guide_downtime():
+    body = "<h2>The definition in each agreement</h2>\n<p>Each vendor defines downtime in its own words. Your monitoring tool or your own users may count a different outage from the vendor.</p>\n" + "\n".join(vendor_block(v, [v["downtimeClause"]["quote"]] + v["downtimeClause"].get("also", [])[:1]) for v in VENDORS)
+    body += "\n<h2>What each agreement leaves out</h2>\n<p>The lists below summarise the exclusions this site found in each agreement. The agreement itself is the final word.</p>\n"
+    for v in VENDORS:
+        items = []
+        for c in v.get("cannotClaim", []):
+            parts = c["who"].split(": ", 1)
+            dd = parts[1] if len(parts) > 1 else c.get("finding", "")
+            items.append(f"<dt>{esc(parts[0].rstrip('.'))}</dt><dd>{esc(dd[:1].upper() + dd[1:])}</dd>")
+        body += f'<h3><a href="../../sla/{esc(v["id"])}/">{esc(v["vendor"])}: {esc(v["service"])}</a></h3><dl class="who">' + "".join(items) + "</dl>\n"
+    return page("what-counts-as-downtime", "What counts as downtime for a service credit",
+                "How the Microsoft 365, Google Workspace, Atlassian and GitHub agreements define downtime, with the clauses quoted and a list of what each one leaves out.",
+                "What counts as downtime",
+                "An outage you felt may not be downtime under the agreement. This guide quotes how four vendors define it and lists what each leaves out.",
+                body, [("how-service-credits-work", "How service credits work"), ("how-to-ask-for-a-service-credit", "How to ask for a service credit")])
+
+
+GUIDES = [("how-service-credits-work", "How service credits work", "What a credit is, how it is counted and what the vendor decides.", guide_credits),
+          ("how-to-ask-for-a-service-credit", "How to ask for a service credit", "Six steps, the deadline in each agreement and where to send the request.", guide_ask),
+          ("what-counts-as-downtime", "What counts as downtime", "How four vendors define downtime, and what each leaves out.", guide_downtime)]
+
+
+def index_page():
+    items = "".join(f'<li><a href="{s}/"><b>{esc(t)}</b></a><br><span class="fine">{esc(d)}</span></li>' for s, t, d, _ in GUIDES)
+    canonical = f"{bp.SITE_ORIGIN}/guides/"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guides to SaaS service credits | Downtime Credit</title>
+<meta name="description" content="Plain guides to service credits after a SaaS outage: what a credit is, how to ask for one and what counts as downtime, with quotes from the vendors' own agreements.">
+<link rel="canonical" href="{canonical}">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preload" href="../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+{bp.shared_css("../")}
+  .guide li {{ margin: 0 0 18px; }}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
+  <div class="trustbar"><p>Not legal advice. Not run by or linked to any vendor. Calculations run in your browser; nothing is stored on a server.</p></div>
+</header>
+<main class="in guide">
+  <div class="hero">
+    <p class="crumb"><a href="../">Downtime Credit</a> / Guides</p>
+    <h1>Guides to service credits</h1>
+    <p class="lede">Plain guides to what a service credit is and how to ask for one. Each quotes the vendors' own agreements.</p>
+  </div>
+  <ul class="clean">{items}</ul>
+  <p><a href="../sla/">Vendor SLA directory</a> &middot; <a href="../">Work out your credit</a></p>
+</main>
+<footer>
+  <div class="in">
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p><a href="../">Calculator</a> &middot; <a href="../sla/">Vendor SLAs</a> &middot; <a href="../flights/">Flight refunds</a> &middot; <a href="../privacy.html">Privacy</a></p>
+  </div>
+</footer>
+{bp.counter_snippet()}
+</body>
+</html>
+"""
+
+
+def sitemap():
+    paths = ["/", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/flights/airlines/", "/privacy.html"]
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith('/guides') else bp.LASTMOD}</lastmod></url>" for p in paths]
+    return "\n".join(lines + ["</urlset>", ""])
+
+
+def main():
+    bp.write_if_changed(ROOT / "guides" / "index.html", index_page())
+    for s, t, d, fn in GUIDES:
+        bp.write_if_changed(ROOT / "guides" / s / "index.html", fn())
+    bp.write_if_changed(ROOT / "sitemap.xml", sitemap())
+    print(f"Built /guides/ with {len(GUIDES)} guides and the sitemap.")
+
+
+if __name__ == "__main__":
+    main()
