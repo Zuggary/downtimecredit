@@ -541,7 +541,7 @@ with sync_playwright() as pw:
     def cdn(pg): return pg.locator("[id$='dl-days']:visible").count()
     inhero = lambda pg: pg.evaluate("[...document.querySelectorAll('[id$=dl-days]')].every(e => !e.closest('form') && e.closest('.hero'))")
     eq(cdn(m), 1, "item 5: Microsoft mode: one countdown"); ok(inhero(m) and m.evaluate("document.querySelector('.lede').compareDocumentPosition(document.getElementById('cd')) & 4") and m.evaluate("document.getElementById('cd').compareDocumentPosition(document.querySelector('.pick')) & 4"), "item 5: it sits under the lede and above the toggle")
-    ok("47 days left to send it. Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in m.inner_text("#cd").replace("\n", " "), "item 5: the Microsoft sentence")
+    ok(re.search(r"\d+ days? left to send it\. Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December\.", m.inner_text("#cd").replace("\n", " ")), "item 5: the Microsoft sentence (day count follows the clock)")
     m.click("#mode-g"); ok("days left" not in m.inner_text("#cd"), "item 5: Google mode before a day: no count of days")
     ok("You have 30 days. Send your request to Google (or tell your reseller) within 30 days of the day the downtime started. Enter that day in the statement to get your date." in m.inner_text("#cd").replace("\n", " ") and "31 December" not in m.inner_text("#cd") and "Microsoft" not in m.inner_text("#cd"), "item 5: Google mode: the 30-days line, no Microsoft date")
     gfill(m, "Gmail", "2026-11-03", 0, 44); eq(cdn(m), 1, "item 5: Google mode: one countdown")
@@ -556,6 +556,15 @@ with sync_playwright() as pw:
     m = open_page(ctxM, "?today=2026-12-30"); ok("Sooner is safer" in m.inner_text("#cd") or "Send it now" in m.inner_text("#cd"), "item 5: the Sooner is safer line is kept"); m.close()
     m = open_page(ctxM); ok("Sooner is safer. For the Microsoft 365 outage reported on 12 November 2026. From Microsoft's Service Level Agreement." in m.inner_text("#cd").replace("\n", " "), "item 9: the quiet line shows at 375 px"); m.close()
     m = open_page(ctxM); m.click("#mode-g"); top = m.evaluate("document.querySelector('.pick').getBoundingClientRect().bottom"); ok(top < 812, f"item 5: at 375 the toggle stays on the first screen ({top})"); m.close()
+    # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
+    m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
+    ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
+    hrefm = m.get_attribute("#res-mail", "href"); ok(hrefm.startswith("mailto:?subject=") and "312.50" in __import__("urllib.parse").parse.unquote(hrefm) and len(hrefm) < 1800, "10x: the mail draft has an empty recipient, the amount and fits the limit")
+    with m.expect_download() as dl: m.click("#res-img")
+    png = open(dl.value.path(), "rb").read(); ok(png[:8] == b"\x89PNG\r\n\x1a\n" and len(png) > 8000 and dl.value.suggested_filename == "downtime-credit-result.png", f"10x: the picture is a PNG ({len(png)} bytes)")
+    m.close()
+    for md in ["#mode-g", "#mode-own"]:
+        m = open_page(ctxM); m.click("#ex-toggle") if md == "#mode-g" else None; m.click(md); ok(m.locator("#res-actions:visible").count() == 0, f"10x: no result actions before a result in {md}"); m.close()
     ctxM.close()
 
     # ---------- reseller fix round ----------

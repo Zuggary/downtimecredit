@@ -684,6 +684,8 @@
     border-radius: var(--rad);
     padding: var(--s2) var(--s3);
   }
+  .owed-lead { margin: 0 0 var(--s1); font: 700 15px/1.2 var(--text); color: var(--graphite); }
+  .resact { margin-top: var(--s3); }
   .row { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; margin-top: var(--s3); }
   .row .primary { margin-top: 0; }
 
@@ -765,7 +767,7 @@
     .trustbar p, .cal i, .deadline .small, .cdex, .ask { font-size: 13px; }
     .sendbox { grid-template-columns: 1fr; gap: 10px; }
     .letter { padding: var(--s4); }
-    .passon .row > *, #incidents .row > *, #send .row > *, #io-choice > *, .inc .row > * { flex: 1 1 100%; width: 100%; justify-content: center; text-align: center; }
+    .passon .row > *, .resact > *, #incidents .row > *, #send .row > *, #io-choice > *, .inc .row > * { flex: 1 1 100%; width: 100%; justify-content: center; text-align: center; }
   }
   @media (max-width: 479px) {
     .deadline { gap: 8px; }
@@ -946,6 +948,10 @@
       <p class="r-sum" id="r-sum" hidden></p>
       <p class="zone" id="r-zone" hidden></p>
       <p class="r-note">A credit lowers a later bill. It is not cash.</p>
+    </div>
+    <div class="row resact" id="res-actions" hidden>
+      <a class="second" id="res-mail" href="mailto:">Email me this result</a>
+      <button type="button" class="second" id="res-img">Save as a picture</button>
     </div>
     <p class="late" id="late-note" hidden></p>
     <button type="button" class="primary" id="write-btn">Write my request</button>
@@ -1141,7 +1147,7 @@
 <footer><div class="in"><div>
   <section>
     <h2 id="who-runs">Who runs this</h2>
-    <p id="who-runs-p">Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. A free tool. No ads at present. It is not legal advice, and it files nothing for you.</p>
+    <p id="who-runs-p">Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. A free tool that may show ads, which pay for it. It is not legal advice, and it files nothing for you.</p>
     <p>The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="privacy.html">Privacy</a></p>
   </section>
   <section>

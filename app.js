@@ -40,7 +40,7 @@
   // address to a fixed step path and straight back, in one synchronous block. Only the names in STEPS exist; every call below passes one as a
   // string literal. Nothing the visitor types or picks is ever part of a path. Off the live host this does nothing at all.
   var LIVE = /(^|\.)downtimecredit\.com$/.test(location.hostname);
-  var STEPS = { "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-atlassian": 1, "start-github": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-atlassian": 1, "result-github": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1, "summary-copied": 1, "mail-it": 1, "mail-self": 1, "record": 1, "to-flights": 1 };
+  var STEPS = { "mail-result": 1, "image-result": 1, "arrived": 1, "start-microsoft": 1, "start-google": 1, "start-atlassian": 1, "start-github": 1, "start-own": 1, "result-microsoft": 1, "result-google": 1, "result-atlassian": 1, "result-github": 1, "result-own": 1, "no-credit": 1, "example": 1, "request": 1, "copied": 1, "calendar": 1, "saved": 1, "exported": 1, "ad-hook-credit": 1, "ad-m365-nov": 1, "summary-copied": 1, "mail-it": 1, "mail-self": 1, "record": 1, "to-flights": 1 };
   var counted = Object.create(null), actor = false;     // actor: the event being handled right now is a real visitor action
   function countStep(name) {
     if (!LIVE || typeof name !== "string" || !Object.prototype.hasOwnProperty.call(STEPS, name) || counted[name] === 1) return;   // live host only, fixed names only, once per page load
@@ -589,8 +589,52 @@
   }
   function refreshPack() {
     $("passon").hidden = !pack;
+    refreshResultActions();
     if (!pack) return;
     $("mail-it").setAttribute("href", mailHref("it")); $("mail-self").setAttribute("href", mailHref("self"));
+  }
+  // under the visible result: one mail draft and one picture of the result. Nothing is sent; both are made in the browser.
+  var resActBox = null;   // kept here: a repaint of a result area can detach the row from the page
+  function visibleResult() {
+    var all = document.querySelectorAll(".result");
+    for (var i = 0; i < all.length; i++) { if (all[i].offsetParent !== null && all[i].querySelector(".amt")) return all[i]; }
+    return null;
+  }
+  function refreshResultActions() {
+    var box = resActBox || (resActBox = $("res-actions")), r = pack ? visibleResult() : null;
+    if (!r) { box.hidden = true; return; }
+    if (!r.querySelector(".owed-lead")) { r.insertBefore(el("p", { class: "owed-lead", text: "You may be owed" }), r.firstChild); }
+    r.parentNode.insertBefore(box, r.nextSibling);
+    box.querySelector("#res-mail").setAttribute("href", mailHref("self"));
+    box.hidden = false;
+  }
+  function wrapLines(ctx, text, maxW) {
+    var words = String(text).split(/\s+/), lines = [], cur = "";
+    words.forEach(function (w) { var t = cur ? cur + " " + w : w; if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else { cur = t; } });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  // 1200 x 630 picture: the vendor, the outage date, the result sentence, the credit level. It leaves out the fee, the names and the user counts.
+  function resultImage() {
+    var r = visibleResult(); if (!r || !pack) return;
+    var line = r.querySelector(".r-line"), sum = r.querySelector(".r-sum"), amt = r.querySelector(".amt");
+    var cv = document.createElement("canvas"); cv.width = 1200; cv.height = 630; var c = cv.getContext("2d"); if (!c) return;
+    var ink = "#14110f", red = "#b3141c", paper = "#fbfaf7", serif = '"DM Serif DC", Georgia, "Times New Roman", serif', sans = '"Hanken DC", Arial, Helvetica, sans-serif';
+    c.fillStyle = paper; c.fillRect(0, 0, 1200, 630);
+    c.fillStyle = ink; c.fillRect(60, 56, 1080, 4); c.fillRect(60, 66, 1080, 1.5);
+    c.textBaseline = "alphabetic"; c.font = "400 44px " + serif; c.fillText("Downtime Credit", 60, 132); c.fillStyle = red; c.fillText(".", 60 + c.measureText("Downtime Credit").width, 132);
+    c.fillStyle = ink; c.font = "400 28px " + sans; c.fillText(packSubject(), 60, 190);
+    c.font = "700 26px " + sans; c.fillStyle = "#4a4540"; c.fillText((pack.o.example ? "EXAMPLE NUMBERS. " : "") + "You may be owed", 60, 250); c.fillStyle = ink;
+    c.font = "400 60px " + serif; var y = 330, lines = wrapLines(c, line.textContent, 1080);
+    lines.slice(0, 3).forEach(function (t) { c.fillText(t, 60, y); y += 74; });
+    if (sum) { c.font = "400 28px " + sans; c.fillStyle = "#4a4540"; wrapLines(c, String(sum.textContent).replace(/\.\s[\s\S]*$/, "."), 1080).slice(0, 2).forEach(function (t) { c.fillText(t, 60, y + 10); y += 38; }); }
+    c.fillStyle = ink; c.fillRect(60, 548, 1080, 1.5);
+    c.font = "400 24px " + sans; c.fillStyle = "#4a4540"; c.fillText("downtimecredit.com  ·  Not legal advice. A credit is not cash. The vendor decides.", 60, 592);
+    cv.toBlob(function (blob) {
+      if (!blob) return;
+      var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "downtime-credit-result.png";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    }, "image/png");
   }
   function refreshShared() {
     if (!MS) return;
@@ -936,6 +980,9 @@
     $("ex-toggle").addEventListener("click", function () { if (actor) countStep("example"); setExample(!example); });
     $("add-group").addEventListener("click", function () { leaveExample(); var k = addGroup(); $(k + "u").focus(); });
     $("write-btn").addEventListener("click", goWrite);
+    resActBox = $("res-actions");
+    $("res-mail").addEventListener("click", function (ev) { if (ev.isTrusted) countStep("mail-result"); });
+    $("res-img").addEventListener("click", function (ev) { if (ev.isTrusted) { countStep("image-result"); } resultImage(); });
     $("mode-ms").addEventListener("click", function () { setMode("ms"); });
     $("mode-own").addEventListener("click", function () { setMode("own"); });
     SC_MODES.forEach(function (mk) { var btn = $("mode-" + mk); if (btn) btn.addEventListener("click", function () { setMode(mk); }); });
