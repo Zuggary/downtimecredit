@@ -83,7 +83,7 @@ def page(a):
   <div class="hero">
     <p class="crumb"><a href="../">US airline commitments</a> / {esc(short)}</p>
     <h1>{esc(title)}</h1>
-    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice. This page sits with the service-credit pages because an airline that lets you down can owe you something too: a rebooking, a meal, a refund. It lists what the airline has promised, not a software credit.</p>
+    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice. This page lists what the airline has promised, taken from the dashboard and, where read, the airline's own plan.</p>
     <div class="cta-row"><a class="cta" href="../../">Check your own flight &rarr;</a></div>
   </div>
   <h2>What {esc(short)} commits to, per the dashboard</h2>
