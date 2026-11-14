@@ -575,6 +575,11 @@ with sync_playwright() as pw:
     ok(len(reqs) == n0, f"TF6: the helper made no network request while it ran ({len(reqs) - n0})")
     ok("cannot look up" in hp.inner_text("main").lower(), "TF6: the page says it cannot look up a car")
     hp.close()
+    # TF6: the state picker moves to the chosen state and says so for an unchecked state
+    sp = ctxM.new_page(); sp.goto(BASE.replace("index.html", "") + "guides/lien-sale-surplus-other-states/"); sp.wait_for_selector("#st-pick")
+    sp.select_option("#st-pick", "s-florida"); ok("Florida" in sp.inner_text("#st-msg") and sp.evaluate("document.activeElement.id") == "s-florida", "TF6: the picker goes to the Florida section")
+    sp.select_option("#st-pick", "other"); ok("not checked your state yet" in sp.inner_text("#st-msg"), "TF6: the picker says an unchecked state is unchecked")
+    sp.close()
     # 10x: the result moment. A label, a mail draft and a picture, all made in the browser.
     m = open_page(ctxM); m.click("#ex-toggle"); m.wait_for_selector("#res-actions:visible")
     ok(m.inner_text("#result .owed-lead").strip() == "You may be owed" and "$312.50" in m.inner_text("#r-line"), "10x: the result says You may be owed, then the amount")
