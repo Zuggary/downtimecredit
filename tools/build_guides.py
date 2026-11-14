@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
 
 ROOT = bp.ROOT
-TRUST = "Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim."
+TRUST = 'Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site\'s reading; the vendor decides every claim.</span>'
 AIRLINE_IDS = sorted(p.parent.name for p in (bp.ROOT / "flights" / "airlines").glob("*/index.html"))
 LASTMOD = "2026-11-14"
 VENDORS = [json.loads((ROOT / "vendors" / f).read_text(encoding="utf-8")) for f in json.loads((ROOT / "vendors" / "index.json").read_text(encoding="utf-8"))["vendors"]]
@@ -80,7 +80,7 @@ def page(slug, title, meta, h1, lede, body, related):
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
+  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
 </header>
 <nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">About</a></div></nav>
 <main class="in guide">
@@ -213,7 +213,7 @@ def index_page():
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
+  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
 </header>
 <main class="in guide">
   <div class="hero">

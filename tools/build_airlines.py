@@ -71,23 +71,18 @@ def page(a):
 <body>
 <header class="top">
   <div class="in"><a class="brand" href="../../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Independent of every airline. The airline decides what it pays; this page quotes the dashboard and the airline's plan.</p></div>
+  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every airline. The airline decides what it pays; this page quotes the dashboard and the airline's plan.</span></p></div>
 </header>
-<nav class="doors" aria-label="What happened">
-  <div class="in">
-    <a href="../../../"><b>Outage at work</b><span>Service credits for Microsoft 365, Google Workspace, Atlassian, GitHub or your own contract</span></a>
-    <a href="../../" aria-current="page"><b>Flight cancelled or delayed</b><span>What you can ask for, and what 9 US airlines have promised</span></a>
-  </div>
-</nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../../../">Calculator</a><a href="../../../sla/">SLAs</a><a href="../../../guides/">Guides</a><a href="../../../about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="../">US airline commitments</a> / {esc(short)}</p>
     <h1>{esc(title)}</h1>
-    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice. This page lists what the airline has promised, taken from the dashboard and, where read, the airline's own plan.</p>
+    <p class="lede">What {esc(name)} has told the US Department of Transportation it commits to when it causes a cancellation or delay. Dashboard last updated {esc(D["d"])}, read {esc(D["r"])}. The airline decides what it pays. Not legal advice.</p>
     <div class="cta-row"><a class="cta" href="../../">Check your own flight &rarr;</a></div>
   </div>
   <h2>What {esc(short)} commits to, per the dashboard</h2>
-  <p>Yes or no, as the dashboard shows for {esc(name)}. No means the airline has not committed to it on the dashboard. The commitments apply to delays and cancellations the airline caused, such as maintenance or crew problems.</p>
+  <p>Yes or no, as the dashboard shows for {esc(name)}. No means the airline has not committed to it. The commitments apply to delays and cancellations the airline caused, such as maintenance or crew problems.</p>
   <div class="table-wrap keep" tabindex="0" role="region" aria-label="{esc(short)} commitments"><table><thead><tr><th scope="col">When {esc(short)} causes the problem</th><th scope="col">Dashboard says</th></tr></thead><tbody>{rows}</tbody></table></div>
   <p>The dashboard does not say what an airline gives when the cause is weather or air traffic control. Ask the airline anyway.</p>
   {plan_html}
@@ -96,7 +91,7 @@ def page(a):
   {refund}
   {ask}
   <h2>Sources and when we read them</h2>
-  <div class="table-wrap keep" tabindex="0" role="region" aria-label="Sources and dates read"><table><thead><tr><th scope="col">Source</th><th scope="col">Dated</th><th scope="col">Last read</th></tr></thead><tbody>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Sources and dates read"><table><thead><tr><th scope="col">Source</th><th scope="col">Dated</th><th scope="col">Last read</th></tr></thead><tbody>
     <tr><th scope="row"><a href="{esc(D["u"])}" rel="noopener">US Department of Transportation, Airline Cancellation and Delay Dashboard</a></th><td>{esc(D["d"])}</td><td>{esc(D["r"])}</td></tr>
     <tr><th scope="row"><a href="{esc(a["link"])}" rel="noopener">{esc(name)} customer service plan</a></th><td>{"Not stated on the page" if plan else "Not read"}</td><td>{esc(D["r"]) if plan else "Not read by this site"}</td></tr>
   </tbody></table></div>

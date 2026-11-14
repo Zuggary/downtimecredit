@@ -580,7 +580,7 @@ with sync_playwright() as pw:
         for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", h), ("#g0m", "0" if h != "0" else "30"), ("#fee", "625")]: pg.fill(sel, v)
         pg.check("input[name=m-buy][value=reseller]")
     n = open_page(ctxN, "?today=2026-11-13"); rfill(n)
-    ok("Possibly, if your company pays for a Microsoft 365 business plan and users could not send or receive email in Outlook on the web. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead." in n.inner_text("#cue"), "F4: the cue follows the new route")
+    ok("Possibly, if your company pays for a Microsoft 365 business plan and users could not send or receive email in Outlook on the web. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead." in re.sub(r"\s+", " ", n.text_content("#cue")), "F4: the cue follows the new route")
     ok("your provider, or the partner they buy from, asks microsoft for you" in n.inner_text("#who-list").lower() and "files the request" not in n.inner_text("#who-list"), "F4: the first 'cannot claim' row agrees with the route")
     ok("must submit" not in n.evaluate("document.body.textContent") and "provider files the request" not in n.evaluate("document.body.textContent"), "F3: the page never says the provider must submit or files the request")
     ok("Your provider, or the partner they buy from, requests it from Microsoft." in n.inner_text("#sel-note") + n.inner_text("#rules-ms") + n.evaluate("document.getElementById('reseller').textContent"), "F3: the page says who requests it")

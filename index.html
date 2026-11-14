@@ -200,6 +200,7 @@
     .intro > .pick { order: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
     .intro > .pick button:last-child { grid-column: 1 / -1; }
     .intro > .cue { order: 3; margin: 0; font-size: 15px; }
+    .intro > .cue .cue-x { display: none; }
     .panels { order: 4; }
     .intro > .cd { order: 5; }
     .intro > .outline { order: 6; }
@@ -918,7 +919,7 @@
       <button type="button" id="mode-github" aria-pressed="false">GitHub Enterprise Cloud</button>
       <button type="button" id="mode-own" aria-pressed="false">Another vendor or my own contract</button>
     </div>
-    <p class="cue" id="cue"><b>Does this apply to us?</b> Possibly, if your company pays for a Microsoft 365 business plan and users could not send or receive email in Outlook on the web. Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</p>
+    <p class="cue" id="cue"><b>Does this apply to us?</b> Possibly, if your company pays for a Microsoft 365 business plan and users could not send or receive email in Outlook on the web. <span class="cue-x">Bought through a reseller or your IT company? Pick that in the statement: your provider asks Microsoft for you. Open and Open Value licences get days of service instead. <a href="#who">See who cannot claim</a>.</span></p>
     <p class="cue" id="cue-g" hidden><b>Does this apply to us?</b> <span id="cue-g-body">This agreement is for organisations with a Google Workspace agreement. Some editions and causes are left out. Check your edition: Essentials Starter is not covered.</span> <a href="#who-g">See who cannot claim</a>.</p>
     <ul class="outline" aria-label="The three steps">
       <li><a href="#statement">Work it out</a><span id="ol-work">Four numbers give the credit the agreement allows.</span></li>
