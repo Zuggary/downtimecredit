@@ -556,7 +556,7 @@ var DTC = (function () {
     }
     var showLast = n < 0, tp = parseISO(showLast ? last : ask);
     m.tile = state === "passed" ? { month: "Window", day: "closed", label: "", closed: true }
-      : { month: MONTHS[tp.m - 1].slice(0, 3) + " " + tp.y, day: String(tp.d), label: (showLast || kind === "own") ? "last day" : (rs && kind !== "sc") ? "ask by" : "send by" };
+      : { month: MONTHS[tp.m - 1].slice(0, 3) + " " + tp.y, day: String(tp.d), label: (showLast || kind === "own") ? "last day" : (rs && kind !== "sc") ? "ask by" : "send by" + (ask !== last ? " (deadline " + parseISO(last).d + " " + MONTHS[parseISO(last).m - 1].slice(0, 3) + ")" : "") };
     m.text = [m.lead, m.sentence, m.quiet, m.why].filter(Boolean).join(" ");
     return m;
   }

@@ -83,7 +83,7 @@ def page(a):
   <div class="hero">
     <p class="crumb"><a href="../">US airline commitments</a> / {esc(short)}</p>
     <h1>{esc(title)}</h1>
-    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice.</p>
+    <p class="lede">From the US Department of Transportation's dashboard, last updated {esc(D["d"])}, read {esc(D["r"])}. The dashboard lists what each airline says it commits to when the airline causes the cancellation or delay. The airline decides what it pays. Not legal advice. This page is here because a flight delay is another time a company can owe you something: service credits when an airline lets you down.</p>
     <div class="cta-row"><a class="cta" href="../../">Check your own flight &rarr;</a></div>
   </div>
   <h2>What {esc(short)} commits to, per the dashboard</h2>

@@ -622,7 +622,7 @@ with sync_playwright() as pw:
         t = clip(pg)
         ok(len(t) <= 1150 and "undefined" not in t and "NaN" not in t, f"{label}: summary size and sanity ({len(t)})")
         ok("Result: " + vis(pg, result_sel) in re.sub(r"\s+", " ", t), f"{label}: the summary holds the visible result sentence")
-        cdv = re.sub(r"^(Example dates, not yours\. )?", "", re.sub(r"^([A-Z][a-z]{2} \d{4} \d{1,2} (send by|ask by|days|last day) |Window closed )", "", vis(pg, "#cd"))).replace(" Why this date", "")
+        cdv = re.sub(r"^\(deadline \d+ \w+\) ", "", re.sub(r"^([A-Z][a-z]{2} \d{4} \d{1,2} (send by|ask by|days|last day) |Window closed )", "", vis(pg, "#cd"))).replace(" Why this date", "")
         cdv = re.sub(r"^Example dates, not yours\. ", "", cdv)
         if "No credit" not in vis(pg, result_sel): ok("Date: " + cdv in re.sub(r"\s+", " ", t), f"{label}: the summary holds the visible countdown: {cdv[:60]}")
         ok(route_words in t, f"{label}: who asks ({route_words})")
@@ -698,9 +698,9 @@ with sync_playwright() as pw:
         for sel, v in [("#all", "50"), ("#g0u", "50"), ("#g0h", h), ("#g0m", m_), ("#fee", "625")]: pg.fill(sel, v)
     def tile(pg, pre): return (pg.inner_text(f"#{pre}-cal-d"), pg.inner_text(f"#{pre}-cal-l"))
     # item 9: Microsoft direct, each state; N counts to the send-by day; the tile shows the send-by day
-    for t, lead, sent, tl in [("2026-11-13", "47 days left to send it.", "Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December.", ("30", "send by")),
-                              ("2026-12-29", "1 day left to send it.", "Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December.", ("30", "send by")),
-                              ("2026-12-30", "Send it today.", "Your request must reach Microsoft by tomorrow, Thursday 31 December 2026.", ("30", "send by")),
+    for t, lead, sent, tl in [("2026-11-13", "47 days left to send it.", "Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December.", ("30", "send by (deadline 31 Dec)")),
+                              ("2026-12-29", "1 day left to send it.", "Your request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December.", ("30", "send by (deadline 31 Dec)")),
+                              ("2026-12-30", "Send it today.", "Your request must reach Microsoft by tomorrow, Thursday 31 December 2026.", ("30", "send by (deadline 31 Dec)")),
                               ("2026-12-31", "Today is the last day.", "Your request must reach Microsoft today, Thursday 31 December 2026.", ("31", "last day"))]:
         q = qopen("?today=" + t)
         eq(q.inner_text("#dl-days"), lead, f"item 9: today={t}: the lead"); ok(sent in q.inner_text("#dl-date"), f"item 9: today={t}: the sentence"); eq(tile(q, "dl"), tl, f"item 9: today={t}: the tile shows the send-by day")
@@ -721,13 +721,13 @@ with sync_playwright() as pw:
     q = qopen("?today=2026-11-13"); q.click("#mode-g")
     ok(q.inner_text("#g-dl-days") == "You have 30 days." and "Send your request to Google (or tell your reseller) within 30 days of the day the downtime started. Enter that day in the statement to get your date." in q.inner_text("#g-dl-date") and tile(q, "g-dl") == ("30", "days"), "item 11: Google, no start day: the same box, 30 days")
     gfill(q, "Gmail", "2026-11-03", 0, 44)
-    eq(q.inner_text("#g-dl-days"), "19 days left to send it.", "item 12: Google: N counts to the send-by day"); eq(tile(q, "g-dl"), ("2", "send by"), "item 12: the tile shows the send-by day")
+    eq(q.inner_text("#g-dl-days"), "19 days left to send it.", "item 12: Google: N counts to the send-by day"); eq(tile(q, "g-dl"), ("2", "send by (deadline 3 Dec)"), "item 12: the tile shows the send-by day")
     ok("By this page's count, a support case with Google is due by Thursday 3 December 2026; send it by Wednesday 2 December 2026." in q.inner_text("#g-dl-date"), "item 12: the sentence")
     ok(q.evaluate("document.getElementById('g-dl-why').open") is False and q.inner_text("#g-dl-why summary") == "Why this date" and "several outages" in q.text_content("#g-dl-why-t") and "The agreement does not say when you become eligible." in q.text_content("#g-dl-why-t"), "item 12: the hedge is in a closed 'Why this date'")
     q.click("#g-dl-why summary"); ok("several outages this month" in q.inner_text("#g-dl-why"), "item 12: and opens"); 
     q.click("#g-ex"); ok(q.inner_text("#g-dl-ex") == "Example dates, not yours." and not q.is_hidden("#g-dl-ex"), "item 12: the Google example box says so")
     q.click("#g-ex"); ok(q.is_hidden("#g-dl-ex"), "item 12: and not when the example is off")
-    for t, lead, tl in [("2026-12-01", "1 day left to send it.", ("2", "send by")), ("2026-12-02", "Send it today.", ("2", "send by")), ("2026-12-03", "Today is the last day.", ("3", "last day"))]:
+    for t, lead, tl in [("2026-12-01", "1 day left to send it.", ("2", "send by (deadline 3 Dec)")), ("2026-12-02", "Send it today.", ("2", "send by (deadline 3 Dec)")), ("2026-12-03", "Today is the last day.", ("3", "last day"))]:
         q2 = qopen("?today=" + t); q2.click("#mode-g"); gfill(q2, "Gmail", "2026-11-03", 0, 44); eq(q2.inner_text("#g-dl-days"), lead, f"item 12: today={t}"); eq(tile(q2, "g-dl"), tl, f"item 12: today={t}: tile"); q2.close()
     for t, lead, sent, tl in [("2026-11-13", "19 days left to tell your reseller.", "By this page's count, a support case with Google is due by Thursday 3 December 2026; tell your reseller by Wednesday 2 December 2026. They notify Google.", ("2", "ask by")),
                               ("2026-12-02", "Tell your reseller today.", "By this page's count, a support case with Google is due by tomorrow, Thursday 3 December 2026. They notify Google.", ("2", "ask by")),
@@ -751,7 +751,7 @@ with sync_playwright() as pw:
     q = qopen("?today=2026-11-13"); msfill(q, "0", "30")
     ok("No credit" in q.inner_text("#r-line"), "item 1: no credit state")
     eq(q.inner_text("#dl-days"), "No credit by this count.", "MS direct no-credit countdown lead")
-    ok("If your own figures differ, the request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in q.inner_text("#dl-date"), "MS direct no-credit countdown sentence"); eq(tile(q, "dl"), ("30", "send by"), "MS direct no-credit keeps tile")
+    ok("If your own figures differ, the request must reach Microsoft by Thursday 31 December 2026, so send it by Wednesday 30 December." in q.inner_text("#dl-date"), "MS direct no-credit countdown sentence"); eq(tile(q, "dl"), ("30", "send by (deadline 31 Dec)"), "MS direct no-credit keeps tile")
     q.check("input[name=m-buy][value=reseller]")
     eq(q.inner_text("#dl-days"), "No credit by this count.", "MS reseller no-credit countdown lead")
     ok("If your own figures differ, ask your provider by Wednesday 23 December 2026; this page counts their month as ending Wednesday 30 December 2026." in q.inner_text("#dl-date"), "MS reseller no-credit countdown sentence"); eq(tile(q, "dl"), ("23", "ask by"), "MS reseller no-credit keeps tile")

@@ -82,7 +82,7 @@ def page(slug, title, meta, h1, lede, body, related):
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice. Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">Who runs this</a></div></nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / {esc(h1)}</p>
@@ -267,6 +267,7 @@ def about_page():
 <style>
 {bp.shared_css("")}
   .guide h2 {{ margin-top: 36px; }}
+  .guide .hero {{ padding-bottom: 0; margin-bottom: 0; }}
   .guide p, .guide li {{ max-width: 46em; }}
 </style>
 </head>
@@ -275,7 +276,7 @@ def about_page():
   <div class="in"><a class="brand" href="./">Downtime Credit</a></div>
   <div class="trustbar"><p>{TRUST}</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="./">Calculator</a><a href="sla/">Vendor SLAs</a><a href="guides/">Guides</a><a href="about.html">Who runs this</a></div></nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="./">Calculator</a><a href="sla/">SLAs</a><a href="guides/">Guides</a><a href="about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="./">Downtime Credit</a> / Who runs this</p>
