@@ -94,6 +94,14 @@
       name: "Frontier Airlines",
       short: "Frontier",
       link: "https://www.flyfrontier.com/legal/customer-service-plan",
+      plan: {
+        url: "https://www.flyfrontier.com/legal/customer-service-plan/",
+        quotes: [
+          "If your flight is delayed, canceled, diverted, or if you miss a connecting flight due to controllable situations, we'll place you on the next available Frontier flight at no additional cost. In addition, Frontier will provide meal vouchers for flight delays of 3 hours or more or for cancellations that result in a Frontier rebooking that departs 3 hours or greater after the originally scheduled departure time.",
+          "Uncontrollable Situations are defined as flight delays, diversions, or cancellations out of Frontier's control (such as those caused by weather, Air Traffic Control, aircraft damage caused by occurrences out of Frontier's control, such as bird strikes, etc.).",
+          "Given their nature, we do not offer compensation for uncontrollable events beyond the re-accommodation on the next available Frontier flight. Alternatively, if your flight is canceled or delayed in excess of 3 hours, we'll provide you, upon request, a full refund of any unused portion of your ticket."
+        ]
+      },
       values: airlineValues("ynynnnnn")
     },
     hawaiian: {
@@ -108,6 +116,15 @@
       name: "JetBlue Airways",
       short: "JetBlue",
       link: "https://www.jetblue.com/legal/customer-service-plan",
+      plan: {
+        url: "https://www.jetblue.com/customer-assurance/customer-service-plan",
+        quotes: [
+          "If your JetBlue flight is canceled or disrupted due to a controllable irregularity causing an arrival delay of three hours or more, we will provide each ticketed customer with a reasonable meal in the form of a digital voucher.",
+          "If your JetBlue flight is canceled or disrupted due to a controllable irregularity, causing an arrival delay of 3 or more hours, and you are away from your home or origin city overnight, we will provide hotel accommodations at a contracted facility, based on availability.",
+          "If no contracted hotel is available, or if ground transportation is not provided, JetBlue will reimburse reasonable overnight hotel expenses and/or ground transportation with valid receipts.",
+          "Hotels will not be provided or reimbursed for events that are not deemed a controllable irregularity or for customers who live locally."
+        ]
+      },
       values: airlineValues("yyyyynyn")
     },
     southwest: {
@@ -156,6 +173,7 @@
       yes: yes,
       no: no,
       link: airline.link,
+      plan: airline.plan || null,
       hasData: hasData
     };
   }
@@ -312,12 +330,25 @@
       container.appendChild(p);
     }
 
-    function appendPlanPara(container, href, linkText) {
+    function appendPlanPara(container, href, linkText, readNote) {
       var p = document.createElement("p");
       p.className = "fine";
       p.appendChild(extLink(href, linkText));
-      p.appendChild(document.createTextNode(" (this page has not read it)"));
+      p.appendChild(document.createTextNode(readNote || " (this page has not read it)"));
       container.appendChild(p);
+    }
+
+    function appendPlanQuotes(container, info) {
+      var intro = document.createElement("p");
+      intro.textContent = "From the customer service plan of " + info.name + ", read by this page on " + DASH_READ + ". Only the passages quoted here were read; the plan may say more.";
+      container.appendChild(intro);
+      info.plan.quotes.forEach(function (q) {
+        var bq = document.createElement("blockquote");
+        var qp = document.createElement("p");
+        qp.textContent = "\u201C" + q + "\u201D";
+        bq.appendChild(qp);
+        container.appendChild(bq);
+      });
     }
 
     function appendLabelList(container, labels) {
@@ -363,7 +394,12 @@
       pFixed.textContent = "These commitments are for cancellations and delays the airline caused, such as maintenance or crew problems. The dashboard does not say what an airline gives when the cause is weather or air traffic control. Ask the airline anyway. An airline with no commitment may still help.";
       container.appendChild(pFixed);
       appendSourcePara(container);
-      appendPlanPara(container, info.link, "The customer service plan of " + info.name);
+      if (info.plan) {
+        appendPlanQuotes(container, info);
+        appendPlanPara(container, info.plan.url, "The customer service plan of " + info.name, " (the page the quotes are from, read " + DASH_READ + ")");
+      } else {
+        appendPlanPara(container, info.link, "The customer service plan of " + info.name);
+      }
     }
 
     function fillClaim(pre, text) {

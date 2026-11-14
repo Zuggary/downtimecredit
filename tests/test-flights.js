@@ -380,3 +380,36 @@
     throw new Error(fail + " test(s) failed");
   }
 })(typeof globalThis !== "undefined" ? globalThis : this);
+
+// airline plan passages: only the two plans lane 1 read; each quote is in the saved page text
+(function () {
+  var pass = 0, fail = 0;
+  function ok(c, m) { if (c) { pass++; } else { fail++; print("FAIL " + m); } }
+  function eq(x, y, m) { ok(x === y, m + " (got " + x + ")"); }
+  var EXPECT = {
+    frontier: ["If your flight is delayed, canceled, diverted, or if you miss a connecting flight due to controllable situations, we'll place you on the next available Frontier flight at no additional cost. In addition, Frontier will provide meal vouchers for flight delays of 3 hours or more or for cancellations that result in a Frontier rebooking that departs 3 hours or greater after the originally scheduled departure time.",
+      "Uncontrollable Situations are defined as flight delays, diversions, or cancellations out of Frontier's control (such as those caused by weather, Air Traffic Control, aircraft damage caused by occurrences out of Frontier's control, such as bird strikes, etc.).",
+      "Given their nature, we do not offer compensation for uncontrollable events beyond the re-accommodation on the next available Frontier flight. Alternatively, if your flight is canceled or delayed in excess of 3 hours, we'll provide you, upon request, a full refund of any unused portion of your ticket."],
+    jetblue: ["If your JetBlue flight is canceled or disrupted due to a controllable irregularity causing an arrival delay of three hours or more, we will provide each ticketed customer with a reasonable meal in the form of a digital voucher.",
+      "If your JetBlue flight is canceled or disrupted due to a controllable irregularity, causing an arrival delay of 3 or more hours, and you are away from your home or origin city overnight, we will provide hotel accommodations at a contracted facility, based on availability.",
+      "If no contracted hotel is available, or if ground transportation is not provided, JetBlue will reimburse reasonable overnight hotel expenses and/or ground transportation with valid receipts.",
+      "Hotels will not be provided or reimbursed for events that are not deemed a controllable irregularity or for customers who live locally."]
+  };
+  var ids = Object.keys(FLIGHTS.AIRLINES), n = 0;
+  ids.forEach(function (id) {
+    var a = FLIGHTS.airlineAnswer(id);
+    if (EXPECT[id]) {
+      n++;
+      eq(JSON.stringify(a.plan.quotes), JSON.stringify(EXPECT[id]), id + " plan quotes are exactly the checked ones");
+      var src = ""; try { src = readFile("../../research/TF4-plan-" + id + ".txt").replace(/\s+/g, " "); } catch (e) { src = ""; }
+      ok(src.length > 1000, id + " source text is readable (the test fails, it does not skip)");
+      a.plan.quotes.forEach(function (q, i) { ok(src.indexOf(q) >= 0, id + " quote " + i + " is in the saved page text"); });
+      ok(/^https:\/\/www\.(flyfrontier|jetblue)\.com\//.test(a.plan.url), id + " plan address is the airline's own");
+    } else {
+      ok(a.plan === null, id + " has no plan quotes (its page was not read)");
+    }
+  });
+  eq(n, 2, "exactly two airlines carry plan quotes");
+  print("plan quotes: " + pass + " passed, " + fail + " failed");
+  if (fail) { throw new Error("plan quote tests failed"); }
+})();
