@@ -402,6 +402,7 @@ def build_vendor_page(v: dict) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(meta_desc)}">
 <link rel="canonical" href="{esc(canonical)}">
@@ -541,6 +542,7 @@ def build_sla_index(vendors: list[dict]) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(meta_desc)}">
 <link rel="canonical" href="{esc(canonical)}">

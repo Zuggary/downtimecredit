@@ -40,7 +40,7 @@ for p in pages:
     if t: ok(t.group(1) not in titles, rel + ": title is unique"); titles[t.group(1)] = rel
     ok(bool(re.search(r'<meta name="description" content="[^"]{60,}', s)), rel + ": description")
     ok(('<link rel="canonical" href="https://www.downtimecredit.com' + url + '"') in s, rel + ": canonical")
-    ok(("<loc>https://www.downtimecredit.com" + url + "</loc>") in sm, rel + ": in the sitemap")
+    if not rel.startswith(os.path.join("flights", "airlines")): ok(("<loc>https://www.downtimecredit.com" + url + "</loc>") in sm, rel + ": in the sitemap")
     ok("<h1" in s and s.count("<h1") == 1, rel + ": one h1")
     if rel != os.path.join("flights", "airlines", "index.html"): ok(not re.search(r"<script[^>]+src=|<link[^>]+href=\"https?:(?!//www\.downtimecredit)|<img[^>]+src=\"https?:", s), rel + ": no outside file")
     ok("slack" not in s.lower(), rel + ": no Slack text")
@@ -51,5 +51,17 @@ for p in pages:
         txt = norm(re.sub(r"<[^>]+>", "", m.group(1))).strip('" ')
         ok(txt in blob, rel + ": quote is in the vendor files: " + txt[:60])
     ok(not re.search(r"<h[23][^>]*>[^<]*</h[23]>\s*<h[23]", s), rel + ": no heading directly followed by a heading")
+
+# AdSense site-ownership tag on every page; no ad script anywhere; airline pages held out of the first review
+import glob
+allpages = [os.path.join(ROOT, f) for f in ["index.html", "privacy.html", "about.html", "flights/index.html"]] + pages
+META = '<meta name="google-adsense-account" content="ca-pub-4144533231524022">'
+for p in sorted(set(allpages)):
+    t = open(p, encoding="utf-8").read(); rel = os.path.relpath(p, ROOT)
+    ok(META in t, rel + ": AdSense account meta tag")
+    ok("pagead2" not in t and "adsbygoogle" not in t and "googlesyndication" not in t, rel + ": no ad script")
+    if rel.startswith(os.path.join("flights", "airlines")): 
+        ok('<meta name="robots" content="noindex">' in t, rel + ": noindex while the site is first reviewed")
+ok("/flights/airlines/" not in sm, "sitemap: airline pages left out")
 print(f"pages: {checks - fails} passed, {fails} failed")
 sys.exit(1 if fails else 0)

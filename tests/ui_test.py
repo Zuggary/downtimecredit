@@ -712,7 +712,7 @@ with sync_playwright() as pw:
         q = qopen("?today=" + t)
         eq(q.inner_text("#dl-days"), lead, f"item 9: today={t}: the lead"); ok(sent in q.inner_text("#dl-date"), f"item 9: today={t}: the sentence"); eq(tile(q, "dl"), tl, f"item 9: today={t}: the tile shows the send-by day")
         ok("From Microsoft's Service Level Agreement." in q.inner_text("#dl-left") and "For the Microsoft 365 outage reported on 12 November 2026." in q.inner_text("#dl-left"), f"item 9: today={t}: the quiet line shows at 375 px")
-        ok("Send by Wednesday 30 December 2026. See the countdown." in q.inner_text("#st-date"), f"item 9: today={t}: the statement's note"); q.close()
+        ok("Send by Wednesday 30 December 2026 (deadline Thursday 31 December 2026). See the countdown." in q.inner_text("#st-date"), f"item 9: today={t}: the statement's note"); q.close()
     q = qopen("?today=2027-01-05")
     ok(q.inner_text("#dl-lead") == "The window has closed." and "Microsoft had to receive the request by Thursday 31 December 2026. The agreement gives no right to a late claim. You can still ask Microsoft." in q.inner_text("#dl-date") and tile(q, "dl")[0] == "closed", "item 14: Microsoft passed: lead, sentence, grey tile")
     bg = q.evaluate("getComputedStyle(document.getElementById('dl-box')).backgroundColor"); ok(bg != "rgb(246, 233, 231)" and q.evaluate("getComputedStyle(document.getElementById('dl-box')).color") != "rgb(143, 29, 29)", f"item 14: passed is not red ({bg})")

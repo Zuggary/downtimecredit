@@ -47,6 +47,8 @@ def page(a):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
+<meta name="robots" content="noindex">
 <title>{esc(title)} | Downtime Credit</title>
 <meta name="description" content="{esc(meta)}">
 <link rel="canonical" href="{esc(canonical)}">

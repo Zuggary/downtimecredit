@@ -53,6 +53,7 @@ def page(slug, title, meta, h1, lede, body, related):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
 <title>{esc(title)} | Downtime Credit</title>
 <meta name="description" content="{esc(meta)}">
 <link rel="canonical" href="{esc(canonical)}">
@@ -199,6 +200,7 @@ def index_page():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
 <title>Guides to SaaS service credits | Downtime Credit</title>
 <meta name="description" content="Plain guides to service credits after a SaaS outage: what a credit is, how to ask for one and what counts as downtime, with quotes from the vendors' own agreements.">
 <link rel="canonical" href="{canonical}">
@@ -258,6 +260,7 @@ def about_page():
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
 <title>Who runs Downtime Credit and how we work</title>
 <meta name="description" content="Downtime Credit is an independent project. How its quotes are sourced and checked, which agreements it has read and when, and how to report an error.">
 <link rel="canonical" href="{bp.SITE_ORIGIN}/about.html">
@@ -297,7 +300,7 @@ def about_page():
 
 
 def sitemap():
-    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/flights/airlines/"] + [f"/flights/airlines/{a}/" for a in AIRLINE_IDS] + ["/privacy.html"]
+    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + ["/flights/", "/privacy.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith(('/guides', '/flights/airlines/')) and p != '/flights/airlines/' else bp.LASTMOD}</lastmod></url>" for p in paths]
     return "\n".join(lines + ["</urlset>", ""])

@@ -159,7 +159,7 @@
   function msTile() {
     var s = msStart(), rs = msReseller(), d = msDeadlineFor({ start: s }, rs), m = E.countdownModel("ms", d, cdOpts("ms", { reseller: rs, noCredit: noCredit })), sd = $("st-date");
     fillBox("dl", m, example);
-    sd.textContent = m.state === "passed" ? "" : rs ? "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown." : "Send by " + E.fullDate(d.sendBy) + ". See the countdown."; sd.hidden = noCredit || m.state === "passed";
+    sd.textContent = m.state === "passed" ? "" : rs ? "Ask your provider by " + E.fullDate(d.sendBy) + " (this page's count of the partner month). See the countdown." : "Send by " + E.fullDate(d.sendBy) + (d.date && d.sendBy && d.date !== d.sendBy ? " (deadline " + E.fullDate(d.date) + ")" : "") + ". See the countdown."; sd.hidden = noCredit || m.state === "passed";
     return E.countdown(TODAY, d.date);
   }
   function writeButton(btn, cd, none) {

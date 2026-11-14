@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-4144533231524022">
 <title>Microsoft 365 outage SLA credit: work out what you may be owed | Downtime Credit</title>
 <meta name="description" content="Was your business hit by the Microsoft 365 email outage of 12 November 2026? Work out the service credit you may be owed under the SLA, get the request written, and send it so Microsoft receives it by 31 December 2026. Free, independent, nothing leaves your browser.">
 <link rel="canonical" href="https://www.downtimecredit.com/">
@@ -193,6 +194,7 @@
   .intro { min-width: 0; }
   /* Phones: the tool comes first. Heading, vendor chips, the short eligibility line, then the statement with its result on top, then the deadline. */
   @media (max-width: 767px) {
+    #send .cal { display: none; }
     .hero { gap: var(--s3); }
     .intro { display: contents; }
     .intro > h1 { order: 1; font-size: 30px; line-height: 1.1; margin: 0; }
@@ -383,6 +385,7 @@
   .sheet > .sh { order: -5; }
   .sheet > .sub, .sheet > .exflag, .sheet > .own-note { order: -4; }
   .sheet > .result, .sheet > .resact { order: -3; }
+  .sheet > #st-date { order: -2; margin: var(--s2) 0 var(--s2); font-weight: 600; }
   .flightcard { margin-top: var(--s6); padding-top: var(--s4); border-top: 1px solid var(--hairline); }
   .flightcard h2 { font: 400 24px/1.2 var(--head); margin: 0 0 var(--s2); }
   .flightcard p { margin: 0; max-width: 46em; }
