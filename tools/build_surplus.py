@@ -28,7 +28,7 @@ TX_URL = "https://statutes.capitol.texas.gov/Docs/TN/htm/TN.683.htm"
 NY_URL = "https://www.nysenate.gov/legislation/laws/LIE/204"
 CO_URL = "https://content.leg.colorado.gov/sites/default/files/images/olls/crs2024-title-42.pdf"
 ARTICLE = "https://valleywidenewspaper.com/the-dmv-makes-millions-from-auctioned-cars-doesnt-tell-owners/"
-TRUST = 'Not legal advice. Not affiliated with any agency named here. This site cannot look up your car or file a claim. Whoever holds the money decides every claim.'
+TRUST = 'Not legal advice. Not affiliated with any agency named here. This site cannot look up your record or file a claim for you. The agency or holder decides every claim.'
 
 
 def q(text, cite_html):

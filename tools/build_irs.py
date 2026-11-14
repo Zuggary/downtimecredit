@@ -17,6 +17,8 @@ Q2 = q("If you filed your return before its due date, the IRS considers it filed
 Q3 = q("You can't get a credit or refund if you don't file the claim within 3 years of filing your original return, or 2 years after paying the tax, whichever is later, unless you meet an exception that allows you more time to file a claim.", C_T)
 Q4 = q("Are affected by a Presidentially declared disaster: You may have up to 1 more year to claim a credit or refund.", C_T)
 Q5 = q("Claim a credit or refund for other taxes (not income taxes) and penalties on Form 843, Claim for Refund and Request for Abatement.", C_T)
+Q7 = q("Your credit or refund is limited to the amount you paid during the 3 years before you filed the claim, plus any extensions of time you had to file your return.", C_T)
+Q8 = q("Your credit or refund is limited to the amount you paid within the 2 years right before you filed your claim.", C_T)
 Q6 = q("Generally, to claim a refund, you must file an amended return within 3 years after the date you filed your original return or 2 years after the date you paid the tax, whichever is later. If you filed early, count from the April tax deadline.", C_A)
 
 CALC = r"""
@@ -25,7 +27,7 @@ CALC = r"""
   <p>This tool runs in your browser. Nothing you type is sent anywhere. It does the arithmetic of the two dates in the IRS rule above. The IRS decides what applies to you.</p>
   <form id="hf" class="hform" novalidate>
     <div class="f"><label for="c-filed">Date the IRS counts as the date you filed</label><input id="c-filed" type="date"></div>
-    <p class="fine">If you filed before the due date, use the due date, as the IRS says above. For most tax years, that is mid-April of the next year.</p>
+    <p class="fine">If you filed before the due date, enter the due date, as the IRS says above. The due date is the April tax deadline.</p>
     <div class="f"><label for="c-paid">Date the IRS counts as the date you paid the tax</label><input id="c-paid" type="date"></div>
     <p class="fine">Tax withheld or estimated tax counts as paid on the return due date, as the IRS says above.</p>
     <button type="button" class="cta" id="c-go">Work it out</button>
@@ -44,7 +46,7 @@ CALC = r"""
     var f = p(document.getElementById("c-filed").value), pd = p(document.getElementById("c-paid").value), a = f ? add(f, 3) : null, b = pd ? add(pd, 2) : null, later;
     if (!a && !b) { out.textContent = "Enter at least one date."; return; }
     later = a && b ? (a > b ? a : b) : (a || b);
-    out.textContent = (a ? "3 years from the filing date: " + fmt(a) + ". " : "") + (b ? "2 years from the payment date: " + fmt(b) + ". " : "") + "The later of these is " + fmt(later) + ". This is this site's arithmetic of the IRS rule. Exceptions can add time, and the IRS decides.";
+    out.textContent = (a ? "3 years from the filing date: " + fmt(a) + ". " : "") + (b ? "2 years from the payment date: " + fmt(b) + ". " : "") + (a && b ? "The later of these is " + fmt(later) + ". " : "Only one date was entered, so only that date was worked out. ") + "If you filed before the due date, you should have entered the due date. This is this site's arithmetic of the IRS rule: a date that falls on 29 February moves to 1 March, and a weekend or holiday rule is not applied. Exceptions can add time, and a late claim can be limited in amount. The IRS decides.";
   });
 }());
 </script>
@@ -61,21 +63,24 @@ def page():
   <p>The IRS calls the deadline the Refund Statute Expiration Date.</p>
   {Q1}
   {Q2}
-  <p>This site's reading: for most people the first date is the one that matters. If you filed your 2023 return on time in April 2024, the three years run to April 2027.</p>
+  <p>This site's reading: tax withheld during the year counts as paid on the return due date, so for a return filed on time the three years from filing is usually the later date. If you paid tax at some later time, the two years from that payment can be later.</p>
 
   <h2>If you miss it</h2>
   {Q3}
+  <p>The IRS also limits how much you can get, depending on which date you use.</p>
+  {Q7}
+  {Q8}
   <p>The IRS lists some exceptions.</p>
   {Q4}
-  <p>The IRS page also lists exceptions for a written agreement with the IRS, for service in a combat zone and for bad debt deductions. This site did not summarise them.</p>
+  <p>The IRS page also names exceptions for a written agreement with the IRS, for service in a combat zone and for bad debt deductions, and its other page lists more. This site did not summarise them.</p>
 
 {CALC}
 
   <h2>How to file a claim</h2>
-  <p>The IRS says how to claim a refund for an earlier year.</p>
+  <p>The IRS says how to file a claim, on an original return or on an amended return.</p>
   {Q6}
   {Q5}
-  <p>Where to check a refund you already filed for: <a href="{REFUNDS}" rel="noopener" target="_blank">IRS refund status page</a>.</p>
+  <p>Where to check a refund you already filed for: <a href="{REFUNDS}" rel="noopener" target="_blank">IRS refund status page</a>, which also covers amended returns.</p>
 
   <h2>What this site cannot do</h2>
   <ul class="clean">
@@ -98,7 +103,7 @@ def page():
     return bs.shell("federal-tax-refund-deadline", "Federal tax refund deadline: the 3-year and 2-year rule",
         "The IRS says a federal income tax refund must generally be claimed within 3 years of filing or 2 years of paying the tax, whichever is later. The rule quoted from the IRS, and a date calculator.",
         "Federal tax refund deadline: the 3-year and 2-year rule",
-        "A refund you never claimed does not wait forever. The IRS sets a time limit. This page quotes the rule, lists the exceptions the IRS names and works out your date in your browser.",
+        "A refund you never claimed does not wait forever. The IRS sets a time limit. This page quotes the rule, names some exceptions the IRS lists and works out your date in your browser.",
         body)
 def main():
     bp.write_if_changed(ROOT / "guides" / "federal-tax-refund-deadline" / "index.html", page()); print("Built IRS guide.")
