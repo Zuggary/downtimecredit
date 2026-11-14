@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_ORIGIN = "https://www.downtimecredit.com"
-LASTMOD = "2026-11-13"
+LASTMOD = "2026-11-14"
 
 MONTHS = [
     "January", "February", "March", "April", "May", "June",
