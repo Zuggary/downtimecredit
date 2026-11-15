@@ -195,6 +195,7 @@
   /* Phones: the tool comes first. Heading, vendor chips, the short eligibility line, then the statement with its result on top, then the deadline. */
   @media (max-width: 767px) {
     #send .cal { display: none; }
+    .sheet.sheet > .result, .sheet.sheet > .resact, .sheet.sheet > #st-date { order: 0; }   /* phones: the four boxes come first, the result sits right under them and nothing jumps when it appears */
     .hero { gap: var(--s3); }
     .intro { display: contents; }
     .intro > h1 { order: 1; font-size: 30px; line-height: 1.1; margin: 0; }
