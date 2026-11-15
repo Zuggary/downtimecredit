@@ -200,7 +200,7 @@ def shell(slug, title, meta, h1, lede, body, canonical_extra=""):
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
   <div class="trustbar"><p>{TRUST}</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">SLAs</a><a href="../">Guides</a><a href="../../about.html">About</a></div></nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Outage calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../">Guides</a><a href="../../about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / {esc(h1)}</p>
@@ -311,8 +311,6 @@ def page_california():
     <li>News report that raised the question, not used as a source of fact: <a href="{ARTICLE}" rel="noopener">The DMV makes millions from auctioned cars, doesn’t tell owners</a>, Valleywide Newspapers, 5 June 2025</li>
   </ul>
   <p class="fine">Quotations are copied word for word from the source named under each. Text outside a quotation is this site's reading. The DMV decides every claim. This is not legal advice.</p>
-  <h2>More</h2>
-  <ul class="clean"><li><a href="../lien-sale-surplus-other-states/">How other states handle lien-sale surplus</a></li><li><a href="../ask-the-tow-yard-where-the-money-went/">Ask the tow yard in writing where the money went</a></li><li><a href="../">All guides</a></li></ul>
 """
     return shell("car-towed-lien-sale-money-california",
                  "Car towed and sold? Money may be held for you at the California DMV",

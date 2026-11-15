@@ -60,6 +60,7 @@ PICKER = r"""
 <form class="hform" onsubmit="return false">
   <div class="f"><label for="u-pick">Which state might hold your money?</label>
     <select id="u-pick"><option value="">Choose a state</option>__OPTIONS__<option value="other">Another state</option></select></div>
+  <p class="fine">Covers California, Florida, Georgia, Illinois, Michigan, New York, North Carolina, Ohio, Pennsylvania and Texas. State missing? This site has not checked it yet. Search your state treasurer's or comptroller's official website for unclaimed property.</p>
   <p class="fine" id="u-msg" aria-live="polite"></p>
 </form>
 <script>
@@ -135,8 +136,6 @@ def page():
     <li><a href="{OH_TEN}" rel="noopener">Ohio Department of Commerce, Ten Years to Claim Your Funds</a>, read {READ}</li>
   </ul>
   <p class="fine">Quotations are copied word for word from the pages named under each one. Text outside a quotation is this site's reading. Each state decides every claim. This is not legal advice.</p>
-  <h2>More</h2>
-  <ul class="clean"><li><a href="../car-towed-lien-sale-money-california/">Car towed and sold? Money may be held for you</a></li><li><a href="../">All guides</a></li></ul>
 """
     return bs.shell("unclaimed-property-by-state",
                     "Unclaimed property: where to search in ten large states",

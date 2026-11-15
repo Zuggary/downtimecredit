@@ -75,7 +75,7 @@ def page(a):
   <div class="in"><a class="brand" href="../../../">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every airline. The airline decides what it pays; this page quotes the dashboard and the airline's plan.</span></p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../../">Calculator</a><a href="../../../sla/">SLAs</a><a href="../../../guides/">Guides</a><a href="../../../about.html">About</a></div></nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../../../">Outage calculator</a><a href="../../../sla/">Vendor SLAs</a><a href="../../../guides/">Guides</a><a href="../../../about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="../">US airline commitments</a> / {esc(short)}</p>

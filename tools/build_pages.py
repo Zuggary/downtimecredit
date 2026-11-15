@@ -428,7 +428,7 @@ def build_vendor_page(v: dict) -> str:
   <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Calculator</a><a href="../../sla/">SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">About</a></div></nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Outage calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">About</a></div></nav>
 
 <main class="in">
   <div class="hero">
@@ -568,7 +568,7 @@ def build_sla_index(vendors: list[dict]) -> str:
   <div class="in"><a class="brand" href="../">Downtime Credit</a></div>
   <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../">Calculator</a><a href="../sla/">SLAs</a><a href="../guides/">Guides</a><a href="../about.html">About</a></div></nav>
+<nav class="subnav" aria-label="Site"><div class="in"><a href="../">Outage calculator</a><a href="../sla/">Vendor SLAs</a><a href="../guides/">Guides</a><a href="../about.html">About</a></div></nav>
 
 <main class="in">
   <div class="hero">

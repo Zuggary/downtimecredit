@@ -42,14 +42,14 @@ LETTER = r"""
   <h2 id="h-help">Write your letter</h2>
   <p>This tool runs in your browser. Nothing you type is sent anywhere. It builds a letter asking for your deposit or an itemized statement. You send the letter yourself.</p>
   <form id="hf" class="hform" novalidate>
+    <div class="f"><label for="d-state">State</label>
+      <select id="d-state"><option value="">Choose a state</option><option value="ca">California</option><option value="fl">Florida</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="oh">Ohio</option><option value="tx">Texas</option><option value="other">Another state</option></select></div>
     <div class="f"><label for="d-name">Your name</label><input id="d-name" autocomplete="off"></div>
     <div class="f"><label for="d-addr">Your new mailing address</label><input id="d-addr" autocomplete="off"></div>
     <div class="f"><label for="d-ll">Landlord or property manager name and address</label><input id="d-ll" autocomplete="off"></div>
     <div class="f"><label for="d-unit">Address of the place you rented</label><input id="d-unit" autocomplete="off"></div>
     <div class="f"><label for="d-out">Date you moved out and returned the keys</label><input id="d-out" autocomplete="off" placeholder="e.g. 1 March 2026"></div>
     <div class="f"><label for="d-amt">Deposit amount, if you know it</label><input id="d-amt" inputmode="decimal" autocomplete="off" placeholder="e.g. 1,200.00"></div>
-    <div class="f"><label for="d-state">State</label>
-      <select id="d-state"><option value="">Choose a state</option><option value="ca">California</option><option value="fl">Florida</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="oh">Ohio</option><option value="tx">Texas</option><option value="other">Another state</option></select></div>
     <button type="button" class="cta" id="d-go">Build my letter</button>
   </form>
   <div id="d-outbox" hidden>
@@ -120,22 +120,23 @@ def page():
     ]
     tbl = "".join(f'<tr><th scope="row"><a href="#d-{k}">{n}</a></th><td>{d}</td><td>{w}</td><td><a href="{esc(SRC[k][1])}" rel="noopener">{esc(SRC[k][0])}</a></td></tr>' for n, d, w, k in rows)
     secs = "".join([
-        sec("ca", "California", "California's deposit statute gives the landlord a deadline to send an itemized statement and return the rest.", [Q["ca"]], "<p>The statute has more conditions, exceptions and documents the landlord must send. This site quoted the main rule and did not summarise the rest.</p>"),
-        sec("fl", "Florida", "Florida's statute has two paths, depending on whether the landlord means to keep any of the deposit.", [Q["fl"]], "<p>The statute also covers the tenant's objection to a claim, the balance, a notice a tenant must give in some cases when leaving early, and kinds of housing it does not cover. This site quoted the first rule and did not summarise the rest.</p>"),
-        sec("mi", "Michigan", "Michigan's rule is about a notice of damages.", [Q["mi"]], "<p>The statute continues with how payment is made and a time for the tenant to respond to the notice. This site quoted the first sentence and did not summarise the rest. Read the full text.</p>"),
-        sec("ny", "New York", "New York's rule includes a consequence for a late statement.", [Q["ny1"], Q["ny2"]], "<p>This site quoted only these two sentences. The section has exceptions for some kinds of housing and other paragraphs that this site did not summarise.</p>"),
-        sec("nc", "North Carolina", "North Carolina's rule sets a 30-day limit and allows for a longer time in some cases.", [Q["nc"]], "<p>The same statute says what happens if the landlord's claim cannot be determined within 30 days. This site quoted the first rule and did not summarise the rest.</p>"),
-        sec("oh", "Ohio", "Ohio's rule is about an itemized notice of any deduction.", [Q["oh"]], "<p>The statute says the tenant is to give a forwarding address in writing and states what follows if not. This site quoted this rule and did not summarise the rest.</p>"),
-        sec("tx", "Texas", "Texas sets a refund deadline in one section and the itemized list in the next.", [Q["tx1"], Q["tx2"], Q["tx3"]], "<p>The first sentence says the deadline is subject to another section. The statute also lets a lease set a notice-of-surrender condition and excuses the itemized list in one case. This site did not summarise these.</p>"),
+        sec("ca", "California", "California's deposit statute gives the landlord a deadline to send an itemized statement and return the rest.", [Q["ca"]], "<p>The statute has more conditions, exceptions and documents the landlord must send. This site quoted the main rule and did not summarize the rest.</p>"),
+        sec("fl", "Florida", "Florida's statute has two paths, depending on whether the landlord means to keep any of the deposit.", [Q["fl"]], "<p>The statute also covers the tenant's objection to a claim, the balance, a notice a tenant must give in some cases when leaving early, and kinds of housing it does not cover. This site quoted the first rule and did not summarize the rest.</p>"),
+        sec("mi", "Michigan", "Michigan's rule is about a notice of damages.", [Q["mi"]], "<p>The statute continues with how payment is made and a time for the tenant to respond to the notice. This site quoted the first sentence and did not summarize the rest. Read the full text.</p>"),
+        sec("ny", "New York", "New York's rule includes a consequence for a late statement.", [Q["ny1"], Q["ny2"]], "<p>This site quoted only these two sentences. The section has exceptions for some kinds of housing and other paragraphs that this site did not summarize.</p>"),
+        sec("nc", "North Carolina", "North Carolina's rule sets a 30-day limit and allows for a longer time in some cases.", [Q["nc"]], "<p>The same statute says what happens if the landlord's claim cannot be determined within 30 days. This site quoted the first rule and did not summarize the rest.</p>"),
+        sec("oh", "Ohio", "Ohio's rule is about an itemized notice of any deduction.", [Q["oh"]], "<p>The statute says the tenant is to give a forwarding address in writing and states what follows if not. This site quoted this rule and did not summarize the rest.</p>"),
+        sec("tx", "Texas", "Texas sets a refund deadline in one section and the itemized list in the next.", [Q["tx1"], Q["tx2"], Q["tx3"]], "<p>The first sentence says the deadline is subject to another section. The statute also lets a lease set a notice-of-surrender condition and excuses the itemized list in one case. This site did not summarize these.</p>"),
     ])
     body = f"""
   <div class="callout">
     <p><b>Start here.</b> Find the state where you rented, read the deadline, then build a letter asking for your deposit or an itemized statement.</p>
     <p class="fine">This site cannot say whether your landlord owes you money or how much. The statutes have exceptions and extra rules. This page is information, not legal advice. A legal aid office or a lawyer can tell you your options.</p>
   </div>
+  <p><a href="#d-ca">Jump to the state rules</a> &middot; <a href="#helper">Jump to the letter builder</a> &middot; <a href="#not-listed">Your state not listed?</a></p>
 
   <h2>Return deadlines in seven states</h2>
-  <p>Each row shows the main return rule this site read in the state's law. Each statute has exceptions and extra conditions that this site did not summarise. The deadline and what the landlord must send differ by state.</p>
+  <p>Each row shows the main return rule this site read in the state's law. Each statute has exceptions and extra conditions that this site did not summarize. The deadline and what the landlord must send differ by state.</p>
   <div class="table-wrap" tabindex="0" role="region" aria-label="Deposit return deadlines by state"><table><thead><tr><th scope="col">State</th><th scope="col">Deadline in the statute</th><th scope="col">What the landlord is to send</th><th scope="col">Source</th></tr></thead><tbody>{tbl}</tbody></table></div>
   <p>This site's reading: each statute names its own start. California and New York say the tenant has vacated. Florida says vacating for termination of the lease. Michigan says termination of occupancy. North Carolina and Ohio say termination of the tenancy or rental agreement and delivery of possession. Texas says the tenant surrenders the premises. This site's suggestion: keep proof of the day you left, the day you returned the keys and the address you gave the landlord.</p>
 
@@ -145,27 +146,25 @@ def page():
   <h2>After you send it</h2>
   <ul class="clean">
     <li>This site's suggestion: send it in a way that gives you a receipt, and keep a copy and photos of the place when you left.</li>
-    <li>If the deadline has passed and you have no answer, a legal aid office, a tenant organisation or a lawyer can tell you your options. This site cannot.</li>
+    <li>If the deadline has passed and you have no answer, a legal aid office, a tenant organization or a lawyer can tell you your options. This site cannot.</li>
   </ul>
 
   <h2>What this site cannot do</h2>
   <ul class="clean">
     <li>It cannot tell you whether your landlord owes you money, or how much.</li>
     <li>It does not send the letter. You send it.</li>
-    <li>It did not summarise the penalties, the exceptions or the court rules in these states, except where a quote above says so.</li>
+    <li>It did not summarize the penalties, the exceptions or the court rules in these states, except where a quote above says so.</li>
     <li>It is not a law firm. This page is information, not legal advice.</li>
   </ul>
 
-  <h2>Not on this list</h2>
-  <p>Your state is missing? That means this site has not checked it yet. Search your state's landlord and tenant law, or ask a tenant organisation or legal aid office.</p>
+  <h2 id="not-listed">Not on this list</h2>
+  <p>Your state is missing? That means this site has not checked it yet. Search your state's landlord and tenant law, or ask a tenant organization or legal aid office.</p>
 
   <h2>Sources</h2>
   <ul class="clean">
     {''.join(f'<li><a href="{esc(u)}" rel="noopener">{esc(n)}</a>, read {READ}</li>' for n, u in SRC.values())}
   </ul>
   <p class="fine">Quotations are copied word for word. Text outside a quotation is this site's reading. This is not legal advice.</p>
-  <h2>More</h2>
-  <ul class="clean"><li><a href="../unclaimed-property-by-state/">Unclaimed property: where to search in ten large states</a></li><li><a href="../">All guides</a></li></ul>
 """
     return bs.shell("security-deposit-return-deadlines",
                     "Security deposit return deadlines in seven states, and a letter to ask",

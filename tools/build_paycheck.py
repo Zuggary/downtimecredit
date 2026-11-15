@@ -35,14 +35,14 @@ LETTER = r"""
   <h2 id="h-help">Write your letter</h2>
   <p>This tool runs in your browser. Nothing you type is sent anywhere. It builds a letter asking for your final pay. You send the letter yourself.</p>
   <form id="hf" class="hform" novalidate>
+    <div class="f"><label for="p-state">State where you worked</label>
+      <select id="p-state"><option value="">Choose a state</option><option value="ca">California</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="tx">Texas</option><option value="wa">Washington</option><option value="other">Another state</option></select></div>
     <div class="f"><label for="p-name">Your name</label><input id="p-name" autocomplete="off"></div>
     <div class="f"><label for="p-addr">Your mailing address</label><input id="p-addr" autocomplete="off"></div>
     <div class="f"><label for="p-emp">Employer name and address (or payroll contact)</label><input id="p-emp" autocomplete="off"></div>
     <div class="f"><label for="p-end">Your last day of work</label><input id="p-end" autocomplete="off" placeholder="e.g. 14 March 2026"></div>
     <div class="f"><label for="p-how">How the job ended</label>
       <select id="p-how"><option value="">Choose</option><option value="discharged">I was let go</option><option value="quit">I left</option></select></div>
-    <div class="f"><label for="p-state">State where you worked</label>
-      <select id="p-state"><option value="">Choose a state</option><option value="ca">California</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="tx">Texas</option><option value="wa">Washington</option><option value="other">Another state</option></select></div>
     <button type="button" class="cta" id="p-go">Build my letter</button>
   </form>
   <div id="p-outbox" hidden>
@@ -107,21 +107,22 @@ def page():
     ]
     tbl = "".join(f'<tr><th scope="row"><a href="#p-{k}">{n}</a></th><td>{d}</td><td><a href="{esc(SRC[k][1])}" rel="noopener">{esc(SRC[k][0])}</a></td></tr>' for n, d, k in rows)
     secs = "".join([
-     sec("ca", "California", "California has one rule for an employer that discharges an employee and a different rule for an employee who quits.", [Q["ca1"], Q["ca2"]], "<p>The sections have more provisions, for example for some seasonal work and state employers. This site quoted the main rules and did not summarise the rest.</p>"),
-     sec("mi", "Michigan", "Michigan's statute covers both a discharge and a voluntary departure.", [Q["mi1"], Q["mi2"]], "<p>The statute has exceptions, for example for some contract employment. This site quoted these two sentences and did not summarise the rest.</p>"),
-     sec("ny", "New York", "New York's rule is tied to the regular pay day.", [Q["ny"]], "<p>This site quoted this paragraph and did not summarise the rest of the section.</p>"),
-     sec("nc", "North Carolina", "North Carolina's rule applies when employment is discontinued for any reason.", [Q["nc"]], "<p>The statute continues with rules for bonuses and commissions. This site did not summarise them.</p>"),
+     sec("ca", "California", "California has one rule for an employer that discharges an employee and a different rule for an employee who quits.", [Q["ca1"], Q["ca2"]], "<p>The sections have more provisions, for example for some seasonal work and state employers. This site quoted the main rules and did not summarize the rest.</p>"),
+     sec("mi", "Michigan", "Michigan's statute covers both a discharge and a voluntary departure.", [Q["mi1"], Q["mi2"]], "<p>The statute has exceptions, for example for some contract employment. This site quoted these two sentences and did not summarize the rest.</p>"),
+     sec("ny", "New York", "New York's rule is tied to the regular pay day.", [Q["ny"]], "<p>This site quoted this paragraph and did not summarize the rest of the section.</p>"),
+     sec("nc", "North Carolina", "North Carolina's rule applies when employment is discontinued for any reason.", [Q["nc"]], "<p>The statute continues with rules for bonuses and commissions. This site did not summarize them.</p>"),
      sec("tx", "Texas", "Texas treats a discharge and a departure differently.", [Q["tx1"], Q["tx2"]]),
-     sec("wa", "Washington", "Washington's statute names the end of the established pay period.", [Q["wa"]], "<p>The statute goes on with exceptions for some multi-employer industry plans and for some labor-management agreements. This site quoted the main rule and did not summarise the rest.</p>"),
+     sec("wa", "Washington", "Washington's statute names the end of the established pay period.", [Q["wa"]], "<p>The statute goes on with exceptions for some multi-employer industry plans and for some labor-management agreements. This site quoted the main rule and did not summarize the rest.</p>"),
     ])
     body = f"""
   <div class="callout">
     <p><b>Start here.</b> Find the state where you worked, read when final pay is due, then build a letter asking for it.</p>
     <p class="fine">This site cannot say whether your employer owes you money or how much. The statutes have exceptions and extra rules. This page is information, not legal advice. A state labor agency, a legal aid office or a lawyer can tell you your options.</p>
   </div>
+  <p><a href="#p-ca">Jump to the state rules</a> &middot; <a href="#helper">Jump to the letter builder</a> &middot; <a href="#not-listed">Your state not listed?</a></p>
 
   <h2>When final pay is due in six states</h2>
-  <p>Each row shows the main timing rule this site read in the state's law. This page is about the timing of wages. The statutes have other provisions, for example on bonuses and commissions in some states, that this site did not summarise.</p>
+  <p>Each row shows the main timing rule this site read in the state's law. This page is about the timing of wages. The statutes have other provisions, for example on bonuses and commissions in some states, that this site did not summarize.</p>
   <div class="table-wrap" tabindex="0" role="region" aria-label="Final pay timing by state"><table><thead><tr><th scope="col">State</th><th scope="col">When final wages are due, per the statute</th><th scope="col">Source</th></tr></thead><tbody>{tbl}</tbody></table></div>
   <p>This site's reading: whether you were discharged or you quit can change the deadline in some states. Keep a record of your last day and how the job ended.</p>
 
@@ -138,11 +139,11 @@ def page():
   <ul class="clean">
     <li>It cannot tell you whether your employer owes you money, or how much.</li>
     <li>It does not send the letter. You send it.</li>
-    <li>It did not summarise the penalties, the exceptions or the claim steps in these states, except where a quote above says so.</li>
+    <li>It did not summarize the penalties, the exceptions or the claim steps in these states, except where a quote above says so.</li>
     <li>It is not a law firm. This page is information, not legal advice.</li>
   </ul>
 
-  <h2>Not on this list</h2>
+  <h2 id="not-listed">Not on this list</h2>
   <p>Your state is missing? That means this site has not checked it yet. Search your state labor department's website for final pay, or ask a legal aid office.</p>
 
   <h2>Sources</h2>
@@ -151,8 +152,6 @@ def page():
     {''.join(f'<li><a href="{esc(SRC[k][1])}" rel="noopener">{esc(SRC[k][0])}</a>, read {READ}</li>' for k in ["mi","nc","ny","tx","wa"])}
   </ul>
   <p class="fine">Quotations are copied word for word. Text outside a quotation is this site's reading. This is not legal advice.</p>
-  <h2>More</h2>
-  <ul class="clean"><li><a href="../security-deposit-return-deadlines/">Security deposit return deadlines in seven states</a></li><li><a href="../unclaimed-property-by-state/">Unclaimed property: where to search</a></li><li><a href="../">All guides</a></li></ul>
 """
     return bs.shell("final-paycheck-deadlines", "Final paycheck deadlines in six states, and a letter to ask",
         "When an employer must pay final wages after a job ends in California, Michigan, New York, North Carolina, Texas and Washington, quoted from the statutes, with a letter builder.",

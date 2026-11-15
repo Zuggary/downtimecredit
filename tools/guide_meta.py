@@ -36,4 +36,4 @@ def breadcrumb(slug, origin):
         {"@type": "ListItem", "position": 3, "name": title, "item": f"{origin}/guides/{slug}/"}]}, ensure_ascii=False, separators=(",", ":"))
 def related_html(slug):
     items = "".join(f'<li><a href="../{s}/">{TITLES[s]}</a></li>' for s in RELATED.get(slug, []))
-    return f'  <h2>Related guides</h2>\n  <ul class="clean">{items}</ul>\n' if items else ""
+    return f'  <h2>Related guides</h2>\n  <ul class="clean">{items}<li><a href="../">All guides</a></li></ul>\n' if items else ""

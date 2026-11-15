@@ -12,7 +12,7 @@ AMEND = "https://www.irs.gov/filing/file-an-amended-return"
 REFUNDS = "https://www.irs.gov/refunds"
 C_T = f'IRS, <a href="{TIME}" rel="noopener">Time you can claim a credit or refund</a>, read {READ}.'
 C_A = f'IRS, <a href="{AMEND}" rel="noopener">File an amended return</a>, read {READ}.'
-Q1 = q(["The latest date, by law, you can claim a credit or federal income tax refund for a specific tax year is generally the later of these 2 dates:", "3 years from the date you filed your federal income tax return, or", "2 years from the date you paid the tax."], C_T)
+Q1 = q(["\u201cThe latest date, by law, you can claim a credit or federal income tax refund for a specific tax year is generally the later of these 2 dates:", "3 years from the date you filed your federal income tax return, or", "2 years from the date you paid the tax.\u201d"], C_T)
 Q2 = q("If you filed your return before its due date, the IRS considers it filed on the due date. If you had income tax withheld or paid estimated tax during the year, we consider those payments to have been made on the return due date.", C_T)
 Q3 = q("You can't get a credit or refund if you don't file the claim within 3 years of filing your original return, or 2 years after paying the tax, whichever is later, unless you meet an exception that allows you more time to file a claim.", C_T)
 Q4 = q("Are affected by a Presidentially declared disaster: You may have up to 1 more year to claim a credit or refund.", C_T)
@@ -33,6 +33,7 @@ CALC = r"""
     <button type="button" class="cta" id="c-go">Work it out</button>
   </form>
   <p id="c-out" aria-live="polite"></p>
+  <p class="fine">This tool counts from a filing date or a payment date. If you have not filed a return for that year, ask the IRS or a tax professional how the time limit applies to you.</p>
 </section>
 <script>
 (function () {
@@ -55,7 +56,7 @@ CALC = r"""
 def page():
     body = f"""
   <div class="callout">
-    <p><b>Start here.</b> A federal income tax refund has a time limit. The IRS says it is generally the later of 3 years from when you filed or 2 years from when you paid the tax. If a refund is still unclaimed, find your date below.</p>
+    <p><b>Start here.</b> A federal income tax refund has a time limit. The IRS says it is generally the later of 3 years from when you filed or 2 years from when you paid the tax. If a refund is still unclaimed, <a href="#helper">jump to the date calculator</a>.</p>
     <p class="fine">This site cannot look up your refund or file anything. It is information, not legal advice or tax advice. A tax professional or the IRS can tell you what applies to you.</p>
   </div>
 
@@ -72,12 +73,12 @@ def page():
   {Q8}
   <p>The IRS lists some exceptions.</p>
   {Q4}
-  <p>The IRS page also names exceptions for a written agreement with the IRS, for service in a combat zone and for bad debt deductions, and its other page lists more. This site did not summarise them.</p>
+  <p>The IRS page also names exceptions for a written agreement with the IRS, for service in a combat zone and for bad debt deductions, and its other page lists more. This site did not summarize them.</p>
 
 {CALC}
 
   <h2>How to file a claim</h2>
-  <p>The IRS says how to file a claim, on an original return or on an amended return.</p>
+  <p>The IRS describes how to claim a refund on an amended return and, for other taxes, on Form 843.</p>
   {Q6}
   {Q5}
   <p>Where to check a refund you already filed for: <a href="{REFUNDS}" rel="noopener" target="_blank">IRS refund status page</a>, which also covers amended returns.</p>
@@ -87,7 +88,7 @@ def page():
     <li>It cannot tell you whether the IRS owes you a refund or how much.</li>
     <li>It does not file a return or a claim. You or your tax preparer file.</li>
     <li>It covers federal income tax refunds as the IRS page describes them. State refunds have their own rules that this site did not read.</li>
-    <li>It is not the IRS and not a tax adviser. This page is information, not legal or tax advice.</li>
+    <li>It is not the IRS and not a tax advisor. This page is information, not legal or tax advice.</li>
   </ul>
 
   <h2>Sources</h2>
@@ -97,8 +98,6 @@ def page():
     <li><a href="{REFUNDS}" rel="noopener">IRS, Where's my refund?</a>, read {READ}</li>
   </ul>
   <p class="fine">Quotations are copied word for word. Text outside a quotation is this site's reading. This is not legal or tax advice.</p>
-  <h2>More</h2>
-  <ul class="clean"><li><a href="../unclaimed-property-by-state/">Unclaimed property: where to search</a></li><li><a href="../final-paycheck-deadlines/">Final paycheck deadlines</a></li><li><a href="../">All guides</a></li></ul>
 """
     return bs.shell("federal-tax-refund-deadline", "Federal tax refund deadline: the 3-year and 2-year rule",
         "The IRS says a federal income tax refund must generally be claimed within 3 years of filing or 2 years of paying the tax, whichever is later. The rule quoted from the IRS, and a date calculator.",
