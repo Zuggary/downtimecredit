@@ -305,8 +305,31 @@
     }
     window.countStep = countStep;
 
-    var state = { what: null, hours: null, route: null, airline: null, card: null };
-    var actor = false;
+    var state = { what: null, hours: null, from: null, to: null, euair: null, airline: null, card: null };
+    var actor = false, shownReal = false;
+    var SAMPLE = { what: "cancelled", hours: null, from: "us", to: "us", euair: null };
+
+    // The questions ask where the flight left from and where it went; the rule logic takes routes.
+    // A flight can fall under both rules (EU to US, or US to EU on an EU airline): then both answers show.
+    function routesFor(st) {
+      if (!st.from || !st.to) return null;
+      var r = [];
+      if (st.from === "eu") r.push("eu-dep");
+      else if (st.to === "eu") {
+        if (!st.euair) return null;
+        if (st.euair === "yes") r.push("eu-arr");
+      }
+      if (st.from === "us" && st.to === "us") r.push("us-dom");
+      else if (st.from === "us" || st.to === "us") r.push("us-intl");
+      if (!r.length) r.push("other");
+      return r;
+    }
+    function needsEuAir(st) { return st.to === "eu" && !!st.from && st.from !== "eu"; }
+
+    function isUSRoute(route) {
+      return route === "us-dom" || route === "us-intl";
+    }
+    function hasUS(routes) { return !!routes && routes.some(isUSRoute); }
 
     function clearEl(node) {
       while (node.firstChild) node.removeChild(node.firstChild);
@@ -432,10 +455,6 @@
       return cardVal === "yes" ? "Check" : "Not sure?";
     }
 
-    function isUSRoute(route) {
-      return route === "us-dom" || route === "us-intl";
-    }
-
     function syncButtons() {
       var btns = document.querySelectorAll("[data-q][data-val]");
       Array.prototype.forEach.call(btns, function (btn) {
@@ -443,8 +462,15 @@
         var v = btn.getAttribute("data-val");
         btn.setAttribute("aria-pressed", state[q] === v ? "true" : "false");
       });
+      // one question at a time: each appears once the one before it is answered
       $("q-hours").hidden = state.what !== "delayed";
-      var usRoute = isUSRoute(state.route);
+      $("reset-btn").parentNode.hidden = !state.what;
+      var whatDone = !!state.what && (state.what !== "delayed" || !!state.hours);
+      $("q-from").hidden = !whatDone;
+      $("q-to").hidden = !whatDone || !state.from;
+      $("q-euair").hidden = !whatDone || !needsEuAir(state);
+      if (!needsEuAir(state)) state.euair = null;
+      var usRoute = whatDone && hasUS(routesFor(state));
       var qAirline = $("q-airline");
       var sel = $("airline-select");
       if (qAirline) {
@@ -457,41 +483,79 @@
     }
 
     function isComplete() {
-      if (!state.what || !state.route) return false;
+      if (!state.what) return false;
       if (state.what === "delayed" && !state.hours) return false;
-      return true;
+      return !!routesFor(state);
+    }
+
+    var RULE_NAME = { "us-dom": "Under the US refund rule", "us-intl": "Under the US refund rule", "eu-dep": "Under the EU regulation", "eu-arr": "Under the EU regulation", "other": "Under the rules this page covers" };
+    var PLACE = { us: "the US", eu: "the EU", other: "somewhere else" };
+
+    function describe(st) {
+      var what = st.what === "cancelled" ? "A cancelled flight" : "A delayed flight";
+      if (st.from === "us" && st.to === "us") return what + " within the US";
+      return what + " from " + PLACE[st.from] + " to " + PLACE[st.to];
+    }
+
+    function vrow(label, verdictText, yes, text) {
+      var d = document.createElement("div");
+      d.className = "vrow";
+      var k = document.createElement("span"); k.className = "k"; k.textContent = label;
+      var v = document.createElement("span"); v.className = "v";
+      var vi = document.createElement("span"); vi.textContent = verdictText; if (yes) vi.className = "verdict-yes";
+      v.appendChild(vi);
+      var p = document.createElement("p"); p.textContent = text;
+      d.appendChild(k); d.appendChild(v); d.appendChild(p);
+      return d;
     }
 
     function render(trusted) {
       syncButtons();
-      var answersBox = $("answers");
-      if (!isComplete()) {
-        answersBox.hidden = true;
-        return;
+      var real = isComplete();
+      var st = real ? state : SAMPLE;
+      var routes = routesFor(st);
+      var box = $("ans-rules");
+      clearEl(box);
+      var extras = [], letterKind = null, stampKind = null;
+      routes.forEach(function (route) {
+        var ans = flightAnswer({ what: st.what, hours: st.hours, route: route });
+        var sec = document.createElement("section");
+        sec.className = "rule-block";
+        var h = document.createElement("h2");
+        h.textContent = RULE_NAME[route];
+        sec.appendChild(h);
+        sec.appendChild(vrow("A refund of the ticket", refundVerdictLabel(ans.refund.verdict), ans.refund.verdict === "yes", ans.refund.text));
+        sec.appendChild(vrow("Meals and a hotel", careVerdictLabel(ans.care), ans.care.verdict === "yes", ans.care.text));
+        box.appendChild(sec);
+        ans.extra.forEach(function (line) { if (extras.indexOf(line) < 0) extras.push(line); });
+        if (ans.letter && !letterKind) { letterKind = ans.letter; stampKind = ans.letter; }
+      });
+
+      $("ans-tag").hidden = real;
+      $("ans-what").textContent = describe(st);
+
+      // the stamp: the refund window the rule gives, once, when a refund is due
+      var stamp = $("ans-stamp");
+      if (stampKind === "eu") {
+        stamp.querySelector("b").textContent = "within 7 days";
+        stamp.querySelector("small").textContent = "EU regulation, Article 8(1)";
+        stamp.hidden = false;
+      } else if (stampKind === "us") {
+        stamp.querySelector("b").textContent = "7 business days";
+        stamp.querySelector("small").textContent = "by card; 20 calendar days otherwise";
+        stamp.hidden = false;
+      } else {
+        stamp.hidden = true;
       }
 
-      var usRoute = isUSRoute(state.route);
-      var ans = flightAnswer(state);
-      $("v-refund").textContent = refundVerdictLabel(ans.refund.verdict);
-      $("t-refund").textContent = ans.refund.text;
-      $("card-refund").setAttribute("data-verdict", ans.refund.verdict);
-
-      $("v-care").textContent = careVerdictLabel(ans.care);
-      $("t-care").textContent = ans.care.text;
-      $("card-care").setAttribute("data-verdict", ans.care.verdict);
+      var usRoute = hasUS(routes);
       var careQuotes = $("care-quotes");
-      if (careQuotes) careQuotes.hidden = !usRoute;
-
-      if ($("card-card")) {
-        $("v-card").textContent = cardVerdictLabel(state.card);
-        $("t-card").textContent = ans.card.text;
-        $("card-card").setAttribute("data-verdict", state.card === "yes" ? "maybe" : "no");
-      }
+      if (careQuotes) careQuotes.hidden = !(real && usRoute);
 
       var airlineCard = $("card-airline");
       var airlineBody = $("t-airline");
       if (airlineCard && airlineBody) {
-        if (usRoute && state.airline) {
+        if (real && usRoute && state.airline) {
           fillAirlineCard(airlineBody, state.airline);
           airlineCard.hidden = false;
         } else {
@@ -503,8 +567,8 @@
       var extraWrap = $("extra-wrap");
       var extraList = $("extra-list");
       clearEl(extraList);
-      if (ans.extra.length > 0) {
-        ans.extra.forEach(function (line) {
+      if (real && extras.length > 0) {
+        extras.forEach(function (line) {
           var li = document.createElement("li");
           li.textContent = line;
           extraList.appendChild(li);
@@ -515,23 +579,24 @@
       }
 
       var letterWrap = $("letter-wrap");
-      if (ans.letter) {
-        fillClaim($("claim"), letterText(ans.letter, state.what));
-        $("copy-state").textContent = "";
+      $("copy-state").textContent = "";
+      $("copy-btn").hidden = !real;
+      if (letterKind) {
+        fillClaim($("claim"), letterText(letterKind, st.what));
         letterWrap.hidden = false;
       } else {
         clearEl($("claim"));
-        $("copy-state").textContent = "";
         letterWrap.hidden = true;
       }
 
-      var wasHidden = answersBox.hidden;
-      answersBox.hidden = false;
-      if (trusted) countStep("flights-answer");
-      if (trusted && wasHidden) {   // the answer appears below the questions: take the visitor to it
+      var first = real && !shownReal;
+      shownReal = real;
+      if (real && trusted) countStep("flights-answer");
+      if (trusted && first) {   // on a phone the answer sits below the questions: take the visitor to it
+        var narrow = window.matchMedia && window.matchMedia("(max-width: 899px)").matches;
         var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var head = $("v-refund");
-        if (head) { head.setAttribute("tabindex", "-1"); answersBox.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" }); head.focus({ preventScroll: true }); }
+        var head = $("ans-what");
+        if (narrow && head) { head.setAttribute("tabindex", "-1"); $("answers").scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" }); head.focus({ preventScroll: true }); }
       }
     }
 
@@ -584,7 +649,9 @@
       $("reset-btn").addEventListener("click", function () {
         state.what = null;
         state.hours = null;
-        state.route = null;
+        state.from = null;
+        state.to = null;
+        state.euair = null;
         state.airline = null;
         state.card = null;
         if (sel) sel.value = "";

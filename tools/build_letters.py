@@ -494,10 +494,15 @@ def rules_page(rows) -> str:
 """ + tail(p)
 
 
-HUB_ROWS = [("credit/", "outage", "phone", "An outage at work", "A service credit from Microsoft 365, Google Workspace, Atlassian or GitHub"),
-            ("flights/", "flight", "tag", "A flight cancelled or delayed", "A refund under the US rule or the EU regulation"),
-            ("letters/security-deposit/", "deposit", "keys", "A deposit not returned", "The landlord's deadline in seven states"),
-            ("letters/final-paycheck/", "paycheck", "pay", "A final paycheck not paid", "When final wages are due in six states")]
+HUB_ROWS = [("credit/", "outage", "An outage at work", "A service credit from Microsoft 365, Google Workspace, Atlassian or GitHub", "Microsoft 365 claims close 31 Dec", "2026-12-31", "Credit tables for 4 vendors"),
+            ("flights/", "flight", "A flight cancelled or delayed", "A refund under the US rule or the EU regulation", "EU refund within 7 days", "", ""),
+            ("letters/security-deposit/", "deposit", "A deposit not returned", "The landlord's deadline in seven states", "14 to 30 days, 7 states", "", ""),
+            ("letters/final-paycheck/", "paycheck", "A final paycheck not paid", "When final wages are due in six states", "Deadlines in 6 states", "", "")]
+# The hub's sample letter can show any of the four. Tab label, letter, what the head says, the step its button counts.
+HUB_SAMPLES = [("Outage", "service-credit", "A service credit claim, filled in", "hub-outage"),
+               ("Flight", "flight-refund", "A flight refund request, filled in", "hub-flight"),
+               ("Deposit", "security-deposit", "A deposit letter, filled in", "hub-deposit"),
+               ("Paycheck", "final-paycheck", "A final pay letter, filled in", "hub-paycheck")]
 REDIRECT = """<script>
   // The outage credit tool lived at this address until TF12. Old links that carry its settings or its section links go to /credit/.
   (function () { var q = location.search, h = location.hash; if (/[?&](vendor|demo|today|utm_campaign)=/.test(q) || /^#(statement|write|send|rules|incidents|who|who-g|passon|io-choice)\\b/.test(h)) location.replace("credit/" + q + h); })();
@@ -505,40 +510,97 @@ REDIRECT = """<script>
 """
 
 
-def hub_page(nrules: int) -> str:
-    html, text, r = render_sample(DEPOSIT)
-    due = r["due"]
-    rows = "".join(f'<li><a href="{h}" data-step="hub-{st}"><span class="pic"><picture><source srcset="art/{a}-240.avif" type="image/avif"><img src="art/{a}-240.jpg" alt="" width="240" height="135"></picture></span><span class="t"><b>{esc(t)}</b><span>{esc(d)}</span></span></a></li>' for h, st, a, t, d in HUB_ROWS)
+def hub_sample(slug: str) -> tuple[str, str]:
+    """The stamp and body of one sample letter, pre-rendered with the page's own code."""
+    L = [x for x in LETTERS if x["slug"] == slug][0]
+    html, text, r = render_sample(L)
+    due = r["due"] or {}
+    stamp = (f'<span>{esc(due["label"])}</span><b>{esc(r["full"].split(" ", 1)[1])}</b>' if due.get("date") else "")
+    return stamp, html
+
+
+def hub_page(rows_all: list) -> str:
+    nrules = len(rows_all)
+    checked = sorted({r["checked"] for r in rows_all})
+    when = fmt(checked[-1]) if len(checked) == 1 else f'{fmt(checked[0]).rsplit(" ", 2)[0] if checked[0][:7] == checked[-1][:7] else fmt(checked[0])} to {fmt(checked[-1])}'
+    rows = []
+    for h, st, t, d, fact, until, after in HUB_ROWS:
+        f = (f'<span class="hfact" data-until="{until.replace("-", "")}">{esc(fact)}</span><span class="hfact" data-after="{until.replace("-", "")}" hidden>{esc(after)}</span>' if until
+             else f'<span class="hfact">{esc(fact)}</span>')
+        rows.append(f'<li><a href="{h}" data-step="hub-{st}"><span class="t"><b>{esc(t)}</b><span class="sub">{esc(d)}</span>{f}</span><svg class="go" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>')
+    tabs, tpls = [], []
+    first_stamp, first_body = hub_sample(HUB_SAMPLES[0][1])
+    for i, (lab, slug, head_txt, step) in enumerate(HUB_SAMPLES):
+        tabs.append(f'<button type="button" class="stab" data-s="{slug}" aria-pressed="{"true" if i == 0 else "false"}">{esc(lab)}</button>')
+        if i:
+            stp, body = hub_sample(slug)
+            tpls.append(f'<template id="smp-{slug}" data-head="{esc(head_txt)}" data-step="{step}"><div data-part="stamp">{stp}</div><div data-part="body">{body}</div></template>')
+    _, s0, h0, step0 = HUB_SAMPLES[0]
     ld = [{"@context": "https://schema.org", "@type": "WebSite", "name": "Downtime Credit", "url": O + "/", "description": "Forms and samples for money you may be owed: service credits after an outage, flight refunds, security deposits and final pay, each with the rule it rests on."}]
     page = head("/", "Forms and samples for money you may be owed", "Free letters that fill in as you type, for money you may be owed: a service credit after an outage, a flight refund, a security deposit, a final paycheck. Each shows the deadline from the rule, with the quote and source.", ld, "", REDIRECT)
     page = page.replace('<title>Forms and samples for money you may be owed | Downtime Credit</title>', '<title>Downtime Credit: forms and samples for money you may be owed</title>')
     page = page.replace('<meta name="google-adsense-account" content="ca-pub-4144533231524022">', '<meta name="google-adsense-account" content="ca-pub-4144533231524022">\n<meta name="msvalidate.01" content="09A196455D98CAA5B1853FB6264F41E7">')
     return page + f"""<main class="in">
-  <p class="strip" data-until="2026-12-31"><span class="long"><b>Microsoft 365 email outage, 12 November 2026.</b> By this site's reading of the SLA, Microsoft must receive a credit claim by 31 December 2026.</span><span class="short"><b>Microsoft 365 outage, 12 November:</b> claims due by 31 December 2026.</span> <a href="credit/" data-step="hub-outage">Work out your credit</a></p>
   <div class="hub">
     <div class="ask">
+      <p class="strip" data-until="20261231"><span><b>Microsoft 365 outage, 12 November:</b> claims due by 31 December 2026<span class="hedge">, by this site's reading of the SLA</span>.</span> <a href="credit/" data-step="hub-outage">Work out your credit</a></p>
       <h1>What happened?</h1>
-      <p class="lede">Forms and samples for money you may be owed.<span class="more-lede"> Pick what happened; the letter fills in as you type.</span></p>
-      <ul class="happened">{rows}</ul>
+      <p class="lede">Money you may be owed after an outage, a flight, a move or a job, and the letter to ask for it.</p>
+      <ul class="happened">{"".join(rows)}</ul>
+      <section class="proof" aria-labelledby="h-proof">
+        <h2 id="h-proof">Checked, with sources</h2>
+        <p>{nrules} rules behind these letters, each quoted word for word with its source and date. Last checked {esc(when)}.</p>
+        <p class="who">Run by one independent developer. Not a law firm, and not linked to any vendor, airline or landlord.</p>
+        <p><a href="rules/">Read the rule book</a> <a href="about.html#facts">How we check facts</a></p>
+      </section>
+      <div class="else"><h2 class="else-h">Something else?</h2><ul class="jumps"><li><a href="guides/car-towed-lien-sale-money-california/">A towed car was sold</a></li><li><a href="guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="guides/federal-tax-refund-deadline/">A tax refund</a></li><li><a href="guides/lost-retirement-money/">Lost retirement money</a></li></ul></div>
     </div>
     <div class="lt-col">
+      <div class="stabs" role="group" aria-label="Show a sample letter">{"".join(tabs)}</div>
       <article class="letter" aria-labelledby="lt-h">
-        <div class="lt-head"><span class="sample-tag">Sample data</span><span id="lt-h">A deposit letter, filled in</span></div>
-        <div class="stamp"><span>{esc(due["label"])}</span><b>{esc(r["full"].split(" ", 1)[1])}</b></div>
-        <div class="lt-body">{html}</div>
+        <div class="lt-head"><span class="sample-tag">Sample data</span><span id="lt-h">{esc(h0)}</span></div>
+        <p class="lt-go"><a class="cta" id="lt-go" href="letters/{s0}/" data-step="{step0}">Make this letter yours</a><span>Type your details; the highlighted blanks fill in.</span></p>
+        <div class="stamp" id="lt-stamp">{first_stamp}</div>
+        <div class="lt-body" id="lt-body">{first_body}</div>
+        <p class="lt-more"><a id="lt-more" href="letters/{s0}/">Read the whole letter and the rule behind it</a></p>
       </article>
-      <div class="cta-row"><a class="cta" href="letters/security-deposit/" data-step="hub-deposit">Make this letter yours</a><a class="cta-sec" href="letters/">See all four letters</a></div>
+      {"".join(tpls)}
     </div>
-    <div class="else"><h2 class="else-h">Something else?</h2><ul class="jumps"><li><a href="guides/car-towed-lien-sale-money-california/">A towed car was sold</a></li><li><a href="guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="guides/federal-tax-refund-deadline/">A tax refund</a></li><li><a href="guides/lost-retirement-money/">Lost retirement money</a></li></ul></div>
   </div>
   <div class="hub-more">
     <section aria-labelledby="h-how"><h2 id="h-how">How it works</h2><p>Each letter starts as a finished sample. Type your details and every highlighted blank fills in. Where the rule gives a day count, the deadline is stamped on the letter and saved to your calendar. You send the letter; this site never sees it.</p></section>
-    <section aria-labelledby="h-rb"><h2 id="h-rb">Checked, with sources</h2><p>Every rule behind the letters is quoted word for word, with its source and the day it was last read: {nrules} rules in <a href="rules/">the rule book</a>, with a CSV. Not legal advice.</p></section>
+    <section aria-labelledby="h-rb"><h2 id="h-rb">Use the data</h2><p>Every rule is in <a href="rules/">the rule book</a>, with the quote, the source address, the document date and the day this site last read it, and a CSV you can download. Not legal advice.</p></section>
     <section aria-labelledby="h-gd"><h2 id="h-gd">Guides</h2><ul><li><a href="guides/how-service-credits-work/">How service credits work</a></li><li><a href="guides/security-deposit-return-deadlines/">Deposit deadlines by state</a></li><li><a href="guides/final-paycheck-deadlines/">Final paycheck deadlines</a></li><li><a href="guides/">All guides</a></li></ul></section>
   </div>
 </main>
 <script>
-  (function () {{ var s = document.querySelector(".strip[data-until]"); if (!s || !window.Date) return; var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); if (t > 20261231) s.hidden = true; }})();
+  (function () {{
+    var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-until]"), function (e) {{ if (t > +e.getAttribute("data-until")) e.hidden = true; }});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-after]"), function (e) {{ if (t > +e.getAttribute("data-after")) e.hidden = false; }});
+    // The sample tabs swap the letter on the desk. The samples are pre-rendered in templates; nothing is fetched.
+    var tabs = document.querySelectorAll(".stab"), body = document.getElementById("lt-body"), stamp = document.getElementById("lt-stamp"),
+        hd = document.getElementById("lt-h"), go = document.getElementById("lt-go"), more = document.getElementById("lt-more"), first = null;
+    if (!body || !window.HTMLTemplateElement) return;
+    first = document.createElement("template");
+    first.setAttribute("data-head", hd.textContent); first.setAttribute("data-step", go.getAttribute("data-step"));
+    var fs = stamp.cloneNode(true), fb = body.cloneNode(true); fs.removeAttribute("id"); fb.removeAttribute("id"); fs.setAttribute("data-part", "stamp"); fb.setAttribute("data-part", "body"); first.content.appendChild(fs); first.content.appendChild(fb);
+    function show(btn) {{
+      var slug = btn.getAttribute("data-s"), tp = document.getElementById("smp-" + slug) || first, frag = tp.content.cloneNode(true);
+      var nb = frag.querySelector('[data-part="body"]'), ns = frag.querySelector('[data-part="stamp"]');
+      while (body.firstChild) body.removeChild(body.firstChild);
+      while (nb.firstChild) body.appendChild(nb.firstChild);
+      while (stamp.firstChild) stamp.removeChild(stamp.firstChild);
+      while (ns.firstChild) stamp.appendChild(ns.firstChild);
+      stamp.hidden = !stamp.firstChild;
+      hd.textContent = tp.getAttribute("data-head");
+      go.href = more.href = "letters/" + slug + "/";
+      go.setAttribute("data-step", tp.getAttribute("data-step"));
+      Array.prototype.forEach.call(tabs, function (b) {{ b.setAttribute("aria-pressed", b === btn ? "true" : "false"); }});
+      stamp.classList.remove("lands"); void stamp.offsetWidth; stamp.classList.add("lands");
+    }}
+    Array.prototype.forEach.call(tabs, function (b) {{ b.addEventListener("click", function () {{ show(b); }}); }});
+  }})();
 </script>
 """ + tail("")
 
@@ -552,7 +614,7 @@ def main():
     out = ROOT / "rules" / "rules.csv"; c = rules_csv(rows)
     if not out.exists() or out.read_text(encoding="utf-8") != c:
         out.write_text(c, encoding="utf-8")
-    bp.write_if_changed(ROOT / "index.html", hub_page(len(rows)))
+    bp.write_if_changed(ROOT / "index.html", hub_page(rows))
     print(f"Built /letters/ with {len(LETTERS)} letters and /rules/ with {len(rows)} rules.")
 
 

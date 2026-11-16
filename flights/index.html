@@ -19,465 +19,78 @@
 <link rel="preload" href="../fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  @font-face { font-family: "DM Serif DC"; src: url("../fonts/dm-serif-display-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
-  @font-face { font-family: "Hanken DC"; src: url("../fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
-
-  :root {
-    --paper: #FBFAF7;
-    --sheet: #FFFFFF;
-    --tint: #EEF1F5;
-    --ink: #14110F;
-    --graphite: #4A4640;
-    --hairline: rgba(20, 17, 15, .28);
-    --crimson: #B3161B;
-    --cobalt: #163F7A;
-    --blank: #E3EAF5;
-
-    --head: "DM Serif DC", Georgia, "Times New Roman", serif;
-    --text: "Hanken DC", Arial, Helvetica, sans-serif;
-    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
-
-    --s1: 4px;
-    --s2: 8px;
-    --s3: 12px;
-    --s4: 16px;
-    --s5: 24px;
-    --s6: 32px;
-    --s7: 48px;
-
-    --gut: var(--s4);
-    --rad: 2px;
-  }
-
-  /* Base & Accessibility */
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
-  html, body { margin: 0; }
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font: 400 16px/1.5 var(--text);
-    overflow-x: clip;
-  }
-  a, a:visited {
-    color: var(--cobalt);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-  }
-  :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 2px; }
-  input:focus, textarea:focus, select:focus, input[type=date]:focus-within, .f:focus-within > input[type=date] { outline: 3px solid var(--cobalt) !important; outline-offset: 2px; }
-  .in { max-width: 1200px; width: calc(100% - 2 * var(--gut)); margin: 0 auto; }
-  small, .small { font: 400 13px/1.4 var(--text); color: var(--graphite); }
-
-  /* Masthead & Legal Line */
-  .top .in {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--s1) var(--s4);
-    padding-top: 12px;
-    padding-bottom: 8px;
-    border-bottom: 3px solid var(--ink);
-    position: relative;
-  }
-  .top .in::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -7px;
-    height: 1px;
-    background: var(--ink);
-  }
-  .brand, .brand:visited {
-    font: 400 30px/1 var(--head);
-    letter-spacing: -0.02em;
-    color: var(--ink);
-    text-decoration: none;
-    white-space: nowrap;
-    min-height: 44px;
-    padding: 7px 0;
-    display: inline-block;
-  }
-  .brand::after {
-    content: "";
-    display: inline-block;
-    width: 0.16em;
-    height: 0.16em;
-    margin-left: 0.06em;
-    background: var(--crimson);
-    clip-path: circle(50%);
-    vertical-align: baseline;
-  }
-  .trustbar {
-    background: none;
-    color: var(--graphite);
-    border: 0;
-  }
-  .trustbar p {
-    margin: 0 auto;
-    width: calc(100% - 2 * var(--gut));
-    max-width: 1200px;
-    padding: 10px 0 8px;
-    font: 400 13px/1.4 var(--text);
-    color: var(--graphite);
-  }
-
-  /* Two Newspaper Section Tabs */
-  .doors { padding: 0; }
-  .doors .in {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-    gap: 0;
-    border-top: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--ink);
-  }
-  .doors a, .doors a:visited {
-    min-width: 0;
-    min-height: 44px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    padding: 8px 12px 8px 0;
-    border: 0;
-    border-top: 4px solid transparent;
-    border-radius: 0;
-    background: transparent;
-    color: var(--graphite);
-    text-decoration: none;
-    font: 400 16px/1.25 var(--text);
-  }
-  .doors a + a {
-    padding-left: 12px;
-    padding-right: 0;
-    border-left: 1px solid var(--hairline);
-  }
-  .doors a b { font-weight: 600; display: block; color: var(--graphite); }
-  .doors a span { display: block; font: 400 13px/1.35 var(--text); color: var(--graphite); }
-  .doors a[aria-current="page"], .doors a[aria-current="page"]:visited {
-    background: transparent;
-    color: var(--ink);
-    border-top-color: var(--crimson);
-  }
-  .doors a[aria-current="page"] b { font-weight: 700; color: var(--ink); }
-  .doors a[aria-current="page"] span { color: var(--graphite); }
-  .doors a:not([aria-current="page"]):hover { color: var(--ink); }
-  .doors a:not([aria-current="page"]):hover b { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-  @media (max-width: 559px) {
-    .doors a span { display: none; }
-  }
-
-  /* Hero */
-  .hero { padding-top: 16px; padding-bottom: 0; }
-  h1 {
-    font: 400 38px/1.05 var(--head);
-    letter-spacing: -0.02em;
-    margin: 0 0 12px;
-    text-wrap: balance;
-    max-width: 18em;
-    color: var(--ink);
-  }
-  .lede {
-    margin: 0 0 16px;
-    font: 400 17px/1.4 var(--text);
-    max-width: 42em;
-    color: var(--ink);
-  }
-
-  /* Flights Card */
-  .sheet {
-    --pad: 20px;
-    background: var(--sheet);
-    border: 1px solid var(--hairline);
-    border-top: 3px solid var(--ink);
-    border-radius: var(--rad);
-    padding: var(--pad);
-    max-width: 780px;
-    min-width: 0;
-    margin-bottom: var(--s7);
-  }
-  .tag-stripe { display: none; }
-  .tear {
-    height: 0;
-    border: 0;
-    border-top: 1px solid var(--hairline);
-    margin: var(--s4) calc(var(--pad) * -1);
-  }
-
-  .q + .q { margin-top: var(--s4); padding-top: var(--s4); border-top: 1px solid var(--hairline); }
-  .q-label { font: 400 22px/1.2 var(--head); letter-spacing: -0.015em; margin: 0 0 var(--s3); display: block; color: var(--ink); }
-  .q-note { margin: var(--s2) 0 0; font: 400 14px/1.45 var(--text); color: var(--graphite); }
-  .q-note a { font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; }
-
-  .airline-select {
-    font: 500 17px/1.25 var(--mono);
-    letter-spacing: 0.01em;
-    color: var(--cobalt);
-    background: var(--sheet);
-    border: 1px solid var(--hairline);
-    border-bottom: 2px solid var(--ink);
-    border-radius: var(--rad);
-    padding: var(--s2) var(--s3);
-    min-height: 46px;
-    width: 100%;
-    max-width: 24em;
-    cursor: pointer;
-  }
-
-  .opts {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-    border-top: 2px solid var(--ink);
-    border-bottom: 2px solid var(--ink);
-    background: var(--sheet);
-  }
-  .opt-btn {
-    font: 400 16px/1.3 var(--text);
-    color: var(--ink);
-    background: var(--sheet);
-    border: 0;
-    border-radius: 0;
-    padding: 10px 14px;
-    min-height: 48px;
-    min-width: 0;
-    text-align: left;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-  }
-  .opt-btn + .opt-btn { border-top: 1px solid var(--hairline); }
-  .opt-btn:hover { background: var(--tint); }
-  .opt-btn:focus-visible { position: relative; z-index: 1; }
-  .opt-btn[aria-pressed="true"] {
-    background: var(--tint);
-    color: var(--ink);
-    font-weight: 700;
-  }
-  .opt-btn .punch { flex: none; display: block; overflow: visible; }
-  .opt-btn .punch .ring { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.5; }
-  .opt-btn .punch .dot { fill: transparent; }
-  .opt-btn[aria-pressed="true"] .punch .ring { fill: var(--crimson); stroke: var(--crimson); }
-  .opt-btn[aria-pressed="true"] .punch .dot { fill: var(--crimson); }
-
-  .actions { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; }
-
-  /* Buttons */
-  .primary {
-    font: 700 16px/1.2 var(--text);
-    color: var(--sheet);
-    background: var(--ink);
-    border: 1px solid var(--ink);
-    border-radius: var(--rad);
-    padding: var(--s3) var(--s5);
-    cursor: pointer;
-    min-height: 48px;
-  }
-  .primary:hover { background: rgba(20, 17, 15, .92); border-color: rgba(20, 17, 15, .92); }
-  .primary:active { background: rgba(20, 17, 15, .85); border-color: rgba(20, 17, 15, .85); }
-  .second {
-    font: 600 15px/1.2 var(--text);
-    color: var(--ink);
-    background: var(--sheet);
-    border: 1px solid var(--ink);
-    border-radius: var(--rad);
-    padding: var(--s2) var(--s4);
-    cursor: pointer;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-  }
-  .second:hover { background: var(--tint); }
-  .second:active { background: var(--ink); color: var(--sheet); }
-
-  /* Answers */
-  .step { padding-top: 0; padding-bottom: var(--s7); }
-  .step h2 {
-    font: 400 22px/1.18 var(--head);
-    letter-spacing: -0.015em;
-    margin: 0 0 var(--s3);
-    padding-top: var(--s4);
-    border-top: 3px solid var(--ink);
-    color: var(--ink);
-  }
-  .cards { display: grid; grid-template-columns: 1fr; gap: var(--s5); }
-  .card {
-    background: transparent;
-    border: 0;
-    border-top: 3px solid var(--ink);
-    border-radius: 0;
-    padding: var(--s4) 0 0;
-  }
-  .card h2 {
-    font: 400 20px/1.25 var(--head);
-    margin: 0 0 var(--s2);
-    padding-top: 0;
-    border-top: 0;
-    color: var(--ink);
-  }
-  .verdict { font: 400 40px/1.08 var(--head); letter-spacing: -0.02em; margin: 0 0 var(--s2); color: var(--ink); }
-  .card > p:last-of-type { margin: 0; font: 400 16px/1.5 var(--text); color: var(--ink); }
-  #care-quotes { margin-top: var(--s3); display: grid; gap: var(--s3); }
-  #care-quotes blockquote p { font-size: 15px; }
-  .promise {
-    grid-column: 1 / -1;
-    border-top: 3px solid var(--ink);
-    padding-top: var(--s4);
-    margin-top: var(--s3);
-    background: transparent;
-  }
-  .promise h2 {
-    font: 400 22px/1.25 var(--head);
-    margin: 0 0 var(--s3);
-    padding-top: 0;
-    border-top: 0;
-    color: var(--ink);
-  }
-  .promise p { margin: 0 0 var(--s3); font: 400 16px/1.5 var(--text); color: var(--ink); max-width: 52em; }
-  .promise p:last-child { margin-bottom: 0; }
-  .promise .clean-list {
-    list-style: none;
-    margin: 0 0 var(--s4);
-    padding-left: 0;
-    display: grid;
-    gap: 0;
-    max-width: 52em;
-    border-top: 1px solid var(--hairline);
-  }
-  .promise .clean-list li {
-    padding: var(--s2) 0;
-    border-bottom: 1px solid var(--hairline);
-    line-height: 1.5;
-  }
-  .promise .fine { margin-top: var(--s3); font-size: 13.5px; color: var(--graphite); }
-
-  .block { margin-top: var(--s7); max-width: 46em; }
-  .block h2 { font: 400 22px/1.2 var(--head); margin: 0 0 var(--s3); }
-  .clean-list { margin: 0; padding-left: 20px; display: grid; gap: var(--s2); }
-  .clean-list li { line-height: 1.5; }
-
-  .tinted { background: var(--paper); border: 0; padding-top: 0; padding-bottom: var(--s7); }
-  .letter {
-    background: var(--sheet);
-    border: 1px solid var(--hairline);
-    border-radius: 0;
-    padding: 20px 22px;
-    max-width: 46em;
-  }
-  pre.claim {
-    margin: 0;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    font: 400 14.5px/1.65 var(--mono);
-    color: var(--ink);
-  }
-  pre.claim mark {
-    background: var(--blank);
-    color: var(--ink);
-    padding: 1px 4px;
-    border-radius: var(--rad);
-    border-bottom: 1.5px solid var(--cobalt);
-    font-weight: 500;
-  }
-  .row { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; margin-top: var(--s4); }
-
-  /* Sources */
-  .sources { padding-top: 0; padding-bottom: var(--s7); border-top: 0; }
-  .sources h2 {
-    font: 400 22px/1.18 var(--head);
-    letter-spacing: -0.015em;
-    margin: 0 0 var(--s4);
-    padding-top: var(--s4);
-    border-top: 3px solid var(--ink);
-    color: var(--ink);
-  }
-  .quotes { display: grid; gap: var(--s3); max-width: 46em; }
-  blockquote { margin: 0; padding: var(--s1) 0 var(--s1) var(--s3); border-left: 3px solid var(--hairline); color: var(--graphite); }
-  blockquote p { margin: 0; font-size: 15px; line-height: 1.5; }
-  blockquote cite { display: block; font-style: normal; font-size: 13px; color: var(--graphite); margin-top: var(--s1); }
-  .fine { margin: var(--s4) 0 0; font: 400 13.5px/1.45 var(--text); color: var(--graphite); max-width: 46em; }
-
-  /* Footer */
-  .end-band {
-    padding-top: 0;
-    padding-bottom: var(--s7);
-  }
-  .end-band .in {
-    border-top: 3px solid var(--ink);
-    position: relative;
-    padding-top: var(--s5);
-  }
-  .end-band .in::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 3px;
-    height: 1px;
-    background: var(--ink);
-  }
-  .cross-link { margin: 0 0 var(--s2); font: 600 16px/1.4 var(--text); }
-  .cross-link a { display: inline-flex; align-items: center; min-height: 44px; }
-  .foot-meta { margin: 0; font: 400 15px/1.4 var(--text); color: var(--graphite); }
-  .foot-meta a { display: inline-flex; align-items: center; min-height: 44px; }
-
-  /* Responsive Breakpoints */
-  @media (max-width: 767px) {
-    .q-note, .fine, .small, .promise .fine, #care-quotes blockquote p, blockquote p, .foot-meta { font-size: 16px; }
-    .trustbar p { font-size: 13px; }
-    .letter { padding: var(--s4); }
-  }
+  /* The flight checker in the TF12 look (tokens in ../site.css). Questions on the left, the answer on the right. */
+  .fl-hero { padding: 18px 0 4px; }
+  .fl-hero h1 { margin: 0 0 8px; }
+  .fl-hero .lede { margin: 0 0 4px; font-size: 18px; max-width: 34em; }
+  .fl { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; margin-top: 12px; }
+  .fl-form { background: var(--sheet); border-radius: var(--rad); box-shadow: var(--lift); padding: 20px; margin: 0; min-width: 0; }
+  .q { margin: 0; padding: 0; border: 0; }
+  .q + .q { margin-top: 22px; }
+  .q-label { font: 700 21px/1.2 var(--head); letter-spacing: -0.01em; margin: 0 0 10px; display: block; color: var(--ink); }
+  .q-label .n { display: inline-block; min-width: 1.6em; color: var(--ink-2); font-weight: 600; }
+  .q-note { margin: 8px 0 0; font: 400 15px/1.45 var(--text); color: var(--ink-2); }
+  .q-note a { font-weight: 700; display: inline-flex; align-items: center; min-height: 44px; }
+  .opts { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
+  .opts-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .opt-btn { position: relative; font: 600 16px/1.25 var(--text); color: var(--ink); background: var(--sheet); border: 1.5px solid var(--rule-2); border-radius: var(--ctl); padding: 12px 40px 12px 14px; min-height: 56px; min-width: 0; text-align: left; cursor: pointer; display: flex; align-items: center; transition: border-color var(--t-tap) var(--ease-out), background-color var(--t-tap) var(--ease-out), transform var(--t-tap) var(--ease-press); }
+  .opt-btn:hover { border-color: var(--ink); }
+  .opt-btn:active { transform: scale(0.96); }
+  .opt-btn .tick { position: absolute; right: 12px; top: 50%; width: 20px; height: 20px; margin-top: -10px; border: 1.5px solid var(--rule-2); border-radius: 50%; background: var(--sheet); }
+  .opt-btn[aria-pressed="true"] { border: 2px solid var(--ink); background: #F4F6F7; padding: 11.5px 39.5px 11.5px 13.5px; }
+  .opt-btn[aria-pressed="true"] .tick { border-color: var(--ink); background: var(--ink); }
+  .opt-btn[aria-pressed="true"] .tick::after { content: ""; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border-right: 2px solid var(--sheet); border-bottom: 2px solid var(--sheet); transform: rotate(45deg); }
+  .opt-btn small { display: block; font: 400 13.5px/1.3 var(--text); color: var(--ink-2); margin-top: 2px; }
+  .airline-select { font: 400 17px/1.3 var(--text); color: var(--ink); background: var(--sheet); border: 1.5px solid var(--rule-2); border-radius: var(--ctl); padding: 10px 12px; min-height: 48px; width: 100%; max-width: 24em; cursor: pointer; }
+  .fl-reset { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+  /* the answer panel */
+  .fl-ans { min-width: 0; }
+  .ans-sheet { position: relative; background: var(--sheet); border-radius: var(--rad); box-shadow: var(--lift); padding: 20px; }
+  .ans-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: -4px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); font: 700 14px/1.3 var(--text); color: var(--ink-2); }
+  .ans-head .sample-tag[hidden] { display: none; }
+  .rule-block + .rule-block { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .rule-block h2 { font: 700 15px/1.3 var(--text); color: var(--ink-2); margin: 0 0 8px; }
+  .vrow { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 2px 14px; margin: 0 0 10px; }
+  .vrow .k { font: 700 16px/1.35 var(--text); }
+  .vrow .v { font: 700 22px/1.1 var(--head); grid-row: span 2; }
+  .vrow .v { grid-row: auto; }
+  .vrow p { grid-column: 1 / -1; margin: 0; font: 400 15.5px/1.5 var(--text); }
+  .verdict-yes { box-shadow: inset 0 -3px 0 var(--ink); }
+  .ans-sheet .stamp { margin: 0 0 10px 14px; }
+  .stamp small { display: block; font: 600 11.5px/1.2 var(--text); margin-top: 3px; }
+  .req { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rule); }
+  .req h2 { font: 700 19px/1.2 var(--head); margin: 0 0 8px; }
+  pre.claim { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 400 15.5px/1.6 var(--text); color: var(--ink); background: #F7F8F9; border-radius: var(--rad); padding: 14px 16px; max-height: 24em; overflow: auto; }
+  pre.claim mark { background: linear-gradient(to top, transparent 0.1em, var(--hi) 0.1em, var(--hi) 0.78em, transparent 0.78em); color: var(--ink); padding: 0 2px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 12px; }
+  .row a { font-weight: 700; display: inline-flex; align-items: center; min-height: 44px; }
+  /* below the two columns */
+  .more { display: grid; gap: 0 24px; grid-template-columns: minmax(0, 1fr); margin-top: 8px; }
+  .more section { min-width: 0; }
+  .promise { background: var(--sheet); border-radius: var(--rad); box-shadow: var(--lift); padding: 16px 20px; margin: 24px 0 0; }
+  .promise h2 { margin-top: 0; }
+  .clean-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 42em; }
+  .quotes { display: grid; gap: 10px; max-width: 46em; }
+  .sources { margin-top: 24px; }
+  .fine { margin: 14px 0 0; font: 400 14.5px/1.45 var(--text); color: var(--ink-2); max-width: 46em; }
   @media (max-width: 479px) {
-    .primary { width: 100%; }
+    .opts-3 { grid-template-columns: 1fr; }
+    .opts-3 .opt-btn { min-height: 48px; }
+    .vrow { grid-template-columns: minmax(0, 1fr) auto; }
   }
-  @media (min-width: 768px) {
-    .brand, .brand:visited { font-size: 36px; }
-    h1 { font-size: 44px; line-height: 1.0; }
-    .lede { font-size: 18px; }
-    .q-label, .step h2, .sources h2, .block h2 { font-size: 26px; }
-  }
+  @media (max-width: 899px) { .fl-form, .ans-sheet { padding: 16px; } .fl-hero .lede { font-size: 17px; } }
+  @media (max-width: 599px) { .ans-sheet .stamp { float: none; display: inline-block; margin: 0 0 14px; } .ans-head { flex-wrap: wrap; } }
   @media (min-width: 900px) {
-    :root { --gut: 28px; }
-    .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
-    .card { padding: var(--s4) 24px 0 0; }
-    .card:nth-child(2), .card:nth-child(3) { padding-left: 24px; border-left: 1px solid var(--hairline); }
-    .card:nth-child(3) { padding-right: 0; }
+    .fl { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
+    .fl-form { grid-column: 1 / span 5; padding: 24px; }
+    .fl-ans { grid-column: 6 / span 7; }
+    .ans-sheet { padding: 28px 32px; }
+    .more { grid-template-columns: 1fr 1fr; }
   }
-  @media (min-width: 1024px) {
-    h1 { font-size: 52px; line-height: 1.0; }
-  }
-  @media (min-width: 1200px) {
-    :root { --gut: 32px; }
-    .top .in { padding-top: 16px; padding-bottom: 10px; }
-    .brand, .brand:visited { font-size: 44px; }
-    .hero { padding-top: 24px; }
-    h1 { font-size: 56px; line-height: 1.0; }
-    .lede { font-size: 19px; line-height: 1.4; }
-    .sheet { --pad: 24px; }
-  }
-  @media (min-width: 1280px) {
-    h1 { font-size: 64px; line-height: 1.0; }
-  }
-
-  /* Reduced Motion */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation: none !important;
-      transition: none !important;
-    }
-  }
-
+  @media (prefers-reduced-motion: reduce) { .opt-btn { transition: none; } }
   [hidden][hidden] { display: none; }
 </style>
 <link rel="stylesheet" href="../site.css">
-<link rel="stylesheet" href="../credit/credit.css">
 </head>
 <body>
 <header class="top">
@@ -487,44 +100,58 @@
   <div class="trustbar"><p>Not legal advice, and free: what you type stays in your browser, and you send every letter yourself.</p></div>
 </header>
 
-<main>
-  <div class="in hero">
-    <h1>Flight cancelled or delayed? See what you can ask for.</h1>
-    <p class="lede">Two or three taps. It covers the US refund rule and the EU passenger regulation, for tickets bought from the airline.</p>
+<main class="in">
+  <div class="fl-hero">
+    <h1>Flight cancelled or delayed?</h1>
+    <p class="lede">What the US refund rule and the EU passenger regulation let you ask for, on a ticket bought from the airline.</p>
   </div>
 
-  <div class="in">
-    <form class="sheet" id="flight-form" novalidate aria-label="Questions about your flight">
-      <div class="tag-stripe" aria-hidden="true"></div>
+  <div class="fl">
+    <form class="fl-form" id="flight-form" novalidate aria-label="Questions about your flight">
       <div class="q" role="group" aria-labelledby="q1-l">
         <p class="q-label" id="q1-l">What happened?</p>
-        <div class="opts opts-2">
-          <button type="button" class="opt-btn" data-q="what" data-val="cancelled" aria-pressed="false"><span>Cancelled</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="what" data-val="delayed" aria-pressed="false"><span>Delayed</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
+        <div class="opts">
+          <button type="button" class="opt-btn" data-q="what" data-val="cancelled" aria-pressed="false"><span>Cancelled</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="what" data-val="delayed" aria-pressed="false"><span>Delayed</span><i class="tick" aria-hidden="true"></i></button>
         </div>
       </div>
 
       <div class="q" id="q-hours" role="group" aria-labelledby="q2-l" hidden>
         <p class="q-label" id="q2-l">How long is the delay?</p>
-        <div class="opts opts-4">
-          <button type="button" class="opt-btn" data-q="hours" data-val="lt3" aria-pressed="false"><span>Under 3 hours</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="hours" data-val="3to5" aria-pressed="false"><span>3 to under 5 hours</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="hours" data-val="5to6" aria-pressed="false"><span>5 to under 6 hours</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="hours" data-val="ge6" aria-pressed="false"><span>6 hours or more</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
+        <div class="opts">
+          <button type="button" class="opt-btn" data-q="hours" data-val="lt3" aria-pressed="false"><span>Under 3 hours</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="hours" data-val="3to5" aria-pressed="false"><span>3 to under 5 hours</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="hours" data-val="5to6" aria-pressed="false"><span>5 to under 6 hours</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="hours" data-val="ge6" aria-pressed="false"><span>6 hours or more</span><i class="tick" aria-hidden="true"></i></button>
         </div>
         <p class="q-note">For the US rule, count how late you reach your destination. For the EU rule, count how late the flight leaves.</p>
       </div>
 
-      <div class="q" role="group" aria-labelledby="q3-l">
-        <p class="q-label" id="q3-l">Which flight?</p>
-        <div class="opts opts-1 opts-routes">
-          <button type="button" class="opt-btn" data-q="route" data-val="us-dom" aria-pressed="false"><span>Within the US</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="route" data-val="us-intl" aria-pressed="false"><span>Between the US and another country</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="route" data-val="eu-dep" aria-pressed="false"><span>Leaves from an airport in the EU</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="route" data-val="eu-arr" aria-pressed="false"><span>Flies into the EU on an EU airline</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
-          <button type="button" class="opt-btn" data-q="route" data-val="other" aria-pressed="false"><span>None of these</span><svg class="punch" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle class="ring" cx="8" cy="8" r="7.25"/><circle class="dot" cx="8" cy="8" r="4"/></svg></button>
+      <div class="q" id="q-from" role="group" aria-labelledby="q3-l" hidden>
+        <p class="q-label" id="q3-l">Where did the flight leave from?</p>
+        <div class="opts opts-3">
+          <button type="button" class="opt-btn" data-q="from" data-val="us" aria-pressed="false"><span>The US</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="from" data-val="eu" aria-pressed="false"><span>The EU</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="from" data-val="other" aria-pressed="false"><span>Somewhere else</span><i class="tick" aria-hidden="true"></i></button>
         </div>
-        <p class="q-note">If your flight is between the EU and the US, both rules can apply. Tap the EU choice, read the answer, then tap the US choice to see the other.</p>
+      </div>
+
+      <div class="q" id="q-to" role="group" aria-labelledby="q4-l" hidden>
+        <p class="q-label" id="q4-l">Where was it going?</p>
+        <div class="opts opts-3">
+          <button type="button" class="opt-btn" data-q="to" data-val="us" aria-pressed="false"><span>The US</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="to" data-val="eu" aria-pressed="false"><span>The EU</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="to" data-val="other" aria-pressed="false"><span>Somewhere else</span><i class="tick" aria-hidden="true"></i></button>
+        </div>
+      </div>
+
+      <div class="q" id="q-euair" role="group" aria-labelledby="q6-l" hidden>
+        <p class="q-label" id="q6-l">Did an EU airline fly it?</p>
+        <div class="opts">
+          <button type="button" class="opt-btn" data-q="euair" data-val="yes" aria-pressed="false"><span>Yes</span><i class="tick" aria-hidden="true"></i></button>
+          <button type="button" class="opt-btn" data-q="euair" data-val="no" aria-pressed="false"><span>No</span><i class="tick" aria-hidden="true"></i></button>
+        </div>
+        <p class="q-note">Flying into the EU, the EU regulation covers you only when an EU airline operates the flight.</p>
       </div>
 
       <div class="q" id="q-airline" role="group" aria-labelledby="q5-l" hidden>
@@ -546,51 +173,37 @@
         <p class="q-note"><a href="airlines/">Compare 9 of these airlines side by side</a> (the dashboard's table has no column for Spirit)</p>
       </div>
 
-      <div class="tear" aria-hidden="true"></div>
-
-      <div class="actions">
-        <button type="button" class="second" id="reset-btn">Start over</button>
-      </div>
+      <div class="fl-reset"><button type="button" class="second" id="reset-btn">Start over</button></div>
     </form>
+
+    <div class="fl-ans" id="answers" aria-live="polite">
+      <div class="ans-sheet">
+        <div class="ans-head"><span class="sample-tag" id="ans-tag">Sample answer</span><span id="ans-what">A cancelled flight within the US</span></div>
+        <div class="stamp" id="ans-stamp" hidden><span>Refund due</span><b></b><small></small></div>
+        <div id="ans-rules"></div>
+        <section class="req" id="letter-wrap" aria-labelledby="h-letter" hidden>
+          <h2 id="h-letter">Refund request</h2>
+          <pre class="claim" id="claim" tabindex="0" aria-label="Your request text"></pre>
+          <div class="row">
+            <button type="button" class="cta" id="copy-btn" hidden>Copy request</button>
+            <span class="small" id="copy-state" aria-live="polite"></span>
+            <a href="../letters/flight-refund/">Fill in your flight details and mark the date</a>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 
-  <div id="answers" aria-live="polite" hidden>
-    <section class="step" aria-label="Answers">
-      <div class="in">
-        <div class="cards">
-          <article class="card" id="card-refund">
-            <h2>A refund of the ticket</h2>
-            <p class="verdict" id="v-refund"></p>
-            <p id="t-refund"></p>
-          </article>
-          <article class="promise" id="card-airline" hidden>
-            <h2>What your airline has promised</h2>
-            <div id="t-airline"></div>
-          </article>
-        </div>
-      </div>
-    </section>
+  <article class="promise" id="card-airline" hidden>
+    <h2>What your airline has promised</h2>
+    <div id="t-airline"></div>
+  </article>
 
-    <section class="step tinted" id="letter-wrap" aria-labelledby="h-letter" hidden>
-      <div class="in">
-        <h2 id="h-letter">Refund request</h2>
-        <div class="letter"><pre class="claim" id="claim" tabindex="0" aria-label="Your request text"></pre></div>
-        <div class="row">
-          <button type="button" class="primary" id="copy-btn">Copy request</button>
-          <span class="small" id="copy-state" aria-live="polite"></span>
-        </div>
-        <p><a href="../letters/flight-refund/">Fill in the blanks with your flight details, and mark the date the airline's refund window ends</a></p>
-      </div>
-    </section>
-
-    <section class="step" aria-label="More answers">
-      <div class="in">
-        <div class="cards">
-          <article class="card" id="card-care">
-            <h2>Meals and a hotel</h2>
-            <p class="verdict" id="v-care"></p>
-            <p id="t-care"></p>
-            <div id="care-quotes" hidden>
+  <div class="more">
+    <section id="extra-wrap" aria-labelledby="h-extra" hidden>
+      <h2 id="h-extra">Good to know</h2>
+      <ul class="clean-list" id="extra-list"></ul>
+      <div id="care-quotes" class="quotes" hidden>
               <blockquote>
                 <p>“A controllable flight cancellation or delay is essentially a delay or cancellation caused by the airline. Examples include: maintenance or crew problems; cabin cleaning; baggage loading; and fueling.”</p>
                 <cite>US Department of Transportation, Airline Cancellation and Delay Dashboard</cite>
@@ -600,35 +213,21 @@
                 <cite>US Department of Transportation, Airline Cancellation and Delay Dashboard</cite>
               </blockquote>
             </div>
-          </article>
-        </div>
-
-        <div class="block" id="extra-wrap">
-          <h2>Good to know</h2>
-          <ul class="clean-list" id="extra-list"></ul>
-        </div>
-      </div>
     </section>
-
-
-    <section class="step" aria-labelledby="h-keep">
-      <div class="in">
-        <div class="block" style="margin-top: 0;">
-          <h2 id="h-keep">What to keep</h2>
-          <ul class="clean-list">
-            <li>The cancellation or delay notice (screenshot the app or the email).</li>
-            <li>Your booking confirmation and ticket number.</li>
-            <li>Receipts for meals, hotel and transport.</li>
-            <li>The times: scheduled and actual departure and arrival.</li>
-            <li>Any offer of rebooking or a voucher, and what you answered.</li>
-          </ul>
-        </div>
-      </div>
+    <section aria-labelledby="h-keep">
+      <h2 id="h-keep">What to keep</h2>
+      <ul class="clean-list">
+        <li>The cancellation or delay notice (screenshot the app or the email).</li>
+        <li>Your booking confirmation and ticket number.</li>
+        <li>Receipts for meals, hotel and transport.</li>
+        <li>The times: scheduled and actual departure and arrival.</li>
+        <li>Any offer of rebooking or a voucher, and what you answered.</li>
+      </ul>
     </section>
   </div>
 
   <section class="sources" id="sources" aria-labelledby="h-sources">
-    <div class="in">
+    <div>
       <h2 id="h-sources">The rules' own words</h2>
       <div class="quotes">
         <blockquote>
