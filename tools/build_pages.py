@@ -701,7 +701,7 @@ def label_tables(content: str) -> str:
 
 TAGLINE = "Money you may be owed, and the letter to ask for it."   # DESIGN.md headline candidate 2; CoS default, open for Zach
 TRUST_LINE = "Not legal advice, and free: what you type stays in your browser, and you send every letter yourself."
-TABS = [("credit/", "Outage at work"), ("flights/", "Flight"), ("letters/security-deposit/", "Deposit"), ("letters/final-paycheck/", "Paycheck")]
+TABS = [("letters/security-deposit/", "Deposit"), ("flights/", "Flight"), ("letters/final-paycheck/", "Paycheck"), ("credit/", "Outage at work")]
 MORE = [("letters/", "All letters"), ("rules/", "Rule book"), ("guides/", "Guides"), ("sla/", "Vendor SLAs"), ("about.html", "About this site")]
 
 

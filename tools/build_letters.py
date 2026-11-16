@@ -361,7 +361,7 @@ def letter_page(L) -> str:
     <p class="crumb"><a href="../">Letters</a> / {esc(L['h1'])}</p>
     <h1>{esc(L['h1'])}</h1>
     <p class="lede">{esc(L['lede'])}</p>
-    <p class="phone-only"><a class="cta-sec" href="#lt-form">{'Pick the vendor and the date' if L.get('sampleOnly') else 'Type your details'}</a></p>
+    <p class="phone-only"><a class="cta-sec" href="#lt-form">{'Pick the vendor and the date' if L.get('sampleOnly') else 'Make it yours'}</a></p>
   </div>
   <div class="desk">
     <form class="lf-col no-print" id="lt-form" novalidate onsubmit="return false" aria-label="Your details">
@@ -494,10 +494,10 @@ def rules_page(rows) -> str:
 """ + tail(p)
 
 
-HUB_ROWS = [("credit/", "outage", "An outage at work", "A service credit from Microsoft 365, Google Workspace, Atlassian or GitHub", "Microsoft 365 claims close 31 Dec", "2026-12-31", "Credit tables for 4 vendors"),
+HUB_ROWS = [("letters/security-deposit/", "deposit", "A deposit not returned", "The landlord's deadline in seven states", "14 to 30 days, 7 states", "", ""),
             ("flights/", "flight", "A flight cancelled or delayed", "A refund under the US rule or the EU regulation", "EU refund within 7 days", "", ""),
-            ("letters/security-deposit/", "deposit", "A deposit not returned", "The landlord's deadline in seven states", "14 to 30 days, 7 states", "", ""),
-            ("letters/final-paycheck/", "paycheck", "A final paycheck not paid", "When final wages are due in six states", "Deadlines in 6 states", "", "")]
+            ("letters/final-paycheck/", "paycheck", "A final paycheck not paid", "When final wages are due in six states", "Deadlines in 6 states", "", ""),
+            ("credit/", "outage", "An outage at work", "A service credit from Microsoft 365, Google Workspace, Atlassian or GitHub", "Microsoft 365 claims close 31 Dec", "2026-12-31", "Credit tables for 4 vendors")]
 # The hub's sample letter can show any of the four. Tab label, letter, what the head says, the step its button counts.
 HUB_SAMPLES = [("Deposit", "security-deposit", "A deposit letter, filled in", "hub-deposit"),
                ("Flight", "flight-refund", "A flight refund request, filled in", "hub-flight"),
@@ -546,6 +546,7 @@ def hub_page(rows_all: list) -> str:
     <div class="ask">
       <h1>What happened?</h1>
       <p class="lede">Pick one. You get a finished sample letter, the deadline from the rule, and the rule's own words.</p>
+      <p class="maker">An independent site, made by one person. Every rule is quoted word for word from its source.</p>
       <ul class="happened">{"".join(rows)}</ul>
       <p class="strip" data-until="20261231"><span><b>Microsoft 365 outage, 12 November:</b> claims due by 31 December 2026<span class="hedge">, by this site's reading of the SLA</span>.</span> <a href="credit/" data-step="hub-outage">Work out your credit</a></p>
       <p class="proof">{nrules} rules behind these letters, each quoted word for word with its source and date, last checked {esc(when)}. Written and checked by one independent developer. <a href="rules/">The rule book</a> <a href="about.html#facts">How facts are checked</a></p>

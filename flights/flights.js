@@ -564,6 +564,7 @@
       if (lead) lead.textContent = leadLine(all, real);
 
       $("ans-tag").hidden = real;
+      var sheet = document.querySelector(".ans-sheet"); if (sheet) sheet.classList.toggle("is-example", !real);
       $("ans-what").textContent = describe(st);
 
       // the stamp: the refund window the rule gives, once, when a refund is due
