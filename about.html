@@ -8,8 +8,8 @@
 <meta name="description" content="Downtime Credit is an independent project. How its quotes are sourced and checked, which agreements it has read and when, and how to report an error.">
 <link rel="canonical" href="https://www.downtimecredit.com/about.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face { font-family: "DM Serif DC"; src: url("fonts/dm-serif-display-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
   @font-face { font-family: "Hanken DC"; src: url("fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
@@ -121,13 +121,15 @@
   .guide .hero { padding-bottom: 0; margin-bottom: 0; }
   .guide p, .guide li { max-width: 46em; }
 </style>
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
 <header class="top">
-  <div class="in"><a class="brand" href="./">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
+  <div class="in"><a class="brand" href="./">Downtime <b>Credit</b></a>
+    <nav class="tabs" aria-label="Site"><a href="credit/">Outage at work</a><a href="flights/">Flight</a><a href="letters/security-deposit/">Deposit</a><a href="letters/final-paycheck/">Paycheck</a><details class="more"><summary>More</summary><div class="drop"><a href="letters/">All letters</a><a href="rules/">Rule book</a><a href="guides/">Guides</a><a href="sla/">Vendor SLAs</a><a href="about.html">About this site</a></div></details></nav>
+    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b><a href="credit/">Outage at work</a><a href="flights/">Flight</a><a href="letters/security-deposit/">Deposit</a><a href="letters/final-paycheck/">Paycheck</a><b>More</b><a href="letters/">All letters</a><a href="rules/">Rule book</a><a href="guides/">Guides</a><a href="sla/">Vendor SLAs</a><a href="about.html">About this site</a></nav></details></div>
+  <div class="trustbar"><p>Not legal advice, and free: what you type stays in your browser, and you send every letter yourself.</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="./">Outage calculator</a><a href="sla/">Vendor SLAs</a><a href="guides/">Guides</a><a href="about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
     <p class="crumb"><a href="./">Downtime Credit</a> / Who runs this</p>
@@ -136,7 +138,7 @@
 
   <h2>Who runs this</h2>
   <p>Downtime Credit is an independent project run by one developer. It is not a law firm, it gives no legal advice, and it has no link to any vendor or airline. The tool is free. The site may show ads, which pay for it.</p>
-  <h2>How the quotes are sourced</h2>
+  <h2 id="facts">How the quotes are sourced</h2>
   <p>Every quotation comes from the agreement it names. We open the agreement in a real browser, copy the clause word for word, and save the text. A test checks every quotation on the site against the saved text before a page goes live. Each page shows the date we last read the source.</p>
   <h2>What is our reading</h2>
   <p>Text outside a quotation is this site's reading. That includes the summaries, the minutes of downtime that reach each credit tier, the deadlines we compute, and the steps in the guides. Each page says so. The vendor decides every claim.</p>
@@ -149,10 +151,16 @@
 
   </div>
 </main>
-<footer>
+<footer class="site">
   <div class="in">
-    <p>Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. Not a law firm. No link to any vendor.</p>
-    <p><a href="./">Calculator</a> &middot; <a href="guides/">Guides</a> &middot; <a href="sla/">Vendor SLAs</a> &middot; <a href="flights/">Flight refunds</a> &middot; <a href="privacy.html">Privacy</a></p>
+    <div class="cols">
+      <section><h2>Letters</h2><ul><li><a href="letters/service-credit/">Service credit after an outage</a></li><li><a href="letters/flight-refund/">Flight refund</a></li><li><a href="letters/security-deposit/">Security deposit</a></li><li><a href="letters/final-paycheck/">Final paycheck</a></li></ul></section>
+      <section><h2>Tools</h2><ul><li><a href="credit/">Outage credit calculator</a></li><li><a href="flights/" data-to-flights>Flight refund checker</a></li><li><a href="rules/">Rule book and CSV</a></li><li><a href="sla/">Vendor SLAs</a></li></ul></section>
+      <section><h2>Guides</h2><ul><li><a href="guides/">All guides</a></li><li><a href="guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>
+      <section><h2>This site</h2><ul><li><a href="about.html">About this site</a></li><li><a href="about.html#facts">How we check facts</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>
+    </div>
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Not legal advice. This site files nothing for you; you send every letter yourself.</p>
   </div>
 </footer>
 </body>

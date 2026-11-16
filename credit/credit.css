@@ -1,0 +1,43 @@
+/* The outage credit tool in the TF12 look. Loaded after the page's own styles and site.css. */
+.f input, .f select, .f textarea, .daysin { font: 400 18px/1.25 var(--text); color: var(--ink); letter-spacing: 0; border: 1.5px solid var(--rule-2); border-radius: var(--ctl); }
+.f textarea { font: 400 17px/1.45 var(--text); }
+.f input:focus, .f select:focus, .f textarea:focus { border-color: var(--ink); }
+.is-example .fields input:not([type="radio"]):not([type="checkbox"]), .is-example .fields select { background: #FAFCE0; color: var(--ink); border-left: 1.5px solid var(--rule-2); box-shadow: inset 0 -3px 0 var(--hi); }
+.exflag { color: var(--ink); background: #FAFCE0; border-left: 3px solid var(--hi); }
+.cdex { color: var(--ink); }
+.pick { border: 0; background: transparent; gap: 6px; }
+.pick button { background: var(--sheet); border-radius: var(--ctl); min-height: 48px; box-shadow: 0 1px 1px rgba(17, 26, 34, .08); }
+.pick button + button { border-top: 0; }
+.pick button:not([aria-pressed="true"]):hover { background: #F4F6F7; }
+.pick [aria-pressed="true"] { background: var(--sheet); box-shadow: inset 0 0 0 2px var(--ink); }
+.pick [aria-pressed="true"]::before { background: var(--ink); border-color: var(--ink); box-shadow: inset 0 0 0 2.5px var(--sheet); }
+.opt input[type="radio"], .chk input[type="checkbox"] { accent-color: var(--ink); }
+/* the deadline is the one stamp on the page */
+.deadline { border-left: 4px solid var(--stamp); background: var(--sheet); padding: 12px 14px 12px 16px; border-radius: 0 var(--rad) var(--rad) 0; box-shadow: var(--lift); }
+.cal b { color: var(--stamp); font: 700 56px/0.9 var(--head); }
+.cal span { font: 700 22px/1.05 var(--head); }
+.deadline.passed { border-left-color: var(--ink-2); }
+.result, #own-res > .r-empty, #g-out > .r-empty { background: #F4F6F7; border-top: 0; border-bottom: 0; }
+.r-line .amt { font: 700 48px/1.02 var(--head); border-bottom: 0; background: linear-gradient(to top, transparent 4%, var(--hi) 4%, var(--hi) 34%, transparent 34%); padding: 0 3px; }
+.r-err { border-left-color: var(--stamp); }
+.step h2.sec { font: 700 clamp(24px, 2.6vw, 30px)/1.12 var(--head); border-top: 0; padding-top: 8px; }
+.step h3, .sh h2, .flightcard h2 { font-family: var(--head); font-weight: 700; }
+.tinted, .tinted.blue { background: transparent; }
+pre.claim { font: 400 16px/1.6 var(--text); }
+pre.claim mark { background: var(--hi); border-bottom: 0; font-weight: 400; padding: 0 2px; }
+.ask { color: var(--ink); background: var(--sheet); }
+.dangerlink:hover { color: var(--stamp); }
+.zone, .late { background: var(--sheet); }
+footer.site .srcs { margin-top: 14px; }
+footer.site .srcs ul { list-style: disc; padding-left: 1.2em; }
+footer.site .srcs li { color: #C9D1D6; font-size: 14.5px; }
+.flightcard { border-top: 0; }
+header.top details.more { margin: 0; font-size: inherit; }
+@media (max-width: 767px) { .hero .intro > .pick { gap: 6px 8px; } }
+@media (max-width: 767px) { .hero .intro > .pick { grid-template-columns: 1fr; } .hero .intro > .pick button:last-child { grid-column: auto; } }
+.saved-link { margin: 4px 0 0; }
+.saved-link a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
+@media (max-width: 767px) { .intro > .saved-link { order: 7; } }
+/* the stamp shows once (the countdown); the send section repeats the date in ink on a sheet */
+.sendbox { background: var(--sheet); border-radius: var(--rad); box-shadow: var(--lift); padding: 14px 16px; }
+#send .cal b { color: var(--ink); }

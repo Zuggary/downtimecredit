@@ -1084,8 +1084,8 @@
     $("statement").setAttribute("data-ready", "1");
   }
   function load() {
-    fetch("vendors/index.json").then(function (r) { if (!r.ok) throw new Error("index"); return r.json(); }).then(function (idx) {
-      return Promise.all(idx.vendors.map(function (f) { return fetch("vendors/" + f).then(function (r) { if (!r.ok) throw new Error(f); return r.text(); }); })).then(function (t) {
+    fetch("../vendors/index.json").then(function (r) { if (!r.ok) throw new Error("index"); return r.json(); }).then(function (idx) {
+      return Promise.all(idx.vendors.map(function (f) { return fetch("../vendors/" + f).then(function (r) { if (!r.ok) throw new Error(f); return r.text(); }); })).then(function (t) {
         var texts = {}; idx.vendors.forEach(function (f, i) { texts[f] = t[i]; });
         var l = E.loadVendors(idx, texts);
         if (l.rejected.length && window.console) console.warn("vendor files rejected", l.rejected);

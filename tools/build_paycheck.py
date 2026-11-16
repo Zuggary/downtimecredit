@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
 import build_surplus as bs
+import letter_rules as lr
 ROOT = bp.ROOT; READ = bs.READ; q = bs.q; esc = bp.esc
 SRC = {
  "ca": ("California Labor Code §§201 and 202", "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=LAB&sectionNum=201"),
@@ -94,17 +95,48 @@ LETTER = r"""
 }());
 </script>
 """
+
+ROWS = [
+ ("California", "Discharged: immediately, with some exceptions (for example seasonal layoffs and state employers). Quit, for an employee without a written contract for a definite period: not later than 72 hours after quitting, or at the time of quitting if 72 hours of notice was given.", "ca"),
+ ("Michigan", "Discharged: immediately, as soon as the amount can with due diligence be determined. Quit: as soon as the amount can with due diligence be determined. The statute sets different rules for some contract employees and hand-harvest workers.", "mi"),
+ ("New York", "Not later than the regular pay day for the pay period during which the termination occurred.", "ny"),
+ ("North Carolina", "On or before the next regular payday.", "nc"),
+ ("Texas", "Discharged: not later than the sixth day after discharge. Left other than by discharge: not later than the next regularly scheduled payday.", "tx"),
+ ("Washington", "At the end of the established pay period, with exceptions for some multi-employer industry plans and some labor-management agreements.", "wa"),
+]
+
+DUE_BOX = """
+<section id="due" aria-labelledby="h-due">
+  <h2 id="h-due">Mark the date</h2>
+  <p>Pick the state and how the job ended. Where the statute gives a day count, this works it out from your last day. Where it names a payday, type that payday to save it. Where it says "immediately" or names no day, this says so. It runs in your browser; nothing is sent.</p>
+  <div class="hform">
+    <div class="f"><label for="m-state">State where you worked</label><select id="m-state"><option value="">Choose a state</option><option value="ca">California</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="tx">Texas</option><option value="wa">Washington</option><option value="other">Another state</option></select></div>
+    <div class="f"><label for="m-how">How the job ended</label><select id="m-how"><option value="">Choose</option><option value="discharged">I was let go</option><option value="quit">I left</option></select></div>
+    <div class="f"><label for="m-end">Your last day of work</label><input id="m-end" type="date" autocomplete="off"></div>
+    <div class="f"><label for="m-payday">Next regular payday, if your state's rule uses it</label><input id="m-payday" type="date" autocomplete="off"></div>
+  </div>
+  <p class="due-out" id="m-txt" role="status">Pick a state to see the deadline.</p>
+  <p><button type="button" class="cta-sec" id="m-cal" hidden>Save the date to your calendar</button></p>
+  <p class="fine">The <a href="../../letters/final-paycheck/">final pay letter</a> stamps the same date on the letter. This site's count, not legal advice.</p>
+</section>
+<script src="../../engine.js"></script>
+<script src="../../letters/letter.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.DTC;
+  """ + lr.pay_vars() + """
+  LETTER.dueBox({ out: "m-txt", cal: "m-cal", uid: "final-pay", empty: "Pick a state to see the deadline.", fields: [{ id: "m-state", key: "state" }, { id: "m-how", key: "how" }, { id: "m-end", key: "end", date: true }, { id: "m-payday", key: "payday", date: true }],
+    due: """ + lr.PAY_DUE_JS + """ });
+}());
+</script>
+"""
+
+
 def sec(k, name, intro, quotes, note=""):
     return f'  <h2 id="p-{k}">{esc(name)}</h2>\n  <p>{intro}</p>\n  {"".join(quotes)}\n  {note}\n'
 def page():
-    rows = [
-     ("California", "Discharged: immediately, with some exceptions (for example seasonal layoffs and state employers). Quit, for an employee without a written contract for a definite period: not later than 72 hours after quitting, or at the time of quitting if 72 hours of notice was given.", "ca"),
-     ("Michigan", "Discharged: immediately, as soon as the amount can with due diligence be determined. Quit: as soon as the amount can with due diligence be determined. The statute sets different rules for some contract employees and hand-harvest workers.", "mi"),
-     ("New York", "Not later than the regular pay day for the pay period during which the termination occurred.", "ny"),
-     ("North Carolina", "On or before the next regular payday.", "nc"),
-     ("Texas", "Discharged: not later than the sixth day after discharge. Left other than by discharge: not later than the next regularly scheduled payday.", "tx"),
-     ("Washington", "At the end of the established pay period, with exceptions for some multi-employer industry plans and some labor-management agreements.", "wa"),
-    ]
+    rows = ROWS
     tbl = "".join(f'<tr><th scope="row"><a href="#p-{k}">{n}</a></th><td>{d}</td><td><a href="{esc(SRC[k][1])}" rel="noopener">{esc(SRC[k][0])}</a></td></tr>' for n, d, k in rows)
     secs = "".join([
      sec("ca", "California", "California has one rule for an employer that discharges an employee and a different rule for an employee who quits.", [Q["ca1"], Q["ca2"]], "<p>The sections have more provisions, for example for some seasonal work and state employers. This site quoted the main rules and did not summarize the rest.</p>"),
@@ -119,7 +151,7 @@ def page():
     <p><b>Start here.</b> Find the state where you worked, read when final pay is due, then build a letter asking for it.</p>
     <p class="fine">This site cannot say whether your employer owes you money or how much. The statutes have exceptions and extra rules. This page is information, not legal advice. A state labor agency, a legal aid office or a lawyer can tell you your options.</p>
   </div>
-  <p><a href="#p-ca">Jump to the state rules</a> &middot; <a href="#helper">Jump to the letter builder</a> &middot; <a href="#not-listed">Your state not listed?</a></p>
+  <ul class="jumps"><li><a href="#p-ca">The state rules</a></li><li><a href="#helper">The letter builder</a></li><li><a href="#due">Mark the date</a></li><li><a href="#not-listed">Your state not listed?</a></li></ul>
 
   <h2>When final pay is due in six states</h2>
   <p>Each row shows the main timing rule this site read in the state's law. This page is about the timing of wages. The statutes have other provisions, for example on bonuses and commissions in some states, that this site did not summarize.</p>
@@ -127,6 +159,7 @@ def page():
   <p>This site's reading: whether you were discharged or you quit can change the deadline in some states. Keep a record of your last day and how the job ended.</p>
 
 {secs}
+{DUE_BOX}
 {LETTER}
 
   <h2>After you send it</h2>

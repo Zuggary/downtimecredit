@@ -226,7 +226,7 @@ def page_california():
   <div class="callout">
     <p><b>Start here.</b> The California DMV runs an official lookup, which it calls Lien Sale Excess Fees. Enter your plate number or the last 5 digits of the VIN to see if money is held for your car.</p>
     <p>Sold recently? The lienholder has 5 or 15 days after the sale to forward the money, and the DMV says its lookup data is refreshed on the 2nd business day of every month. If nothing shows yet, try again next month.</p>
-    <p><a class="cta" href="{DMV_LOOKUP}" rel="noopener" target="_blank">Open the DMV lookup &rarr;</a></p>
+    <p><a class="cta" href="{DMV_LOOKUP}" rel="noopener" target="_blank">Open the DMV lookup</a></p>
     <p class="fine">This site cannot look up your car and does not see what you type at the DMV. The DMV decides every claim. This page is information, not legal advice.</p>
   </div>
 

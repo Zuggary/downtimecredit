@@ -28,7 +28,7 @@ def page():
   <div class="callout">
     <p><b>Start here.</b> Two official searches can show old job-based retirement plans: the Department of Labor's Lost and Found Database and the Pension Benefit Guaranty Corporation's search. The Labor Department database covers private-sector employer and union plans. It does not cover IRAs or government plans. Use the official sites only.</p>
     <p>The Labor Department database asks for an identity check through Login.gov. The PBGC search asks only for your last name and the last four digits of your Social Security number.</p>
-    <p><a class="cta" href="{DOL}" rel="noopener" target="_blank">Open the Labor Department database &rarr;</a> <a class="cta-sec" href="{PBGC}" rel="noopener" target="_blank">Open the PBGC search &rarr;</a></p>
+    <p><a class="cta" href="{DOL}" rel="noopener" target="_blank">Open the Labor Department database</a> <a class="cta-sec" href="{PBGC}" rel="noopener" target="_blank">Open the PBGC search</a></p>
     <p class="fine">This site cannot look up your retirement plans and does not see what you type at those sites. A match is a first step, not proof that money is owed. This page is information, not legal or financial advice.</p>
   </div>
 
@@ -45,7 +45,7 @@ def page():
   {D4}
 
   <h2>The Pension Benefit Guaranty Corporation search</h2>
-  <p><a class="cta-sec" href="{PBGC}" rel="noopener" target="_blank">Open the PBGC search &rarr;</a></p>
+  <p><a class="cta-sec" href="{PBGC}" rel="noopener" target="_blank">Open the PBGC search</a></p>
   <p>This is a separate search. The page says it holds unclaimed benefits for people who were not paid when their retirement plan ended.</p>
   {P1}
   {P2}

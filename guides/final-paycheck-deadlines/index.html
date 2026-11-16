@@ -14,8 +14,8 @@
 <meta property="og:description" content="When an employer must pay final wages after a job ends in California, Michigan, New York, North Carolina, Texas and Washington, quoted from the statutes, with a letter builder.">
 <meta property="og:image" content="https://www.downtimecredit.com/og.png">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="preload" href="../../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"Final paycheck deadlines in six states","description":"When an employer must pay final wages after a job ends in California, Michigan, New York, North Carolina, Texas and Washington, quoted from the statutes, with a letter builder.","url":"https://www.downtimecredit.com/guides/final-paycheck-deadlines/","dateModified":"2026-11-14","inLanguage":"en","publisher":{"@type":"Organization","name":"Downtime Credit","url":"https://www.downtimecredit.com/"}}
 </script>
@@ -146,14 +146,17 @@
   @media print { header, nav, footer, .hform, #h-go, .cta-row, .callout { display: none; } #h-out { display: block !important; } }
 
 </style>
+<link rel="stylesheet" href="../../site.css">
 </head>
 <body>
 <header class="top">
-  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. Not affiliated with any agency named here. This site cannot look up your record or file a claim for you.</p></div>
+  <div class="in"><a class="brand" href="../../">Downtime <b>Credit</b></a>
+    <nav class="tabs" aria-label="Site"><a href="../../credit/">Outage at work</a><a href="../../flights/">Flight</a><a href="../../letters/security-deposit/">Deposit</a><a href="../../letters/final-paycheck/" aria-current="page">Paycheck</a><details class="more"><summary>More</summary><div class="drop"><a href="../../letters/">All letters</a><a href="../../rules/">Rule book</a><a href="../../guides/">Guides</a><a href="../../sla/">Vendor SLAs</a><a href="../../about.html">About this site</a></div></details></nav>
+    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b><a href="../../credit/">Outage at work</a><a href="../../flights/">Flight</a><a href="../../letters/security-deposit/">Deposit</a><a href="../../letters/final-paycheck/">Paycheck</a><b>More</b><a href="../../letters/">All letters</a><a href="../../rules/">Rule book</a><a href="../../guides/">Guides</a><a href="../../sla/">Vendor SLAs</a><a href="../../about.html">About this site</a></nav></details></div>
+  <div class="trustbar"><p>Not legal advice, and free: what you type stays in your browser, and you send every letter yourself.</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Outage calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../">Guides</a><a href="../../about.html">About</a></div></nav>
 <main class="in guide">
+<figure class="margin-art" aria-hidden="true"><picture><source srcset="../../art/pay-800.avif" type="image/avif"><img src="../../art/pay-800.jpg" alt="" width="800" height="450" loading="lazy" decoding="async"></picture></figure>
   <div class="hero">
     <p class="crumb"><a href="../">Guides</a> / Final paycheck deadlines in six states</p>
     <h1>Final paycheck deadlines in six states</h1>
@@ -164,7 +167,7 @@
     <p><b>Start here.</b> Find the state where you worked, read when final pay is due, then build a letter asking for it.</p>
     <p class="fine">This site cannot say whether your employer owes you money or how much. The statutes have exceptions and extra rules. This page is information, not legal advice. A state labor agency, a legal aid office or a lawyer can tell you your options.</p>
   </div>
-  <p><a href="#p-ca">Jump to the state rules</a> &middot; <a href="#helper">Jump to the letter builder</a> &middot; <a href="#not-listed">Your state not listed?</a></p>
+  <ul class="jumps"><li><a href="#p-ca">The state rules</a></li><li><a href="#helper">The letter builder</a></li><li><a href="#due">Mark the date</a></li><li><a href="#not-listed">Your state not listed?</a></li></ul>
 
   <h2>When final pay is due in six states</h2>
   <p>Each row shows the main timing rule this site read in the state's law. This page is about the timing of wages. The statutes have other provisions, for example on bonuses and commissions in some states, that this site did not summarize.</p>
@@ -195,6 +198,43 @@
   <p>Washington's statute names the end of the established pay period.</p>
   <blockquote><p>“When any employee shall cease to work for an employer, whether by discharge or by voluntary withdrawal, the wages due him or her on account of his or her employment shall be paid to him or her at the end of the established pay period”</p><cite>Revised Code of Washington 49.48.010, <a href="https://app.leg.wa.gov/RCW/default.aspx?cite=49.48.010" rel="noopener">official text</a>, read 14 November 2026.</cite></blockquote>
   <p>The statute goes on with exceptions for some multi-employer industry plans and for some labor-management agreements. This site quoted the main rule and did not summarize the rest.</p>
+
+
+<section id="due" aria-labelledby="h-due">
+  <h2 id="h-due">Mark the date</h2>
+  <p>Pick the state and how the job ended. Where the statute gives a day count, this works it out from your last day. Where it names a payday, type that payday to save it. Where it says "immediately" or names no day, this says so. It runs in your browser; nothing is sent.</p>
+  <div class="hform">
+    <div class="f"><label for="m-state">State where you worked</label><select id="m-state"><option value="">Choose a state</option><option value="ca">California</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="tx">Texas</option><option value="wa">Washington</option><option value="other">Another state</option></select></div>
+    <div class="f"><label for="m-how">How the job ended</label><select id="m-how"><option value="">Choose</option><option value="discharged">I was let go</option><option value="quit">I left</option></select></div>
+    <div class="f"><label for="m-end">Your last day of work</label><input id="m-end" type="date" autocomplete="off"></div>
+    <div class="f"><label for="m-payday">Next regular payday, if your state's rule uses it</label><input id="m-payday" type="date" autocomplete="off"></div>
+  </div>
+  <p class="due-out" id="m-txt" role="status">Pick a state to see the deadline.</p>
+  <p><button type="button" class="cta-sec" id="m-cal" hidden>Save the date to your calendar</button></p>
+  <p class="fine">The <a href="../../letters/final-paycheck/">final pay letter</a> stamps the same date on the letter. This site's count, not legal advice.</p>
+</section>
+<script src="../../engine.js"></script>
+<script src="../../letters/letter.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.DTC;
+  var DUE = {"tx|discharged": [6, "Texas: the sixth day after discharge, by this site's count"]}, NONE = {"ca|discharged": "California: due immediately when an employer discharges you, so there is no later date to mark.", "ca|quit": "California: within 72 hours of quitting, or at once with 72 hours' notice. This site counts days, not hours, so it shows the rule and no date.", "mi|discharged": "Michigan: as soon as the amount can with due diligence be determined. The rule names no day count, so there is no date.", "mi|quit": "Michigan: as soon as the amount can with due diligence be determined. The rule names no day count, so there is no date."}, PAYDAY = {"tx|quit": "Texas: the next regularly scheduled payday", "ny|any": "New York: the regular pay day for the pay period in which the job ended", "nc|any": "North Carolina: the next regular payday", "wa|any": "Washington: the end of the established pay period"};
+  LETTER.dueBox({ out: "m-txt", cal: "m-cal", uid: "final-pay", empty: "Pick a state to see the deadline.", fields: [{ id: "m-state", key: "state" }, { id: "m-how", key: "how" }, { id: "m-end", key: "end", date: true }, { id: "m-payday", key: "payday", date: true }],
+    due: function (v, mine) {
+    if (!v.state) return { note: "Pick a state to see the deadline." };
+    if (v.state === "other") return { note: "This site has not checked that state, so it shows no date." };
+    if (!v.how) return { note: "Pick how the job ended to see the deadline." };
+    var k = v.state + "|" + v.how, ka = v.state + "|any";
+    if (NONE[k]) return { note: NONE[k] };
+    var r = DUE[k];
+    if (r) { if (!v.end) return { note: "Type your last day of work to see the date." }; var d = D.addDays(v.end, r[0]); return d ? { date: d, label: "Pay due by", line: r[1], title: "Final pay due (this site's count)", description: r[1] + ". Counted from the last day you typed. The statute has conditions and exceptions. Not legal advice.", alarm: "days to the final pay deadline" } : null; }
+    var p = PAYDAY[k] || PAYDAY[ka];
+    if (p) { if (!v.payday) return { note: p + ". Type that payday to mark it on your calendar." }; return { date: v.payday, label: "Pay due by", line: p + " (the payday you typed)", title: "Final pay: the payday the rule names", description: p + ". This is the payday you typed. The statute has conditions and exceptions. Not legal advice.", alarm: "days to the payday" }; }
+    return { note: "This site shows no date for that case." };
+  } });
+}());
+</script>
 
 
 <section id="helper" aria-labelledby="h-help">
@@ -288,10 +328,16 @@
   <h2>Related guides</h2>
   <ul class="clean"><li><a href="../security-deposit-return-deadlines/">Security deposit return deadlines in seven states</a></li><li><a href="../unclaimed-property-by-state/">Unclaimed property: where to search in ten large states</a></li><li><a href="../federal-tax-refund-deadline/">Federal tax refund deadline: the 3-year and 2-year rule</a></li><li><a href="../">All guides</a></li></ul>
 </main>
-<footer>
+<footer class="site">
   <div class="in">
-    <p>Who runs this: one independent developer. Not a law firm. No affiliation with any agency or vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
-    <p><a href="../../">Calculator</a> &middot; <a href="../">Guides</a> &middot; <a href="../../sla/">Vendor SLAs</a> &middot; <a href="../../about.html">About</a> &middot; <a href="../../privacy.html">Privacy</a></p>
+    <div class="cols">
+      <section><h2>Letters</h2><ul><li><a href="../../letters/service-credit/">Service credit after an outage</a></li><li><a href="../../letters/flight-refund/">Flight refund</a></li><li><a href="../../letters/security-deposit/">Security deposit</a></li><li><a href="../../letters/final-paycheck/">Final paycheck</a></li></ul></section>
+      <section><h2>Tools</h2><ul><li><a href="../../credit/">Outage credit calculator</a></li><li><a href="../../flights/" data-to-flights>Flight refund checker</a></li><li><a href="../../rules/">Rule book and CSV</a></li><li><a href="../../sla/">Vendor SLAs</a></li></ul></section>
+      <section><h2>Guides</h2><ul><li><a href="../../guides/">All guides</a></li><li><a href="../../guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="../../guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="../../guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>
+      <section><h2>This site</h2><ul><li><a href="../../about.html">About this site</a></li><li><a href="../../about.html#facts">How we check facts</a></li><li><a href="../../privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>
+    </div>
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Not legal advice. This site files nothing for you; you send every letter yourself.</p>
   </div>
 </footer>
 <script data-counter>

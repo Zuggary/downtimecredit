@@ -23,7 +23,7 @@ for _f in _g.glob(os.path.join(ROOT, "refs", "tf6", "*.txt")) + _g.glob(os.path.
     pool.append(norm(open(_f, encoding="utf-8").read()))
 walk(vendors); walk(FL["q"]); walk([a.get("plan") for a in FL["a"].values() if a.get("plan")]); blob = "\n".join(pool)
 pages = []
-for d in ["sla", "guides", "flights/airlines"]:
+for d in ["sla", "guides", "flights/airlines", "letters", "rules", "credit"]:
     for r, _, fs in os.walk(os.path.join(ROOT, d)):
         for f in fs:
             if f == "index.html": pages.append(os.path.join(r, f))
@@ -45,7 +45,7 @@ for p in pages:
     ok(('<link rel="canonical" href="https://www.downtimecredit.com' + url + '"') in s, rel + ": canonical")
     if not rel.startswith(os.path.join("flights", "airlines")): ok(("<loc>https://www.downtimecredit.com" + url + "</loc>") in sm, rel + ": in the sitemap")
     ok("<h1" in s and s.count("<h1") == 1, rel + ": one h1")
-    if rel != os.path.join("flights", "airlines", "index.html"): ok(not re.search(r"<script[^>]+src=|<link[^>]+href=\"https?:(?!//www\.downtimecredit)|<img[^>]+src=\"https?:", s), rel + ": no outside file")
+    if rel != os.path.join("flights", "airlines", "index.html"): ok(not re.search(r"<script[^>]+src=\"https?:|<link[^>]+href=\"https?:(?!//www\.downtimecredit)|<img[^>]+src=\"https?:", s), rel + ": no outside file")
     ok("slack" not in s.lower(), rel + ": no Slack text")
     ok(not re.search(r"you are owed|guaranteed|legal advice\b(?!\.)|will be refunded", re.sub(r"<[^>]+>", " ", s), re.I) or "Not legal advice" in s, rel + ": careful wording")
     for q in re.findall(r"<blockquote[^>]*>(.*?)</blockquote>", s, re.S):
@@ -76,5 +76,29 @@ for p in sorted(set(allpages)):
     others = {m for m in _re.findall(r'href="\.\./([a-z0-9-]+)/"', t) if m != slug}
     ok(len(others) >= 3, rel + f": links to {len(others)} other guides (need 3)")
     ok('"@type":"BreadcrumbList"' in t and ('https://www.downtimecredit.com/guides/' + slug + '/') in t.split('"BreadcrumbList"')[1].split("</script>")[0], rel + ": breadcrumb data names its own address")
+# TF12: the letter desk, the rule book and the hub
+desk = os.path.join(ROOT, "letters")
+letters = ["service-credit", "flight-refund", "security-deposit", "final-paycheck"]
+li = open(os.path.join(desk, "index.html"), encoding="utf-8").read()
+ok(all(('href="' + l + '/"') in li for l in letters), "letters: the desk lists the 4 letters")
+for l in letters:
+    t = open(os.path.join(desk, l, "index.html"), encoding="utf-8").read()
+    ok("Sample data" in t and 'class="blank' in t, l + ": the sample letter is in the HTML, with its blanks marked")
+    ok(all(('id="' + b + '"') in t for b in ["lt-copy", "lt-print", "lt-save", "lt-cal"]), l + ": copy, print, save and calendar buttons")
+    ok('"@type":"BreadcrumbList"' in t, l + ": breadcrumb data")
+    ok(len(re.findall(r'<a href="\.\./[a-z-]+/"|<a href="\.\./\.\./[a-z/-]+/"', t)) >= 3, l + ": 3 or more related links")
+import csv as _csv
+rb = open(os.path.join(ROOT, "rules", "index.html"), encoding="utf-8").read()
+rows = list(_csv.reader(open(os.path.join(ROOT, "rules", "rules.csv"), encoding="utf-8")))
+trs = len(re.findall(r"<tbody>.*?</tbody>", rb, re.S)) and sum(x.count("<tr>") for x in re.findall(r"<tbody>(.*?)</tbody>", rb, re.S))
+ok(len(rows) - 1 == trs and trs > 30, f"rules: CSV rows ({len(rows) - 1}) equal table rows ({trs})")
+ok(all(r[3] and r[4] and r[7] for r in rows[1:]), "rules: every CSV row has a quote, a source and a last-checked date")
+for r in rows[1:]: ok(norm(r[3]) in blob, "rules: CSV quote is in the source texts: " + r[3][:50])
+hub = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+ok("What happened?" in hub and hub.count('data-step="hub-') >= 4 and "Sample data" in hub, "hub: What happened, 4 rows and a sample letter")
+ok('location.replace("credit/"' in hub, "hub: old tool links go on to /credit/")
+for g in ["security-deposit-return-deadlines", "final-paycheck-deadlines"]:
+    t = open(os.path.join(ROOT, "guides", g, "index.html"), encoding="utf-8").read()
+    ok('id="m-cal"' in t and "LETTER.dueBox" in t, g + ": Mark the date box with a calendar file")
 print(f"pages: {checks - fails} passed, {fails} failed")
 sys.exit(1 if fails else 0)

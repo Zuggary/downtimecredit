@@ -7,3 +7,4 @@ og-source.html
 tests/output/
 *.log
 .DS_Store
+CLAUDE.md

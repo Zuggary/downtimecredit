@@ -350,7 +350,7 @@ def build_vendor_page(v: dict) -> str:
     excl_html = "<dl class=\"who\">" + "".join(excl_items) + "</dl>"
 
     quotes_blocks = []
-    quotes_blocks.append("<h3>Uptime &amp; availability formula</h3>")
+    quotes_blocks.append("<h3>How uptime is worked out</h3>")
     quotes_blocks.append(render_quote_block(v["formulaClause"]["quote"], cite))
     for extra in v["formulaClause"].get("also", []):
         quotes_blocks.append(render_quote_block(extra, cite))
@@ -362,7 +362,7 @@ def build_vendor_page(v: dict) -> str:
     for extra in v["downtimeClause"].get("also", []):
         quotes_blocks.append(render_quote_block(extra, cite))
 
-    quotes_blocks.append("<h3>Service credit terms &amp; caps</h3>")
+    quotes_blocks.append("<h3>Service credit terms and limits</h3>")
     quotes_blocks.append(render_quote_block(v["creditClause"]["quote"], cite))
     for extra in v["creditClause"].get("also", []):
         quotes_blocks.append(render_quote_block(extra, cite))
@@ -373,10 +373,10 @@ def build_vendor_page(v: dict) -> str:
     if v.get("resellerDeadline"):
         rd = v["resellerDeadline"]
         rcite = f"Microsoft Partner Center, dated {fmt_date(rd['documentDate'])}, last checked {fmt_date(doc['lastChecked'])}."
-        quotes_blocks.append("<h3>Reseller &amp; partner filing rule</h3>")
+        quotes_blocks.append("<h3>Who files through a reseller or partner</h3>")
         quotes_blocks.append(render_quote_block(rd["quote"], rcite))
     elif v.get("resellerClause"):
-        quotes_blocks.append("<h3>Reseller &amp; partner filing rule</h3>")
+        quotes_blocks.append("<h3>Who files through a reseller or partner</h3>")
         quotes_blocks.append(render_quote_block(v["resellerClause"]["quote"], cite))
 
     if v.get("servicesClause"):
@@ -385,7 +385,7 @@ def build_vendor_page(v: dict) -> str:
         for extra in v["servicesClause"].get("also", []):
             quotes_blocks.append(render_quote_block(extra, cite))
 
-    quotes_blocks.append("<h3>Exclusions &amp; eligibility clauses</h3>")
+    quotes_blocks.append("<h3>What is excluded, and who can claim</h3>")
     for c in v.get("cannotClaim", []):
         if c.get("quote"):
             qcite = cite
@@ -437,7 +437,7 @@ def build_vendor_page(v: dict) -> str:
     <p class="lede">The clauses below are quoted word for word from the {esc(doc["title"])} (dated {esc(fmt_date(doc["date"]))}, last checked {esc(fmt_date(doc["lastChecked"]))}). The summary cards and the downtime minutes are this site's reading and arithmetic. {esc(vendor)} decides every claim, and a credit lowers a later bill or adds days of service; it is not cash. Not legal advice.</p>
     {scope_p}
     <div class="cta-row">
-      <a class="cta" href="../../?vendor={esc(vid)}">Open interactive {esc(service)} calculator &rarr;</a>
+      <a class="cta" href="../../credit/?vendor={esc(vid)}">Open interactive {esc(service)} calculator</a>
       <a class="cta-sec" href="../">Compare all vendor SLAs</a>
     </div>
   </div>
@@ -449,7 +449,7 @@ def build_vendor_page(v: dict) -> str:
     <div class="fact"><span>Primary agreement</span><b><a href="{esc(doc['url'])}" rel="noopener">{esc(doc['title'])}</a></b></div>
   </div>
 
-  <h2>Credit tiers &amp; minimum downtime minutes</h2>
+  <h2>Credit tiers and the downtime that reaches each one</h2>
   <div class="sheet">
     <p>The minutes below assume every user is affected. If only half your users are down, the minutes double.</p>
     <p class="swipe">Swipe sideways to see every column.</p>
@@ -474,7 +474,7 @@ def build_vendor_page(v: dict) -> str:
 
   {services_html}
 
-  <h2>Who cannot claim &amp; what is excluded</h2>
+  <h2>Who cannot claim, and what is left out</h2>
   {excl_html}
 
   <h2>Verbatim clauses from the agreement</h2>
@@ -486,7 +486,7 @@ def build_vendor_page(v: dict) -> str:
   <div class="sheet" style="margin-top:32px">
     <h3 style="margin-top:0">Ready to calculate your {esc(service)} credit?</h3>
     <p style="margin:6px 0 14px">Enter your outage minutes{"" if is_days else " and invoice fee"} in the browser calculator to generate a ready-to-send claim request and a deadline reminder you can add to your calendar.</p>
-    <a class="cta" href="../../?vendor={esc(vid)}">Open interactive {esc(service)} calculator &rarr;</a>
+    <a class="cta" href="../../credit/?vendor={esc(vid)}">Open interactive {esc(service)} calculator</a>
   </div>
 </main>
 
@@ -523,7 +523,7 @@ def build_sla_index(vendors: list[dict]) -> str:
             f"<td>{esc(describe_period(v))}</td>"
             f"<td>{esc(describe_top_credit(v))}<br><span class=\"fine\">First tier at {esc(fmt_minutes(first_mins))} in a {ref_days}-day {'quarter' if is_qtr else 'month'}</span></td>"
             f"<td>{esc(describe_deadline(v))}</td>"
-            f"<td class=\"num\"><a href=\"../?vendor={esc(vid)}\">Calculate &rarr;</a></td>"
+            f"<td class=\"num\"><a href=\"../credit/?vendor={esc(vid)}\">Calculate</a></td>"
             f"</tr>"
         )
 
@@ -573,11 +573,11 @@ def build_sla_index(vendors: list[dict]) -> str:
 <main class="in">
   <div class="hero">
     <p class="crumb"><a href="../">Downtime Credit</a> / Vendor SLA directory</p>
-    <h1>SaaS SLA credit rules, allowed downtime &amp; deadlines</h1>
+    <h1>SaaS SLA credit rules, allowed downtime and deadlines</h1>
     <p class="lede">Each vendor page quotes its agreement word for word. The periods, credit tiers, minutes and deadlines on this page are this site's summary of the four agreements. The vendor decides every claim. Open any vendor page for the clauses, or launch its calculator directly.</p>
     <div class="cta-row">
-      <a class="cta" href="../">Open the interactive calculator &rarr;</a>
-      <a class="cta-sec" href="../?vendor=own">Enter your own contract or MSA</a>
+      <a class="cta" href="../credit/">Open the interactive calculator</a>
+      <a class="cta-sec" href="../credit/?vendor=own">Enter your own contract or MSA</a>
     </div>
   </div>
 
@@ -699,7 +699,87 @@ def label_tables(content: str) -> str:
     return re.sub(r"<table.*?</table>", one, content, flags=re.S)
 
 
+TRUST_LINE = "Not legal advice, and free: what you type stays in your browser, and you send every letter yourself."
+TABS = [("credit/", "Outage at work"), ("flights/", "Flight"), ("letters/security-deposit/", "Deposit"), ("letters/final-paycheck/", "Paycheck")]
+MORE = [("letters/", "All letters"), ("rules/", "Rule book"), ("guides/", "Guides"), ("sla/", "Vendor SLAs"), ("about.html", "About this site")]
+
+
+def current_tab(rel: str) -> str:
+    """Which header tab a page sits under, from its path relative to the site root."""
+    if rel.startswith(("credit/", "sla/", "guides/how-", "guides/what-counts", "letters/service-credit/")):
+        return "credit/"
+    if rel.startswith("flights/") or rel.startswith("letters/flight-refund/"):
+        return "flights/"
+    if rel.startswith(("guides/security-deposit", "letters/security-deposit/")):
+        return "letters/security-deposit/"
+    if rel.startswith(("guides/final-paycheck", "letters/final-paycheck/")):
+        return "letters/final-paycheck/"
+    return ""
+
+
+def site_header(p: str, cur: str = "", trust_p: str = "") -> str:
+    """One header for every page: the name, folder tabs named by the problem, a More list; on phones a Menu button."""
+    def a(href, label):
+        here = ' aria-current="page"' if href == cur else ""
+        return f'<a href="{p}{href}"{here}>{label}</a>'
+    tabs = "".join(a(h, t) for h, t in TABS)
+    more = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in MORE)
+    plain = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in TABS)
+    return (f'<header class="top">\n  <div class="in"><a class="brand" href="{p or "./"}">Downtime <b>Credit</b></a>\n'
+            f'    <nav class="tabs" aria-label="Site">{tabs}<details class="more"><summary>More</summary><div class="drop">{more}</div></details></nav>\n'
+            f'    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b>{plain}<b>More</b>{more}</nav></details></div>\n'
+            f'  <div class="trustbar">{trust_p or "<p>" + TRUST_LINE + "</p>"}</div>\n</header>')
+
+
+def site_footer(p: str) -> str:
+    return (f'<footer class="site">\n  <div class="in">\n    <div class="cols">\n'
+            f'      <section><h2>Letters</h2><ul><li><a href="{p}letters/service-credit/">Service credit after an outage</a></li><li><a href="{p}letters/flight-refund/">Flight refund</a></li><li><a href="{p}letters/security-deposit/">Security deposit</a></li><li><a href="{p}letters/final-paycheck/">Final paycheck</a></li></ul></section>\n'
+            f'      <section><h2>Tools</h2><ul><li><a href="{p}credit/">Outage credit calculator</a></li><li><a href="{p}flights/" data-to-flights>Flight refund checker</a></li><li><a href="{p}rules/">Rule book and CSV</a></li><li><a href="{p}sla/">Vendor SLAs</a></li></ul></section>\n'
+            f'      <section><h2>Guides</h2><ul><li><a href="{p}guides/">All guides</a></li><li><a href="{p}guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="{p}guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="{p}guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>\n'
+            f'      <section><h2>This site</h2><ul><li><a href="{p}about.html">About this site</a></li><li><a href="{p}about.html#facts">How we check facts</a></li><li><a href="{p}privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>\n'
+            f'    </div>\n    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>\n'
+            f'    <p>Not legal advice. This site files nothing for you; you send every letter yourself.</p>\n  </div>\n</footer>')
+
+
+MARGIN_ART = {
+    "car-towed-lien-sale-money-california": "carkey", "california-notice-of-pending-lien-sale": "carkey", "ask-the-tow-yard-where-the-money-went": "carkey", "lien-sale-surplus-other-states": "carkey",
+    "security-deposit-return-deadlines": "keys", "final-paycheck-deadlines": "pay", "federal-tax-refund-deadline": "pay", "lost-retirement-money": "pay", "unclaimed-property-by-state": "pay",
+    "how-service-credits-work": "phone", "how-to-ask-for-a-service-credit": "phone", "what-counts-as-downtime": "phone",
+}
+
+
+def keep_trust(header_html: str) -> str:
+    """A page whose trust line is changed by its own script (id="trust") keeps that line."""
+    m = re.search(r'<p id="trust">.*?</p>', header_html, re.S)
+    return m.group(0) if m else ""
+
+
+def chrome(content: str, path: Path) -> str:
+    """Put the shared stylesheet, header, footer and margin picture on a generated page (TF12)."""
+    try:
+        rel = path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return content
+    if not rel.endswith(".html"):
+        return content
+    p = "../" * rel.count("/")
+    content = re.sub(r'<link rel="preload" href="[^"]*dm-serif-display-400\.woff2"[^>]*>', f'<link rel="preload" href="{p}fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>', content, count=1)
+    content = re.sub(r'<link rel="preload" href="[^"]*hanken-400-700\.woff2"[^>]*>', f'<link rel="preload" href="{p}fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>', content, count=1)
+    if "site.css" not in content:
+        content = content.replace("</style>\n</head>", f'</style>\n<link rel="stylesheet" href="{p}site.css">\n</head>', 1)
+    content = re.sub(r'<header class="top">.*?</header>(\s*<nav class="(?:subnav|doors)".*?</nav>)?', lambda m: site_header(p, current_tab(rel), keep_trust(m.group(0))), content, count=1, flags=re.S)
+    content = re.sub(r'<footer[^>]*>.*?</footer>', lambda m: site_footer(p), content, count=1, flags=re.S)
+    slug = rel.split("/")[1] if rel.startswith("guides/") and rel.count("/") == 2 else ""
+    art = MARGIN_ART.get(slug)
+    if art and (ROOT / "art" / f"{art}-800.jpg").exists() and 'class="margin-art"' not in content:
+        pic = (f'<figure class="margin-art" aria-hidden="true"><picture><source srcset="{p}art/{art}-800.avif" type="image/avif">'
+               f'<img src="{p}art/{art}-800.jpg" alt="" width="800" height="450" loading="lazy" decoding="async"></picture></figure>\n')
+        content = content.replace('<main class="in guide">\n', '<main class="in guide">\n' + pic, 1)
+    return content
+
+
 def write_if_changed(path: Path, content: str) -> None:
+    content = chrome(content, path)
     if "<table" in content:
         content = label_tables(content)
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -81,7 +81,7 @@ PICKER = r"""
 
 def section(sid, name, url, label, intro, quotes, note=""):
     return f"""  <h2 id="u-{sid}">{esc(name)}</h2>
-  <p><a class="cta" href="{esc(url)}" rel="noopener" target="_blank">Open the {esc(name)} official search &rarr;</a></p>
+  <p><a class="cta" href="{esc(url)}" rel="noopener" target="_blank">Open the {esc(name)} official search</a></p>
   <p class="fine">{esc(label)}</p>
   <p>{intro}</p>
   {''.join(quotes)}

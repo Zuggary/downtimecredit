@@ -81,7 +81,7 @@ def page(a):
     <p class="crumb"><a href="../">US airline commitments</a> / {esc(short)}</p>
     <h1>{esc(title)}</h1>
     <p class="lede">What {esc(name)} has told the US Department of Transportation it commits to when it causes a cancellation or delay. Dashboard last updated {esc(D["d"])}, read {esc(D["r"])}. The airline decides what it pays. Not legal advice.</p>
-    <div class="cta-row"><a class="cta" href="../../">Check your own flight &rarr;</a></div>
+    <div class="cta-row"><a class="cta" href="../../">Check your own flight</a></div>
   </div>
   <h2>What {esc(short)} commits to, per the dashboard</h2>
   <p>Yes or no, as the dashboard shows for {esc(name)}. No means the airline has not committed to it. The commitments apply to delays and cancellations the airline caused, such as maintenance or crew problems.</p>

@@ -15,8 +15,8 @@
 <meta property="og:image" content="https://www.downtimecredit.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="preload" href="../../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 [{"@context":"https://schema.org","@type":"WebApplication","name":"Google Workspace SLA Credit Calculator","url":"https://www.downtimecredit.com/sla/google-workspace/","applicationCategory":"BusinessApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Google Workspace SLA credits pay 3 to 15 days of service when monthly uptime falls below 99.9% (44+ minutes down in a 30-day month). Within 30 days (counted here from the start of the downtime). Free browser calculator with quotes from the agreement."},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much outage credit does the Google Workspace SLA pay?","acceptedAnswer":{"@type":"Answer","text":"Under the Google Workspace Service Level Agreement (dated 31 August 2026), Google provides 3 to 15 days of service when uptime falls below 99.9% over the calendar month (28 to 31 days). In a 30-day month, 44 minutes of covered downtime triggers the first credit tier."}},{"@type":"Question","name":"What is the deadline to file a Google Workspace SLA credit request?","acceptedAnswer":{"@type":"Answer","text":"Within 30 days (counted here from the start of the downtime). Primary clause: \"Customer must notify Google (or, if Customer ordered Services from a Reseller, Customer must notify Customer's Reseller who must notify Google) by creating a support case within thirty days from the time Customer becomes eligible to receive a Service Credit.\""}},{"@type":"Question","name":"Can reseller customers claim a Google Workspace SLA service credit?","acceptedAnswer":{"@type":"Answer","text":"If Customer ordered Services from a Reseller and complies with this requirement, Customer will receive the applicable Service Credit from Customer's Reseller on behalf of Google."}}]}]
 </script>
@@ -128,13 +128,15 @@
   }
 
 </style>
+<link rel="stylesheet" href="../../site.css">
 </head>
 <body>
 <header class="top">
-  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
+  <div class="in"><a class="brand" href="../../">Downtime <b>Credit</b></a>
+    <nav class="tabs" aria-label="Site"><a href="../../credit/" aria-current="page">Outage at work</a><a href="../../flights/">Flight</a><a href="../../letters/security-deposit/">Deposit</a><a href="../../letters/final-paycheck/">Paycheck</a><details class="more"><summary>More</summary><div class="drop"><a href="../../letters/">All letters</a><a href="../../rules/">Rule book</a><a href="../../guides/">Guides</a><a href="../../sla/">Vendor SLAs</a><a href="../../about.html">About this site</a></div></details></nav>
+    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b><a href="../../credit/">Outage at work</a><a href="../../flights/">Flight</a><a href="../../letters/security-deposit/">Deposit</a><a href="../../letters/final-paycheck/">Paycheck</a><b>More</b><a href="../../letters/">All letters</a><a href="../../rules/">Rule book</a><a href="../../guides/">Guides</a><a href="../../sla/">Vendor SLAs</a><a href="../../about.html">About this site</a></nav></details></div>
+  <div class="trustbar"><p>Not legal advice, and free: what you type stays in your browser, and you send every letter yourself.</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Outage calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">About</a></div></nav>
 
 <main class="in">
   <div class="hero">
@@ -143,7 +145,7 @@
     <p class="lede">The clauses below are quoted word for word from the Google Workspace Service Level Agreement (dated 31 August 2026, last checked 13 November 2026). The summary cards and the downtime minutes are this site's reading and arithmetic. Google decides every claim, and a credit lowers a later bill or adds days of service; it is not cash. Not legal advice.</p>
     <p class="fine">This agreement is for organisations with a Google Workspace agreement.</p>
     <div class="cta-row">
-      <a class="cta" href="../../?vendor=google-workspace">Open interactive Google Workspace calculator &rarr;</a>
+      <a class="cta" href="../../credit/?vendor=google-workspace">Open interactive Google Workspace calculator</a>
       <a class="cta-sec" href="../">Compare all vendor SLAs</a>
     </div>
   </div>
@@ -155,7 +157,7 @@
     <div class="fact"><span>Primary agreement</span><b><a href="https://workspace.google.com/terms/sla/" rel="noopener">Google Workspace Service Level Agreement</a></b></div>
   </div>
 
-  <h2>Credit tiers &amp; minimum downtime minutes</h2>
+  <h2>Credit tiers and the downtime that reaches each one</h2>
   <div class="sheet">
     <p>The minutes below assume every user is affected. If only half your users are down, the minutes double.</p>
     <p class="swipe">Swipe sideways to see every column.</p>
@@ -180,28 +182,28 @@
 
   <h2>Covered Google Workspace services</h2><ul class="clean"><li>Gmail</li><li>Google Calendar</li><li>Google Chat</li><li>Google Cloud Search</li><li>Google Docs</li><li>Google Drive</li><li>Google Forms</li><li>Google Groups for Business</li><li>Google Keep</li><li>Google Meet</li><li>Google Pics</li><li>Google Sheets</li><li>Google Sites</li><li>Google Slides</li><li>Google Tasks</li><li>Google Vault</li><li>Google Vids</li><li>Google Voice</li></ul>
 
-  <h2>Who cannot claim &amp; what is excluded</h2>
+  <h2>Who cannot claim, and what is left out</h2>
   <dl class="who"><dt>Google Workspace Essentials Starter edition</dt><dd>The agreement does not apply to it.</dd><dt>Services whose own documentation excludes this agreement</dt><dd>Not covered.</dd><dt>Gmail Labs functionality</dt><dd>Not a covered service.</dd><dt>Problems caused by force majeure</dt><dd>Not covered.</dd><dt>Problems caused by your own equipment or third-party equipment</dt><dd>Not covered.</dd><dt>Problems caused by abuse or other behaviour that breaks the agreement</dt><dd>Not covered.</dd></dl>
 
   <h2>Verbatim clauses from the agreement</h2>
   <p class="fine">Every quotation below is reproduced word-for-word from <a href="https://workspace.google.com/terms/sla/" rel="noopener">Google Workspace Service Level Agreement</a> (dated 31 August 2026, last checked 13 November 2026).</p>
   <div>
-      <h3>Uptime &amp; availability formula</h3>
+      <h3>How uptime is worked out</h3>
       <blockquote><p>&quot;Monthly Uptime Percentage&quot; means total number of minutes in a calendar month minus the number of minutes of Downtime in a calendar month, divided by the total number of minutes in a calendar month.</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <blockquote><p>&quot;Monthly Uptime Percentage&quot; means total number of minutes in a calendar month minus the number of minutes of Downtime in a calendar month, divided by the total number of minutes in a calendar month.</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <h3>Downtime definition</h3>
       <blockquote><p>&quot;Downtime&quot; means, for a domain, a period of time during which the user web interface for the applicable Covered Services used by Customer has more than a five percent user error rate. Downtime is measured based on server side error rate.</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
-      <h3>Service credit terms &amp; caps</h3>
+      <h3>Service credit terms and limits</h3>
       <blockquote><p>“Days of Service added to the end of the Service term (for offline billing customers), or monetary credit equal to the value of days applied to a future invoice (for online billing customers), for the applicable Covered Service(s) that did not meet the Google Workspace SLA”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <blockquote><p>“Google Workspace Essentials Service Credit. If Customer orders Google Workspace Essentials edition directly from Google, any Service Credits that may be due to Customer will be issued in the form of monetary credits (and not additional Service days) that will be applied to Customer&#x27;s next invoice.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <blockquote><p>“shall not exceed fifteen days of Service added to the end of Customer&#x27;s term for that Covered Service”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <h3>Claim filing deadline</h3>
       <blockquote><p>“Customer must notify Google (or, if Customer ordered Services from a Reseller, Customer must notify Customer&#x27;s Reseller who must notify Google) by creating a support case within thirty days from the time Customer becomes eligible to receive a Service Credit.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
-      <h3>Reseller &amp; partner filing rule</h3>
+      <h3>Who files through a reseller or partner</h3>
       <blockquote><p>“If Customer ordered Services from a Reseller and complies with this requirement, Customer will receive the applicable Service Credit from Customer&#x27;s Reseller on behalf of Google.”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <h3>Covered services clause</h3>
       <blockquote><p>“the Gmail, Google Calendar, Google Chat, Google Cloud Search, Google Docs, Google Drive, Google Forms, Google Groups for Business, Google Keep, Google Meet, Google Pics, Google Sheets, Google Sites, Google Slides, Google Tasks, Google Vault, Google Vids, and Google Voice components of the Services, excluding Gmail Labs functionality”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
-      <h3>Exclusions &amp; eligibility clauses</h3>
+      <h3>What is excluded, and who can claim</h3>
       <blockquote><p>“any services comprised within the Google Workspace Essentials Starter edition (notwithstanding that this SLA may define such services as Google Workspace Covered Services)”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <blockquote><p>“any services that expressly exclude it (as stated in the documentation for such services)”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
       <blockquote><p>“excluding Gmail Labs functionality”</p><cite>Google Workspace Service Level Agreement, dated 31 August 2026, last checked 13 November 2026.</cite></blockquote>
@@ -213,14 +215,20 @@
   <div class="sheet" style="margin-top:32px">
     <h3 style="margin-top:0">Ready to calculate your Google Workspace credit?</h3>
     <p style="margin:6px 0 14px">Enter your outage minutes in the browser calculator to generate a ready-to-send claim request and a deadline reminder you can add to your calendar.</p>
-    <a class="cta" href="../../?vendor=google-workspace">Open interactive Google Workspace calculator &rarr;</a>
+    <a class="cta" href="../../credit/?vendor=google-workspace">Open interactive Google Workspace calculator</a>
   </div>
 </main>
 
-<footer>
+<footer class="site">
   <div class="in">
+    <div class="cols">
+      <section><h2>Letters</h2><ul><li><a href="../../letters/service-credit/">Service credit after an outage</a></li><li><a href="../../letters/flight-refund/">Flight refund</a></li><li><a href="../../letters/security-deposit/">Security deposit</a></li><li><a href="../../letters/final-paycheck/">Final paycheck</a></li></ul></section>
+      <section><h2>Tools</h2><ul><li><a href="../../credit/">Outage credit calculator</a></li><li><a href="../../flights/" data-to-flights>Flight refund checker</a></li><li><a href="../../rules/">Rule book and CSV</a></li><li><a href="../../sla/">Vendor SLAs</a></li></ul></section>
+      <section><h2>Guides</h2><ul><li><a href="../../guides/">All guides</a></li><li><a href="../../guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="../../guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="../../guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>
+      <section><h2>This site</h2><ul><li><a href="../../about.html">About this site</a></li><li><a href="../../about.html#facts">How we check facts</a></li><li><a href="../../privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>
+    </div>
     <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
-    <p><a href="../../">Calculator</a> &middot; <a href="../">Vendor SLA directory</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="../../privacy.html">Privacy</a></p>
+    <p>Not legal advice. This site files nothing for you; you send every letter yourself.</p>
   </div>
 </footer>
 <script data-counter>

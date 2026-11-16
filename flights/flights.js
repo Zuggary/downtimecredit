@@ -457,7 +457,7 @@
     }
 
     function isComplete() {
-      if (!state.what || !state.route || !state.card) return false;
+      if (!state.what || !state.route) return false;
       if (state.what === "delayed" && !state.hours) return false;
       return true;
     }
@@ -482,9 +482,11 @@
       var careQuotes = $("care-quotes");
       if (careQuotes) careQuotes.hidden = !usRoute;
 
-      $("v-card").textContent = cardVerdictLabel(state.card);
-      $("t-card").textContent = ans.card.text;
-      $("card-card").setAttribute("data-verdict", state.card === "yes" ? "maybe" : "no");
+      if ($("card-card")) {
+        $("v-card").textContent = cardVerdictLabel(state.card);
+        $("t-card").textContent = ans.card.text;
+        $("card-card").setAttribute("data-verdict", state.card === "yes" ? "maybe" : "no");
+      }
 
       var airlineCard = $("card-airline");
       var airlineBody = $("t-airline");
@@ -523,8 +525,14 @@
         letterWrap.hidden = true;
       }
 
+      var wasHidden = answersBox.hidden;
       answersBox.hidden = false;
       if (trusted) countStep("flights-answer");
+      if (trusted && wasHidden) {   // the answer appears below the questions: take the visitor to it
+        var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var head = $("v-refund");
+        if (head) { head.setAttribute("tabindex", "-1"); answersBox.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" }); head.focus({ preventScroll: true }); }
+      }
     }
 
     function selectLetter() {

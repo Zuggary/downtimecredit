@@ -40,7 +40,7 @@ class Q(http.server.SimpleHTTPRequestHandler):
 srv = socketserver.ThreadingTCPServer(("127.0.0.1", 0), functools.partial(Q, directory=SITE))
 PORT = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-BASE = f"http://127.0.0.1:{PORT}/"
+BASE = f"http://127.0.0.1:{PORT}/credit/"   # the outage tool moved to /credit/ in TF12
 
 def ready(p):
     p.wait_for_selector('#statement[data-ready="1"]', timeout=8000, state="attached")
@@ -108,7 +108,7 @@ def main():
         for host in ["127.0.0.1", "localhost", "downtimecredit.com", "www.downtimecredit.com", "localhost.", "localhost.localdomain"]:
             ctx = new_ctx(b, "fence"); p = ctx.new_page()
             try:
-                p.goto(f"http://{host}:{PORT}/?today=2026-12-31&demo=example"); ready(p)
+                p.goto(f"http://{host}:{PORT}/credit/?today=2026-12-31&demo=example"); ready(p)
                 days = txt(p, "#dl-box"); allv = p.input_value("#all")
                 local = host in ("127.0.0.1", "localhost")
                 want_days = "Today is the last day" if local else f"{(datetime.date(2026,12,30)-real_today).days} days left to send it"

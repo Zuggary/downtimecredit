@@ -101,7 +101,7 @@ def page(slug, title, meta, h1, lede, body, related):
   <p class="fine">Quotations are copied word for word from the agreement named under each one. Text outside a quotation is this site's reading. A vendor decides every claim. This is not legal advice.</p>
   <h2>More</h2>
   <ul class="clean">{rel}<li><a href="../../sla/">Vendor SLA directory</a></li></ul>
-  <div class="cta-row"><a class="cta" href="../../">Work out your credit &rarr;</a></div>
+  <div class="cta-row"><a class="cta" href="../../credit/">Work out your credit</a></div>
 </main>
 <footer>
   <div class="in">
@@ -150,7 +150,7 @@ def guide_ask():
 <li><b>Find the agreement that applies to you.</b> The sources at the end of this page link to the four agreements this site has read. If you bought through a reseller, ask the reseller which one applies.</li>
 <li><b>Check who files.</b> Some agreements let you file with the vendor. Others send you to your reseller. The quotes below say which.</li>
 <li><b>Write down what happened.</b> Note the start time, the end time, the service and the vendor's incident number if it gave one.</li>
-<li><b>Work out the period and the downtime.</b> Each agreement counts uptime over a month or a quarter. <a href="../../">The calculator</a> does the sums in your browser.</li>
+<li><b>Work out the period and the downtime.</b> Each agreement counts uptime over a month or a quarter. <a href="../../credit/">The calculator</a> does the sums in your browser.</li>
 <li><b>Check the deadline.</b> The deadline is different in each agreement. See the table below.</li>
 <li><b>Send the request and keep a record.</b> Save the request text, the numbers and the date you sent it.</li>
 </ol>
@@ -239,7 +239,7 @@ def index_page():
     <p class="lede">Plain guides to what a service credit is and how to ask for one. Each quotes the vendors' own agreements.</p>
   </div>
   <ul class="clean">{items}</ul>
-  <p><a href="../sla/">Vendor SLA directory</a> &middot; <a href="../">Work out your credit</a></p>
+  <ul class="jumps"><li><a href="../sla/">Vendor SLA directory</a></li><li><a href="../credit/">Work out your credit</a></li><li><a href="../letters/">All letters</a></li><li><a href="../rules/">Rule book</a></li></ul>
 </main>
 <footer>
   <div class="in">
@@ -259,7 +259,7 @@ def about_page():
     body = f"""
   <h2>Who runs this</h2>
   <p>Downtime Credit is an independent project run by one developer. It is not a law firm, it gives no legal advice, and it has no link to any vendor or airline. The tool is free. The site may show ads, which pay for it.</p>
-  <h2>How the quotes are sourced</h2>
+  <h2 id="facts">How the quotes are sourced</h2>
   <p>Every quotation comes from the agreement it names. We open the agreement in a real browser, copy the clause word for word, and save the text. A test checks every quotation on the site against the saved text before a page goes live. Each page shows the date we last read the source.</p>
   <h2>What is our reading</h2>
   <p>Text outside a quotation is this site's reading. That includes the summaries, the minutes of downtime that reach each credit tier, the deadlines we compute, and the steps in the guides. Each page says so. The vendor decides every claim.</p>
@@ -315,7 +315,7 @@ def about_page():
 
 
 def sitemap():
-    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + [f"/guides/{s}/" for s, *_ in EXTRA_GUIDES] + ["/flights/", "/privacy.html"]
+    paths = ["/", "/about.html", "/sla/"] + [f"/sla/{v['id']}/" for v in VENDORS] + ["/guides/"] + [f"/guides/{s}/" for s, *_ in GUIDES] + [f"/guides/{s}/" for s, *_ in EXTRA_GUIDES] + ["/flights/", "/credit/", "/letters/", "/letters/service-credit/", "/letters/flight-refund/", "/letters/security-deposit/", "/letters/final-paycheck/", "/rules/", "/privacy.html"]
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     lines += [f"  <url><loc>{bp.SITE_ORIGIN}{p}</loc><lastmod>{LASTMOD if p.startswith(('/guides', '/flights/airlines/')) and p != '/flights/airlines/' else bp.LASTMOD}</lastmod></url>" for p in paths]
     return "\n".join(lines + ["</urlset>", ""])

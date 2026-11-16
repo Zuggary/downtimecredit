@@ -15,8 +15,8 @@
 <meta property="og:image" content="https://www.downtimecredit.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
-<link rel="preload" href="../../fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="../../fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 [{"@context":"https://schema.org","@type":"WebApplication","name":"Exchange Online SLA Credit Calculator","url":"https://www.downtimecredit.com/sla/microsoft-365-exchange/","applicationCategory":"BusinessApplication","operatingSystem":"All","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Exchange Online SLA credits pay 25% to 100% of your monthly fee when monthly uptime falls below 99.9% (44+ minutes down in a 30-day month). End of the calendar month following the month of the incident. Free browser calculator with quotes from the agreement."},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much outage credit does the Exchange Online SLA pay?","acceptedAnswer":{"@type":"Answer","text":"Under the Service Level Agreement for Microsoft Online Services (dated 1 November 2026), Microsoft provides 25% to 100% of your monthly fee when uptime falls below 99.9% over the calendar month (28 to 31 days). In a 30-day month, 44 minutes of covered downtime triggers the first credit tier."}},{"@type":"Question","name":"What is the deadline to file a Exchange Online SLA credit request?","acceptedAnswer":{"@type":"Answer","text":"End of the calendar month following the month of the incident. Primary clause: \"For claims related to all other Services, we must receive the claim by the end of the Applicable Period following the month in which the Incident occurred. For example, if the Incident occurred on February 15th, we must receive the claim and all required information by March 31st.\""}},{"@type":"Question","name":"Can reseller customers claim a Exchange Online SLA service credit?","acceptedAnswer":{"@type":"Answer","text":"For claims related to all other services, credit requests must be submitted within one month from the end of the billing month in which the incident occurred."}}]}]
 </script>
@@ -128,13 +128,15 @@
   }
 
 </style>
+<link rel="stylesheet" href="../../site.css">
 </head>
 <body>
 <header class="top">
-  <div class="in"><a class="brand" href="../../">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice.<span class="tb-more"> Independent of every vendor named here. Summaries are this site's reading; the vendor decides every claim.</span></p></div>
+  <div class="in"><a class="brand" href="../../">Downtime <b>Credit</b></a>
+    <nav class="tabs" aria-label="Site"><a href="../../credit/" aria-current="page">Outage at work</a><a href="../../flights/">Flight</a><a href="../../letters/security-deposit/">Deposit</a><a href="../../letters/final-paycheck/">Paycheck</a><details class="more"><summary>More</summary><div class="drop"><a href="../../letters/">All letters</a><a href="../../rules/">Rule book</a><a href="../../guides/">Guides</a><a href="../../sla/">Vendor SLAs</a><a href="../../about.html">About this site</a></div></details></nav>
+    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b><a href="../../credit/">Outage at work</a><a href="../../flights/">Flight</a><a href="../../letters/security-deposit/">Deposit</a><a href="../../letters/final-paycheck/">Paycheck</a><b>More</b><a href="../../letters/">All letters</a><a href="../../rules/">Rule book</a><a href="../../guides/">Guides</a><a href="../../sla/">Vendor SLAs</a><a href="../../about.html">About this site</a></nav></details></div>
+  <div class="trustbar"><p>Not legal advice, and free: what you type stays in your browser, and you send every letter yourself.</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="../../">Outage calculator</a><a href="../../sla/">Vendor SLAs</a><a href="../../guides/">Guides</a><a href="../../about.html">About</a></div></nav>
 
 <main class="in">
   <div class="hero">
@@ -143,7 +145,7 @@
     <p class="lede">The clauses below are quoted word for word from the Service Level Agreement for Microsoft Online Services (dated 1 November 2026, last checked 12 November 2026). The summary cards and the downtime minutes are this site's reading and arithmetic. Microsoft decides every claim, and a credit lowers a later bill or adds days of service; it is not cash. Not legal advice.</p>
     
     <div class="cta-row">
-      <a class="cta" href="../../?vendor=microsoft-365-exchange">Open interactive Exchange Online calculator &rarr;</a>
+      <a class="cta" href="../../credit/?vendor=microsoft-365-exchange">Open interactive Exchange Online calculator</a>
       <a class="cta-sec" href="../">Compare all vendor SLAs</a>
     </div>
   </div>
@@ -155,7 +157,7 @@
     <div class="fact"><span>Primary agreement</span><b><a href="https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services" rel="noopener">Service Level Agreement for Microsoft Online Services</a></b></div>
   </div>
 
-  <h2>Credit tiers &amp; minimum downtime minutes</h2>
+  <h2>Credit tiers and the downtime that reaches each one</h2>
   <div class="sheet">
     <p>The minutes below assume every user is affected. If only half your users are down, the minutes double.</p>
     <p class="swipe">Swipe sideways to see every column.</p>
@@ -180,19 +182,19 @@
 
   
 
-  <h2>Who cannot claim &amp; what is excluded</h2>
+  <h2>Who cannot claim, and what is left out</h2>
   <dl class="who"><dt>Bought through a reseller such as GoDaddy</dt><dd>Your provider, or the partner they buy from, asks Microsoft for you. Pick that in the statement.</dd><dt>Open and Open Value licences (bought through Microsoft volume licensing)</dt><dd>The credit is days of service, not money off the fee.</dd><dt>Trials, previews and betas</dt><dd>Not covered.</dd><dt>Free plans</dt><dd>Not covered.</dd><dt>Personal and Family plans</dt><dd>We found no credit term for Personal and Family plans. These plans are not under this business SLA. Not verified in Microsoft&#x27;s consumer terms.</dd></dl>
 
   <h2>Verbatim clauses from the agreement</h2>
   <p class="fine">Every quotation below is reproduced word-for-word from <a href="https://www.microsoft.com/licensing/docs/view/Service-Level-Agreements-SLA-for-Online-Services" rel="noopener">Service Level Agreement for Microsoft Online Services</a> (dated 1 November 2026, last checked 12 November 2026).</p>
   <div>
-      <h3>Uptime &amp; availability formula</h3>
+      <h3>How uptime is worked out</h3>
       <blockquote><p>“where Downtime is measured in user-minutes; that is, for each Applicable Period, Downtime is the sum of the length (in minutes) of each Incident that occurs during that Applicable Period multiplied by the number of users impacted by that Incident.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“User Minutes” means the total number of minutes in an Applicable Period, less all Scheduled Downtime, multiplied by the total number of users.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“For other services, (e.g. M365 E3) “Applicable Period” means the calendar month in which a Service Credit is owed.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <h3>Downtime definition</h3>
       <blockquote><p>“Downtime: Any period of time when users are unable to send or receive email with Outlook Web Access. There is no Scheduled Downtime for this service.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
-      <h3>Service credit terms &amp; caps</h3>
+      <h3>Service credit terms and limits</h3>
       <blockquote><p>“Service Credit” is the percentage of the Applicable Service Fees credited to you following Microsoft’s claim approval.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“Applicable Service Fees” means the total fees actually paid by you for a Service that are applied to the Applicable Period in which a Service Credit is owed.</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“Service Credits apply only to fees paid for the particular Service, Service Resource, or Service tier for which a Service Level has not been met.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
@@ -200,9 +202,9 @@
       <blockquote><p>“If we determine that a Service Credit is owed to you, we will apply the Service Credit to your Applicable Service Fees.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <h3>Claim filing deadline</h3>
       <blockquote><p>“For claims related to all other Services, we must receive the claim by the end of the Applicable Period following the month in which the Incident occurred. For example, if the Incident occurred on February 15th, we must receive the claim and all required information by March 31st.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
-      <h3>Reseller &amp; partner filing rule</h3>
+      <h3>Who files through a reseller or partner</h3>
       <blockquote><p>“For claims related to all other services, credit requests must be submitted within one month from the end of the billing month in which the incident occurred.”</p><cite>Microsoft Partner Center, dated 16 June 2026, last checked 12 November 2026.</cite></blockquote>
-      <h3>Exclusions &amp; eligibility clauses</h3>
+      <h3>What is excluded, and who can claim</h3>
       <blockquote><p>“Credit requests are accepted only from CSP direct and indirect providers. Requests aren&#x27;t accepted from indirect resellers.”</p><cite>Microsoft Partner Center, dated 16 June 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“Services purchased through Open, Open Value, and Open Value Subscription volume licensing agreements, and Services in an Office 365 Small Business Premium suite purchased in the form of a product key are not eligible for Service Credits based on service fees.”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
       <blockquote><p>“preview, pre-release, beta or trial versions ... (as determined by us) or to purchases made using Microsoft subscription credits”</p><cite>Service Level Agreement for Microsoft Online Services, dated 1 November 2026, last checked 12 November 2026.</cite></blockquote>
@@ -212,14 +214,20 @@
   <div class="sheet" style="margin-top:32px">
     <h3 style="margin-top:0">Ready to calculate your Exchange Online credit?</h3>
     <p style="margin:6px 0 14px">Enter your outage minutes and invoice fee in the browser calculator to generate a ready-to-send claim request and a deadline reminder you can add to your calendar.</p>
-    <a class="cta" href="../../?vendor=microsoft-365-exchange">Open interactive Exchange Online calculator &rarr;</a>
+    <a class="cta" href="../../credit/?vendor=microsoft-365-exchange">Open interactive Exchange Online calculator</a>
   </div>
 </main>
 
-<footer>
+<footer class="site">
   <div class="in">
+    <div class="cols">
+      <section><h2>Letters</h2><ul><li><a href="../../letters/service-credit/">Service credit after an outage</a></li><li><a href="../../letters/flight-refund/">Flight refund</a></li><li><a href="../../letters/security-deposit/">Security deposit</a></li><li><a href="../../letters/final-paycheck/">Final paycheck</a></li></ul></section>
+      <section><h2>Tools</h2><ul><li><a href="../../credit/">Outage credit calculator</a></li><li><a href="../../flights/" data-to-flights>Flight refund checker</a></li><li><a href="../../rules/">Rule book and CSV</a></li><li><a href="../../sla/">Vendor SLAs</a></li></ul></section>
+      <section><h2>Guides</h2><ul><li><a href="../../guides/">All guides</a></li><li><a href="../../guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="../../guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="../../guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>
+      <section><h2>This site</h2><ul><li><a href="../../about.html">About this site</a></li><li><a href="../../about.html#facts">How we check facts</a></li><li><a href="../../privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>
+    </div>
     <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
-    <p><a href="../../">Calculator</a> &middot; <a href="../">Vendor SLA directory</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="../../privacy.html">Privacy</a></p>
+    <p>Not legal advice. This site files nothing for you; you send every letter yourself.</p>
   </div>
 </footer>
 <script data-counter>

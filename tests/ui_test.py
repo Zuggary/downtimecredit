@@ -20,7 +20,8 @@ class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 h = functools.partial(Q, directory=SITE)
 srv = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), h); threading.Thread(target=srv.serve_forever, daemon=True).start()
-BASE = f"http://127.0.0.1:{PORT}/index.html"
+BASE = f"http://127.0.0.1:{PORT}/credit/index.html"   # the outage tool moved from / to /credit/ in TF12
+ROOTURL = f"http://127.0.0.1:{PORT}/"
 outside, errors, counter = [], [], []
 COUNTER = "https://static.cloudflareinsights.com/beacon.min.js"   # the one allowed outside file: the visit counter
 tmp = tempfile.mkdtemp()
@@ -532,7 +533,7 @@ with sync_playwright() as pw:
     # item 4: the publisher line, no GitHub link or handle
     m = open_page(ctxM); ft = m.inner_text("footer")
     ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: privacy@downtimecredit.com." in ft, "item 4: the publisher line in the footer")
-    html = open(os.path.join(SITE, "index.html")).read(); pv = open(os.path.join(SITE, "privacy.html")).read()
+    html = open(os.path.join(SITE, "credit", "index.html")).read(); pv = open(os.path.join(SITE, "privacy.html")).read()
     page_text = re.sub(r'<script\s+type=["\']application/ld\+json["\']>.*?</script>', "", html + pv, flags=re.S | re.I)
     page_text = re.sub(r"<style.*?</style>", "", page_text, flags=re.S)
     ok(not re.search(r'href="[^"]*github\.com/(?!customer-terms)', html + pv, re.I) and not re.search(r"(?<![\w.])@[A-Za-z0-9_]{2,}", page_text), "item 4: no author GitHub link or handle in the page or privacy page")
@@ -566,7 +567,7 @@ with sync_playwright() as pw:
     # TF6: the lien-sale guide helper runs in the browser and makes no request while it works
     reqs = []
     hp = ctxM.new_page(); hp.on("request", lambda r: reqs.append(r.url))
-    hp.goto(BASE.replace("index.html", "") + "guides/car-towed-lien-sale-money-california/"); hp.wait_for_selector("#h-go"); n0 = len(reqs)
+    hp.goto(ROOTURL + "guides/car-towed-lien-sale-money-california/"); hp.wait_for_selector("#h-go"); n0 = len(reqs)
     hp.fill("#h-name", "Rivera, Ana M"); hp.fill("#h-addr", "12 Oak Street"); hp.fill("#h-city", "Fresno, CA 93701"); hp.fill("#h-plate", "7ABC123"); hp.fill("#h-vin", "4F2"); hp.fill("#h-amt", "1,250.00"); hp.fill("#h-email", "a@example.com"); hp.fill("#h-phone", "555-0100")
     hp.click("#h-go"); txt = hp.input_value("#h-text"); ok(hp.evaluate("document.getElementById(\"h-text\").scrollTop") == 0, "TF6: the notes open at the first line")
     ok("2. Name or company name: Rivera, Ana M" in txt and "8. Refund amount requested" in txt and "$1,250.00" in txt and "10. VIN/HIN (last 3 characters): 4F2" in txt and "12. License plate number: 7ABC123" in txt, "TF6: the helper puts the typed details on the DMV form items")
@@ -576,14 +577,14 @@ with sync_playwright() as pw:
     ok("cannot look up" in hp.inner_text("main").lower(), "TF6: the page says it cannot look up a car")
     hp.close()
     # TF6: the state picker moves to the chosen state and says so for an unchecked state
-    sp = ctxM.new_page(); sp.goto(BASE.replace("index.html", "") + "guides/lien-sale-surplus-other-states/"); sp.wait_for_selector("#st-pick")
+    sp = ctxM.new_page(); sp.goto(ROOTURL + "guides/lien-sale-surplus-other-states/"); sp.wait_for_selector("#st-pick")
     sp.select_option("#st-pick", "s-florida"); ok("Florida" in sp.inner_text("#st-msg") and sp.evaluate("document.activeElement.id") == "s-florida", "TF6: the picker goes to the Florida section")
     sp.select_option("#st-pick", "other"); ok("not checked your state yet" in sp.inner_text("#st-msg"), "TF6: the picker says an unchecked state is unchecked")
     sp.close()
     # TF6: the tow yard letter builder runs in the browser, makes no request and adds the chosen state's sentence
     reqs2 = []
     ap = ctxM.new_page(); ap.on("request", lambda r: reqs2.append(r.url))
-    ap.goto(BASE.replace("index.html", "") + "guides/ask-the-tow-yard-where-the-money-went/"); ap.wait_for_selector("#a-go"); m0 = len(reqs2)
+    ap.goto(ROOTURL + "guides/ask-the-tow-yard-where-the-money-went/"); ap.wait_for_selector("#a-go"); m0 = len(reqs2)
     ap.fill("#a-name", "Rivera, Ana"); ap.fill("#a-yard", "Ace Towing, 1 Main St"); ap.fill("#a-car", "2009 Honda Civic"); ap.fill("#a-id", "7ABC123"); ap.select_option("#a-state", "fl"); ap.click("#a-go")
     lt = ap.input_value("#a-text")
     ok("Florida Statutes section 713.78" in lt and "Ace Towing, 1 Main St" in lt and "2009 Honda Civic" in lt and "Rivera, Ana" in lt and "itemized statement" in lt, "TF6: the letter holds the typed details and the state sentence")
@@ -591,7 +592,7 @@ with sync_playwright() as pw:
     ok(len(reqs2) == m0, f"TF6: the letter builder made no network request ({len(reqs2) - m0})")
     ap.close()
     # TF7-A: the unclaimed property picker goes to the state and says plainly when a state is unchecked
-    up = ctxM.new_page(); up.goto(BASE.replace("index.html", "") + "guides/unclaimed-property-by-state/"); up.wait_for_selector("#u-pick")
+    up = ctxM.new_page(); up.goto(ROOTURL + "guides/unclaimed-property-by-state/"); up.wait_for_selector("#u-pick")
     up.select_option("#u-pick", "u-ohio") if False else up.select_option("#u-pick", "u-oh")
     ok("Ohio" in up.inner_text("#u-msg") and up.evaluate("document.activeElement.id") == "u-oh", "TF7: the picker goes to the Ohio section")
     up.select_option("#u-pick", "other"); ok("not checked your state yet" in up.inner_text("#u-msg"), "TF7: the picker says an unchecked state is unchecked")
@@ -600,7 +601,7 @@ with sync_playwright() as pw:
     # TF7-B: the deposit letter builder runs in the browser, makes no request, and adds the chosen state's sentence
     reqs3 = []
     dp = ctxM.new_page(); dp.on("request", lambda r: reqs3.append(r.url))
-    dp.goto(BASE.replace("index.html", "") + "guides/security-deposit-return-deadlines/"); dp.wait_for_selector("#d-go"); k0 = len(reqs3)
+    dp.goto(ROOTURL + "guides/security-deposit-return-deadlines/"); dp.wait_for_selector("#d-go"); k0 = len(reqs3)
     dp.fill("#d-name", "Rivera, Ana"); dp.fill("#d-ll", "Oak Property Mgmt"); dp.fill("#d-unit", "5 Elm St Apt 2"); dp.fill("#d-out", "1 March 2026"); dp.fill("#d-amt", "1,200.00"); dp.select_option("#d-state", "ny"); dp.click("#d-go")
     dt = dp.input_value("#d-text")
     ok("New York General Obligations Law section 7-108" in dt and "Oak Property Mgmt" in dt and "$1,200.00" in dt and "itemized statement" in dt, "TF7: the deposit letter holds the typed details and the state sentence")
@@ -610,7 +611,7 @@ with sync_playwright() as pw:
     # TF7-C: the final pay letter builder runs in the browser, makes no request, and picks the sentence by how the job ended
     reqs4 = []
     pp = ctxM.new_page(); pp.on("request", lambda r: reqs4.append(r.url))
-    pp.goto(BASE.replace("index.html", "") + "guides/final-paycheck-deadlines/"); pp.wait_for_selector("#p-go"); z0 = len(reqs4)
+    pp.goto(ROOTURL + "guides/final-paycheck-deadlines/"); pp.wait_for_selector("#p-go"); z0 = len(reqs4)
     pp.fill("#p-name", "Rivera, Ana"); pp.fill("#p-emp", "Acme Co, 1 Main St"); pp.fill("#p-end", "14 March 2026"); pp.select_option("#p-how", "discharged"); pp.select_option("#p-state", "tx"); pp.click("#p-go")
     pt = pp.input_value("#p-text")
     ok("sixth day after the date of discharge" in pt and "Acme Co, 1 Main St" in pt and "14 March 2026" in pt, "TF7: the pay letter picks the discharge sentence for Texas")
@@ -621,7 +622,7 @@ with sync_playwright() as pw:
     # TF7-D: the IRS date calculator does the two-date arithmetic in the browser, makes no request
     reqs5 = []
     ip = ctxM.new_page(); ip.on("request", lambda r: reqs5.append(r.url))
-    ip.goto(BASE.replace("index.html", "") + "guides/federal-tax-refund-deadline/"); ip.wait_for_selector("#c-go"); y0 = len(reqs5)
+    ip.goto(ROOTURL + "guides/federal-tax-refund-deadline/"); ip.wait_for_selector("#c-go"); y0 = len(reqs5)
     ip.fill("#c-filed", "2024-04-15"); ip.fill("#c-paid", "2024-04-15"); ip.click("#c-go")
     ct = ip.inner_text("#c-out")
     ok("April 15, 2027" in ct and "April 15, 2026" in ct and "The later of these is April 15, 2027" in ct, "TF7: the IRS calculator picks the later of the two dates")
@@ -860,7 +861,7 @@ with sync_playwright() as pw:
             path = u[len("https://www.downtimecredit.com"):].split("?")[0].split("#")[0]; path = "/index.html" if path == "/" else path; f = os.path.join(SITE, path.lstrip("/"))
             rt.fulfill(status=200, path=f, content_type=mimetypes.guess_type(f)[0] or "application/octet-stream") if os.path.isfile(f) else rt.fulfill(status=404, body="")
         else: rt.abort()
-    ctxS2.route("**/*", rl2); ls = ctxS2.new_page(); ls.goto("https://www.downtimecredit.com/index.html"); ls.wait_for_selector("#statement[data-ready]", state="attached"); ls.wait_for_function("window.__rs.length >= 2")
+    ctxS2.route("**/*", rl2); ls = ctxS2.new_page(); ls.goto("https://www.downtimecredit.com/credit/index.html"); ls.wait_for_selector("#statement[data-ready]", state="attached"); ls.wait_for_function("window.__rs.length >= 2")
     ls.evaluate("document.addEventListener('click', e => { if (e.target.closest('a[href^=\"mailto:\"]')) e.preventDefault(); })")
     [ls.fill(a, b2) for a, b2 in [("#all", "7777"), ("#g0u", "3000"), ("#g0h", "5"), ("#g0m", "0"), ("#fee", "4321.09"), ("#c-res", "zzqx.example")]]
     ls.click("#sum-copy"); ls.wait_for_timeout(300); ls.click("#mail-it"); ls.click("#mail-self")
@@ -922,7 +923,7 @@ with sync_playwright() as pw:
             else: rt.fulfill(status=404, body="")
         else: liveOut.append(u); rt.abort()
     ctxL.route("**/*", rl)
-    pl = ctxL.new_page(); watch(pl); pl.goto(LIVE + "/index.html"); pl.wait_for_selector("#statement[data-ready]", state="attached")
+    pl = ctxL.new_page(); watch(pl); pl.goto(LIVE + "/credit/index.html"); pl.wait_for_selector("#statement[data-ready]", state="attached")
     pl.wait_for_function("window.__rs.length >= 2")
     hostn = pl.evaluate("location.hostname"); eq(hostn, "www.downtimecredit.com", "steps (live): the page runs on the live host name")
     hl1 = pl.evaluate("history.length")
@@ -941,19 +942,19 @@ with sync_playwright() as pw:
     allp = json.dumps(rs)
     ok(not any(w in allp for w in ["7777", "4321", "zzqx", "Qwxz", "3000", "Google Drive", "2026"]), "steps (live): nothing typed or picked is in any path")
     eq(pl.evaluate("window.__push"), 0, "steps (live): pushState is never called")
-    eq(pl.evaluate("location.href"), LIVE + "/index.html", "steps (live): the visible address is the original after the flows"); eq(pl.evaluate("history.length"), hl1, "steps (live): the history length is unchanged")
-    pl.click("a[href='#incidents']"); ok(pl.url.endswith("/index.html#incidents"), "steps (live): hash anchors work"); pl.go_back(); eq(pl.url, LIVE + "/index.html", "steps (live): Back returns to the page, not to a step path")
+    eq(pl.evaluate("location.href"), LIVE + "/credit/index.html", "steps (live): the visible address is the original after the flows"); eq(pl.evaluate("history.length"), hl1, "steps (live): the history length is unchanged")
+    pl.click("a[href='#incidents']"); ok(pl.url.endswith("/index.html#incidents"), "steps (live): hash anchors work"); pl.go_back(); eq(pl.url, LIVE + "/credit/index.html", "steps (live): Back returns to the page, not to a step path")
     ok(not any("/step/" in u for u in liveReq) and not liveOut, f"steps (live): no request for a step path and nothing else outside ({liveOut[:3]})")
     pl.close()
     # the example flow and a restored incident record no start or result step
-    pe = ctxL.new_page(); pe.goto(LIVE + "/index.html"); pe.wait_for_selector("#statement[data-ready]", state="attached"); pe.wait_for_function("window.__rs.length >= 2")
+    pe = ctxL.new_page(); pe.goto(LIVE + "/credit/index.html"); pe.wait_for_selector("#statement[data-ready]", state="attached"); pe.wait_for_function("window.__rs.length >= 2")
     pe.click("#ex-toggle"); pe.click("#mode-g"); pe.click("#g-ex")
     eq([c[0] for c in pe.evaluate("window.__rs")[0::2]], ["/step/arrived", "/step/example"], "steps (live): the example records only 'example'")
     pe.close()
     # ad arrivals: an exact fixed campaign value counts one fixed step; anything else counts nothing and never reaches a path
     for q, want in [("?utm_campaign=hook-credit", ["arrived", "ad-hook-credit"]), ("?utm_campaign=m365-nov&utm_source=reddit", ["arrived", "ad-m365-nov"]), ("?utm_campaign=hook-364", ["arrived"]),
                     ("?utm_campaign=hook-credit/../x", ["arrived"]), ("?utm_campaign=HOOK-CREDIT", ["arrived"]), ("?utm_campaign=hook-credit%20", ["arrived"]), ("?utm_campaign=" + "a" * 3000, ["arrived"]), ("?utm_campaign=m365-nov%2Fx", ["arrived"]), ("?utm_campaign=", ["arrived"])]:
-        pa = ctxL.new_page(); pa.goto(LIVE + "/index.html" + q); pa.wait_for_selector("#statement[data-ready]", state="attached"); pa.wait_for_function("window.__rs.length >= 2"); pa.wait_for_timeout(200)
+        pa = ctxL.new_page(); pa.goto(LIVE + "/credit/index.html" + q); pa.wait_for_selector("#statement[data-ready]", state="attached"); pa.wait_for_function("window.__rs.length >= 2"); pa.wait_for_timeout(200)
         rsa = pa.evaluate("window.__rs"); got = [c[0][len("/step/"):] for c in rsa[0::2]]
         eq(got, want, f"ads: {q[:40]} counts {want}")
         paths = json.dumps([c[0] for c in rsa[0::2]])
@@ -962,7 +963,7 @@ with sync_playwright() as pw:
         eq(pa.evaluate("location.search"), q, f"ads: the visitor's address keeps its query string"); pa.close()
     ctxR = b.new_context(viewport={"width": 375, "height": 812}); ctxR.route("**/*", rl); ctxR.add_init_script("try { if (!localStorage.getItem('seeded')) { localStorage.setItem('seeded', '1'); localStorage.setItem('downtimecredit.incidents.v1', JSON.stringify({format:'downtimecredit-incidents',version:1,incidents:[{id:'k-1',vendorId:'microsoft-365-exchange',title:'KEEP',start:'2026-11-12',inputs:{allUsers:50,groups:[{affectedUsers:50,downMinutes:840}],feeCents:62500}}]})); } } catch (e) {}")
     ctxR.add_init_script("window.__rs = []; (function () { var o = history.replaceState; history.replaceState = function (s, t, u) { window.__rs.push(String(u)); return o.apply(this, arguments); }; })();")
-    pr = ctxR.new_page(); pr.goto(LIVE + "/index.html"); pr.wait_for_selector("#statement[data-ready]", state="attached"); pr.wait_for_function("window.__rs.length >= 2")
+    pr = ctxR.new_page(); pr.goto(LIVE + "/credit/index.html"); pr.wait_for_selector("#statement[data-ready]", state="attached"); pr.wait_for_function("window.__rs.length >= 2")
     ok("KEEP" in pr.inner_text("#inc-list") and pr.evaluate("window.__rs")[0::2] == ["/step/arrived"], "steps (live): a restored saved incident records no step"); ctxR.close()
     ctxL.close()
 
@@ -971,8 +972,8 @@ with sync_playwright() as pw:
     pd = open_page(ctxD, "?today=2026-11-13")
     eq(pd.locator("nav.doors").count(), 0, "masthead: no two-tab bar on the front page")
     eq(pd.locator("a[data-to-flights]").count(), 2, "flights: a card link and a footer link")
-    eq(pd.locator("a[data-to-flights]").first.get_attribute("href"), "flights/", "flights: the card links to flights/")
-    eq(pd.locator("header.top nav a").count(), 4, "masthead: Vendor SLAs, Guides, Your incidents, Who runs this")
+    eq(pd.locator("a[data-to-flights]").first.get_attribute("href"), "../flights/", "flights: the card links to ../flights/ (the tool is at /credit/ since TF12)")
+    eq(pd.locator("header.top nav.tabs > a").count(), 4, "masthead: four tabs named by the problem (TF12)")
     eq(pd.evaluate("document.documentElement.scrollWidth - innerWidth"), 0, "masthead: no horizontal scroll at 375")
     pd.set_viewport_size({"width": 1024, "height": 768})
     cd_top = pd.evaluate("document.getElementById('cd').getBoundingClientRect().top")
@@ -1005,7 +1006,7 @@ with sync_playwright() as pw:
         else: rt.abort()
     ctxDL.route("**/*", rl_doors)
     pdl = ctxDL.new_page(); watch(pdl)
-    pdl.goto(LIVE + "/index.html"); pdl.wait_for_selector("#statement[data-ready]", state="attached")
+    pdl.goto(LIVE + "/credit/index.html"); pdl.wait_for_selector("#statement[data-ready]", state="attached")
     pdl.wait_for_function("JSON.parse(sessionStorage.getItem('__rs_all') || '[]').includes('/step/arrived')")
     pdl.click("a[data-to-flights]")
     pdl.wait_for_url(LIVE + "/flights/")
@@ -1060,7 +1061,7 @@ with sync_playwright() as pw:
 
     b.close()
 srv.shutdown()
-ok(not errors, f"0 console errors ({errors[:3]})"); ok(not outside, f"0 outside requests besides the visit counter ({outside[:3]})"); ok(not counter, "the visit counter does not load on a local copy"); src = open(os.path.join(SITE, "index.html")).read(); ok(src.count("https://static.cloudflareinsights.com/beacon.min.js") == 1 and "downtimecredit\\.com$/.test(location.hostname)" in src, "one outside script in the page: the visit counter, on the live host only")
+ok(not errors, f"0 console errors ({errors[:3]})"); ok(not outside, f"0 outside requests besides the visit counter ({outside[:3]})"); ok(not counter, "the visit counter does not load on a local copy"); src = open(os.path.join(SITE, "credit", "index.html")).read(); ok(src.count("https://static.cloudflareinsights.com/beacon.min.js") == 1 and "downtimecredit\\.com$/.test(location.hostname)" in src, "one outside script in the page: the visit counter, on the live host only")
 for f in fails[:30]: print("FAIL", f)
 print(f"first phone screen, filled with case 22: about {words} words")
 print(f"{passed} passed, {failed} failed")

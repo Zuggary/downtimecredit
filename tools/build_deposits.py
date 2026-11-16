@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_pages as bp
 import build_surplus as bs
+import letter_rules as lr
 
 ROOT = bp.ROOT
 READ = bs.READ
@@ -104,20 +105,49 @@ LETTER = r"""
 """
 
 
+
+ROWS = [
+    ("California", "21 calendar days after the tenant has vacated, subject to the statute's conditions on the start date", "Itemized statement and the remaining deposit. The statute also covers receipts and similar documents.", "ca"),
+    ("Florida", "If the landlord does not intend to claim any of the deposit: 15 days to return it. If the landlord intends a claim: 30 days to give written notice by certified mail.", "No claim: the deposit, with interest if otherwise required. Claim: written notice of the claim and the reason. The statute then covers the tenant's objection and the balance.", "fl"),
+    ("Michigan", "30 days after the termination of occupancy, for the notice of damages", "If the landlord claims damage or another obligation against the deposit: a notice of damages with an itemized list. The statute also sets a response time for the tenant.", "mi"),
+    ("New York", "14 days after the tenant has vacated", "Itemized statement and the remaining deposit. The statute says the landlord forfeits the right to keep any of it if the statement and deposit are late.", "ny"),
+    ("North Carolina", "30 days after termination of the tenancy and delivery of possession. The statute allows more time in some cases.", "Itemized damage in writing with the balance.", "nc"),
+    ("Ohio", "30 days after termination of the rental agreement and delivery of possession", "An itemized written notice of any deduction, with the amount due.", "oh"),
+    ("Texas", "On or before the 30th day after the tenant surrenders the premises, except as another section provides", "The refund. If the landlord keeps any part, a written description and itemized list of deductions, with some exceptions.", "tx"),
+]
+
+DUE_BOX = """
+<section id="due" aria-labelledby="h-due">
+  <h2 id="h-due">Mark the date</h2>
+  <p>Pick the state and type the day you moved out. Where the statute gives a plain day count, this works out the landlord's deadline and saves it to your calendar. Where it does not, it says so. It runs in your browser; nothing is sent.</p>
+  <div class="hform">
+    <div class="f"><label for="m-state">State</label><select id="m-state"><option value="">Choose a state</option><option value="ca">California</option><option value="fl">Florida</option><option value="mi">Michigan</option><option value="nc">North Carolina</option><option value="ny">New York</option><option value="oh">Ohio</option><option value="tx">Texas</option><option value="other">Another state</option></select></div>
+    <div class="f"><label for="m-out">Day you moved out and returned the keys</label><input id="m-out" type="date" autocomplete="off"></div>
+  </div>
+  <p class="due-out" id="m-txt" role="status">Pick a state to see the landlord's deadline.</p>
+  <p><button type="button" class="cta-sec" id="m-cal" hidden>Save the date to your calendar</button></p>
+  <p class="fine">The <a href="../../letters/security-deposit/">deposit letter</a> stamps the same date on the letter. This site's count, not legal advice.</p>
+</section>
+<script src="../../engine.js"></script>
+<script src="../../letters/letter.js"></script>
+<script>
+(function () {
+  "use strict";
+  var D = window.DTC;
+  """ + lr.deposit_vars() + """
+  LETTER.dueBox({ out: "m-txt", cal: "m-cal", uid: "deposit", empty: "Pick a state to see the landlord's deadline.", fields: [{ id: "m-state", key: "state" }, { id: "m-out", key: "out", date: true }],
+    due: """ + lr.DEPOSIT_DUE_JS + """ });
+}());
+</script>
+"""
+
+
 def sec(k, name, intro, quotes, note=""):
     return f'  <h2 id="d-{k}">{esc(name)}</h2>\n  <p>{intro}</p>\n  {"".join(quotes)}\n  {note}\n'
 
 
 def page():
-    rows = [
-        ("California", "21 calendar days after the tenant has vacated, subject to the statute's conditions on the start date", "Itemized statement and the remaining deposit. The statute also covers receipts and similar documents.", "ca"),
-        ("Florida", "If the landlord does not intend to claim any of the deposit: 15 days to return it. If the landlord intends a claim: 30 days to give written notice by certified mail.", "No claim: the deposit, with interest if otherwise required. Claim: written notice of the claim and the reason. The statute then covers the tenant's objection and the balance.", "fl"),
-        ("Michigan", "30 days after the termination of occupancy, for the notice of damages", "If the landlord claims damage or another obligation against the deposit: a notice of damages with an itemized list. The statute also sets a response time for the tenant.", "mi"),
-        ("New York", "14 days after the tenant has vacated", "Itemized statement and the remaining deposit. The statute says the landlord forfeits the right to keep any of it if the statement and deposit are late.", "ny"),
-        ("North Carolina", "30 days after termination of the tenancy and delivery of possession. The statute allows more time in some cases.", "Itemized damage in writing with the balance.", "nc"),
-        ("Ohio", "30 days after termination of the rental agreement and delivery of possession", "An itemized written notice of any deduction, with the amount due.", "oh"),
-        ("Texas", "On or before the 30th day after the tenant surrenders the premises, except as another section provides", "The refund. If the landlord keeps any part, a written description and itemized list of deductions, with some exceptions.", "tx"),
-    ]
+    rows = ROWS
     tbl = "".join(f'<tr><th scope="row"><a href="#d-{k}">{n}</a></th><td>{d}</td><td>{w}</td><td><a href="{esc(SRC[k][1])}" rel="noopener">{esc(SRC[k][0])}</a></td></tr>' for n, d, w, k in rows)
     secs = "".join([
         sec("ca", "California", "California's deposit statute gives the landlord a deadline to send an itemized statement and return the rest.", [Q["ca"]], "<p>The statute has more conditions, exceptions and documents the landlord must send. This site quoted the main rule and did not summarize the rest.</p>"),
@@ -133,7 +163,7 @@ def page():
     <p><b>Start here.</b> Find the state where you rented, read the deadline, then build a letter asking for your deposit or an itemized statement.</p>
     <p class="fine">This site cannot say whether your landlord owes you money or how much. The statutes have exceptions and extra rules. This page is information, not legal advice. A legal aid office or a lawyer can tell you your options.</p>
   </div>
-  <p><a href="#d-ca">Jump to the state rules</a> &middot; <a href="#helper">Jump to the letter builder</a> &middot; <a href="#not-listed">Your state not listed?</a></p>
+  <ul class="jumps"><li><a href="#d-ca">The state rules</a></li><li><a href="#helper">The letter builder</a></li><li><a href="#due">Mark the date</a></li><li><a href="#not-listed">Your state not listed?</a></li></ul>
 
   <h2>Return deadlines in seven states</h2>
   <p>Each row shows the main return rule this site read in the state's law. Each statute has exceptions and extra conditions that this site did not summarize. The deadline and what the landlord must send differ by state.</p>
@@ -141,6 +171,7 @@ def page():
   <p>This site's reading: each statute names its own start. California and New York say the tenant has vacated. Florida says vacating for termination of the lease. Michigan says termination of occupancy. North Carolina and Ohio say termination of the tenancy or rental agreement and delivery of possession. Texas says the tenant surrenders the premises. This site's suggestion: keep proof of the day you left, the day you returned the keys and the address you gave the landlord.</p>
 
 {secs}
+{DUE_BOX}
 {LETTER}
 
   <h2>After you send it</h2>

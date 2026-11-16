@@ -1,0 +1,9 @@
+exclude:
+  - README.md
+  - NOTES.md
+  - tests
+  - tools
+  - design
+  - refs
+  - shots
+  - og-source.html

@@ -8,8 +8,8 @@
 <meta name="description" content="What downtimecredit.com stores, counts and shows: nothing you type leaves your browser; a cookie-free visit counter; and how ads from Google AdSense may work.">
 <link rel="canonical" href="https://www.downtimecredit.com/privacy.html">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <style>
   @font-face { font-family: "DM Serif DC"; src: url("fonts/dm-serif-display-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
   @font-face { font-family: "Hanken DC"; src: url("fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
@@ -101,26 +101,28 @@
   .guide h2 { margin-top: 36px; }
   .guide p, .guide li { max-width: 46em; }
 </style>
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
 <header class="top">
-  <div class="in"><a class="brand" href="./">Downtime Credit</a></div>
-  <div class="trustbar"><p>Not legal advice. What you type stays in your browser. Anonymous visit counts and ads are explained below.</p></div>
+  <div class="in"><a class="brand" href="./">Downtime <b>Credit</b></a>
+    <nav class="tabs" aria-label="Site"><a href="credit/">Outage at work</a><a href="flights/">Flight</a><a href="letters/security-deposit/">Deposit</a><a href="letters/final-paycheck/">Paycheck</a><details class="more"><summary>More</summary><div class="drop"><a href="letters/">All letters</a><a href="rules/">Rule book</a><a href="guides/">Guides</a><a href="sla/">Vendor SLAs</a><a href="about.html">About this site</a></div></details></nav>
+    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b><a href="credit/">Outage at work</a><a href="flights/">Flight</a><a href="letters/security-deposit/">Deposit</a><a href="letters/final-paycheck/">Paycheck</a><b>More</b><a href="letters/">All letters</a><a href="rules/">Rule book</a><a href="guides/">Guides</a><a href="sla/">Vendor SLAs</a><a href="about.html">About this site</a></nav></details></div>
+  <div class="trustbar"><p>Not legal advice, and free: what you type stays in your browser, and you send every letter yourself.</p></div>
 </header>
-<nav class="subnav" aria-label="Site"><div class="in"><a href="./">Calculator</a><a href="sla/">SLAs</a><a href="guides/">Guides</a><a href="about.html">About</a></div></nav>
 <main class="in guide">
   <div class="hero">
 <h1>Privacy</h1>
-  <p class="fine">Last updated 14 November 2026.</p>
+  <p class="fine">Last updated 15 November 2026.</p>
   <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
   <p>Short version: what you type stays in your browser. We have no server that receives it, no accounts and no sign-in. Two outside services may be involved: Cloudflare Web Analytics counts visits and anonymous button totals without cookies, and Google AdSense may show ads and use cookies to do it.</p>
   <h2>What the site stores</h2>
-  <p>If you save incidents, the list is kept in your own browser's local storage on your device. It never leaves your device unless you export it to a file yourself. Clearing the list, or your browser's site data, deletes it. If your browser blocks storage, the list lasts only for your visit.</p>
+  <p>If you save claims on the outage tool (My saved claims), the list is kept in your own browser's local storage on your device. It never leaves your device unless you export it to a file yourself. Clearing the list, or your browser's site data, deletes it. If your browser blocks storage, the list lasts only for your visit.</p>
   <h2>What we receive</h2>
-  <p>Nothing you type. The page does every sum in your browser. The page itself sets no cookies; ad cookies are covered under Ads.</p>
+  <p>Nothing you type. The pages do every sum and fill every letter in your browser. A letter you save, print or copy, and a calendar file, are made in your browser and stay on your device. The page itself sets no cookies; ad cookies are covered under Ads.</p>
   <p>The mail buttons open your own mail program with the text filled in. The page does not send mail and never sees the address you send it to. The record is a file made in your browser and saved on your device.</p>
   <h2>Counting visits</h2>
-  <p>The home page and the flights pages load one small script from Cloudflare Web Analytics to count visits. Apart from ads (see below), it is the only file the site loads from another company. It sets no cookie and stores nothing in your browser. Cloudflare says it does not fingerprint visitors. It sees the page address without anything after a question mark, the site you came from, your country, your browser, your operating system, your device type and how fast the page loaded. To make the request, your browser shows Cloudflare your IP address, as it does to any web server. It does not see your numbers, your request letter or your saved incidents.</p>
+  <p>The tools, letters and guides load one small script from Cloudflare Web Analytics to count visits (this page and the About page do not). Apart from ads (see below), it is the only file the site loads from another company. It sets no cookie and stores nothing in your browser. Cloudflare says it does not fingerprint visitors. It sees the page address without anything after a question mark, the site you came from, your country, your browser, your operating system, your device type and how fast the page loaded. To make the request, your browser shows Cloudflare your IP address, as it does to any web server. It does not see your numbers, your request letter or your saved incidents.</p>
   <p>The page also counts anonymous totals for a fixed list of steps. Each step is one fixed word from a short list in the page's code, such as "copied". The word never holds a number, a date, a name or anything else you typed.</p>
   <h3>Steps counted on the outage tool</h3>
   <ul>
@@ -129,8 +131,14 @@
     <li>Used the example, opened the request, copied it, or downloaded the calendar file.</li>
     <li>Copied a summary, opened a mail to IT or to yourself, pressed Email me this result or Save as a picture, or downloaded the record.</li>
     <li>Saved or exported an incident.</li>
-    <li>Opened the car-towed guide from the card on the home page.</li>
+    <li>Opened the car-towed guide from the card on the outage tool.</li>
     <li>Arrived from one of our own ads, by the ad's fixed name.</li>
+  </ul>
+  <h3>Steps counted on the home page, the letters and the rule book</h3>
+  <ul>
+    <li>Which of the four rows on the home page you opened: outage, flight, deposit or paycheck.</li>
+    <li>Started typing into a letter, copied it, saved it as text, or saved its date to your calendar. What you typed and the date are never sent.</li>
+    <li>Downloaded the rule book's CSV file.</li>
   </ul>
   <h3>Steps counted on the flights pages</h3>
   <ul>
@@ -152,10 +160,16 @@
   <p>Downtime Credit is not legal advice and has no link to any vendor.</p>
   </div>
 </main>
-<footer>
+<footer class="site">
   <div class="in">
-    <p>Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>. Not a law firm. No link to any vendor.</p>
-    <p><a href="./">Calculator</a> &middot; <a href="guides/">Guides</a> &middot; <a href="sla/">Vendor SLAs</a> &middot; <a href="flights/">Flight refunds</a> &middot; <a href="about.html">Who runs this</a></p>
+    <div class="cols">
+      <section><h2>Letters</h2><ul><li><a href="letters/service-credit/">Service credit after an outage</a></li><li><a href="letters/flight-refund/">Flight refund</a></li><li><a href="letters/security-deposit/">Security deposit</a></li><li><a href="letters/final-paycheck/">Final paycheck</a></li></ul></section>
+      <section><h2>Tools</h2><ul><li><a href="credit/">Outage credit calculator</a></li><li><a href="flights/" data-to-flights>Flight refund checker</a></li><li><a href="rules/">Rule book and CSV</a></li><li><a href="sla/">Vendor SLAs</a></li></ul></section>
+      <section><h2>Guides</h2><ul><li><a href="guides/">All guides</a></li><li><a href="guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>
+      <section><h2>This site</h2><ul><li><a href="about.html">About this site</a></li><li><a href="about.html#facts">How we check facts</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>
+    </div>
+    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Not legal advice. This site files nothing for you; you send every letter yourself.</p>
   </div>
 </footer>
 </body>
