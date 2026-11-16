@@ -39,6 +39,7 @@ sm = open(os.path.join(ROOT, "sitemap.xml")).read()
 titles = {}
 for p in pages:
     s = open(p, encoding="utf-8").read(); rel = os.path.relpath(p, ROOT); url = "/" + os.path.dirname(rel) + "/" if os.path.dirname(rel) else "/" + rel
+    if url.endswith(".html"): url = url[:-5]   # TF15: clean addresses, /about not /about.html
     t = re.search(r"<title>(.*?)</title>", s, re.S); ok(bool(t) and len(t.group(1)) > 15, rel + ": title")
     if t: ok(t.group(1) not in titles, rel + ": title is unique"); titles[t.group(1)] = rel
     ok(bool(re.search(r'<meta name="description" content="[^"]{60,}', s)), rel + ": description")

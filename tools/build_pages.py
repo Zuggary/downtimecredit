@@ -785,8 +785,33 @@ def chrome(content: str, path: Path) -> str:
     return content
 
 
+def clean_urls(content: str) -> str:
+    """TF15: internal links, canonicals, og:url and sitemap entries use clean addresses: / and /path, never index.html or .html."""
+    def fix_path(path: str) -> str:
+        if path.endswith("index.html"):
+            path = path[: -len("index.html")] or "./"
+        elif path.endswith(".html"):
+            path = path[:-5]
+        return path
+    def attr(m):
+        a, val = m.group(1), m.group(2)
+        if val.startswith(("http:", "https:", "//", "mailto:", "tel:", "#", "data:", "javascript:")) and not val.startswith(SITE_ORIGIN):
+            return m.group(0)
+        if a == "content" and not val.startswith(SITE_ORIGIN):
+            return m.group(0)
+        base, sep, frag = val.partition("#")
+        base, qs, q = base.partition("?")
+        return f'{a}="{fix_path(base)}{qs}{q}{sep}{frag}"'
+    content = re.sub(r'\b(href|content)="([^"]*)"', attr, content)
+    content = re.sub(re.escape(SITE_ORIGIN) + r'(/[^"\s<#?]*?)index\.html', lambda m: SITE_ORIGIN + m.group(1), content)
+    content = re.sub(re.escape(SITE_ORIGIN) + r'(/[^"\s<#?]*?)\.html(?=["\s<#?])', lambda m: SITE_ORIGIN + m.group(1), content)
+    return content
+
+
 def write_if_changed(path: Path, content: str) -> None:
     content = chrome(content, path)
+    if path.suffix in (".html", ".xml"):
+        content = clean_urls(content)
     if "<table" in content:
         content = label_tables(content)
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -13,9 +13,15 @@ def main():
     for rel in HAND:
         path = bp.ROOT / rel
         src = path.read_text(encoding="utf-8")
-        out = bp.chrome(src, path)
+        out = bp.clean_urls(bp.chrome(src, path))
         if out != src:
             path.write_text(out, encoding="utf-8")
+    for rel in ["credit/index.html", "about.html"]:
+        path = bp.ROOT / rel
+        if path.exists():
+            src = path.read_text(encoding="utf-8"); out = bp.clean_urls(src)
+            if out != src:
+                path.write_text(out, encoding="utf-8")
     print(f"Shared header and footer on {len(HAND)} hand pages.")
 
 
