@@ -272,3 +272,8 @@ footer.site { background: var(--ink); }
 .chip-ask { background: #D5E1FF; color: #14308F; }
 .vrow .chip { font-size: 14.5px; }
 .letter { background: #FFFEFC; }
+
+/* TF14: the mark beside the name */
+.brand .mk { width: 30px; height: 30px; margin-right: 9px; vertical-align: -7px; flex: none; }
+@media (min-width: 900px) { .brand .mk { width: 34px; height: 34px; vertical-align: -9px; } }
+.brand, .brand:visited { white-space: nowrap; }

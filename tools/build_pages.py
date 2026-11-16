@@ -726,7 +726,7 @@ def site_header(p: str, cur: str = "", trust_p: str = "") -> str:
     tabs = "".join(a(h, t) for h, t in TABS)
     more = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in MORE)
     plain = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in TABS)
-    return (f'<header class="top">\n  <div class="in"><div class="mast"><a class="brand" href="{p or "./"}">Downtime <b>Credit</b></a><span class="tagline">{TAGLINE}</span></div>\n'
+    return (f'<header class="top">\n  <div class="in"><div class="mast"><a class="brand" href="{p or "./"}"><svg class="mk" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#2447D8"/><rect x="12" y="20" width="38" height="28" rx="4" fill="#fff"/><path d="M14.5 23.5L31 37l16.5-13.5" fill="none" stroke="#2447D8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="19" r="9" fill="#F2A900" stroke="#fff" stroke-width="3"/></svg>Downtime <b>Credit</b></a><span class="tagline">{TAGLINE}</span></div>\n'
             f'    <nav class="tabs" aria-label="Site">{tabs}<details class="more"><summary>More</summary><div class="drop">{more}</div></details></nav>\n'
             f'    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b>{plain}<b>More</b>{more}</nav></details></div>\n'
             f'  <div class="trustbar">{trust_p or "<p>" + TRUST_LINE + "</p>"}</div>\n</header>')
@@ -776,6 +776,12 @@ def chrome(content: str, path: Path) -> str:
         pic = (f'<figure class="margin-art" aria-hidden="true"><picture><source srcset="{p}art/{art}-800.avif" type="image/avif">'
                f'<img src="{p}art/{art}-800.jpg" alt="" width="800" height="450" loading="lazy" decoding="async"></picture></figure>\n')
         content = content.replace('<main class="in guide">\n', '<main class="in guide">\n' + pic, 1)
+    if 'rel="icon"' not in content:   # hand pages without one get both icons
+        up = "../" * rel.count("/")
+        content = content.replace("</head>", f'<link rel="icon" href="{up}favicon.svg" type="image/svg+xml">\n</head>', 1)
+    # TF14: the touch icon sits beside the favicon on every page
+    if 'rel="apple-touch-icon"' not in content:
+        content = re.sub(r'(<link rel="icon" href="((?:\.\./)*)favicon\.svg" type="image/svg\+xml">)', lambda m: m.group(1) + f'\n<link rel="apple-touch-icon" href="{m.group(2)}apple-touch-icon.png">', content, count=1)
     return content
 
 
