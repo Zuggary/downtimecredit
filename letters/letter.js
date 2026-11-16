@@ -16,26 +16,36 @@
   // The letter as HTML and as plain text. raw: the values (sample or typed); mine: false while the sample shows.
   // Pure apart from the DTC date words, so the build can pre-render the sample with the same code.
   function compose(cfg, raw, mine, D) {
-    var vals = {};
+    var vals = {}, dates = {};
     Object.keys(raw).forEach(function (k) {
       var f = cfg.fields.filter(function (x) { return x.key === k; })[0];
+      if (f && f.date && raw[k] && !mine) dates[k] = raw[k];
       vals[k] = f && f.date && raw[k] ? D.fullDate(raw[k]) : raw[k];
     });
     var text = cfg.text(raw), keys = keysIn(text), html = "", last = 0, m;
     RE.lastIndex = 0;
     while ((m = RE.exec(text))) {
       var v = vals[m[1]];
-      html += esc(text.slice(last, m.index)) + '<span class="blank' + (mine && v ? " filled" : "") + '" data-k="' + esc(m[1]) + '">' + esc(v ? v : "[" + m[2] + "]") + "</span>";
+      html += esc(text.slice(last, m.index)) + '<span class="blank' + (mine && v ? " filled" : "") + '" data-k="' + esc(m[1]) + '"' + (dates[m[1]] ? ' data-d="' + dates[m[1]] + '"' : "") + '>' + esc(v ? v : "[" + m[2] + "]") + "</span>";
       last = RE.lastIndex;
     }
     html += esc(text.slice(last));
     return { html: html, text: plain(text, vals), open: keys.filter(function (k) { return !vals[k]; }).length };
   }
 
+  // The sample's dates move with the calendar: the "sent" date is today, every other sample date keeps its distance from it.
+  function liveSample(cfg, D) {
+    var smp = cfg.sample, n = new Date(), pad = function (x) { return (x < 10 ? "0" : "") + x; };
+    if (cfg.sampleOnly || !smp || !D.parseISO(smp.sent)) return;
+    var delta = D.daysLeft(smp.sent, n.getFullYear() + "-" + pad(n.getMonth() + 1) + "-" + pad(n.getDate()));
+    cfg.fields.forEach(function (f) { if (f.date && smp[f.key] && D.parseISO(smp[f.key])) smp[f.key] = D.addDays(smp[f.key], delta); });
+  }
+
   function desk(cfg) {
     var D = root.DTC, $ = function (id) { return document.getElementById(id); };
     var letterEl = $("lt-body"), tag = $("lt-tag"), stamp = $("lt-stamp"), dueEl = $("lt-due"), calBtn = $("lt-cal"), state = $("lt-state");
     if (!letterEl) return;
+    liveSample(cfg, D);
     var mine = false, lastStamp = "";
     function read() {
       var v = {};

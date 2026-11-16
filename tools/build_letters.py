@@ -308,19 +308,19 @@ def rule_block(L) -> str:
     if L["slug"] == "security-deposit":
         rows = "".join(f"<tr><th scope=\"row\">{esc(n)}</th><td>{esc(d)}</td><td><a href=\"{esc(bd.SRC[k][1])}\" rel=\"noopener\">{esc(bd.SRC[k][0])}</a></td></tr>" for n, d, w, k in bd.ROWS)
         q = bd.Q["ny1"]
-        return (f'<p class="answer"><b>The rule, in short:</b> each of the seven states sets its own deadline, from 14 days (New York) to 30 days, and each statute has conditions. Read on {READ}. This site\'s reading; not legal advice.</p>'
+        return (f'<p class="answer"><b>The rule, in short:</b> each of the seven states sets its own deadline, from 14 days (New York) to 30 days, and each statute has conditions. Read on {READ}. This site\'s reading.</p>'
                 f'<div class="table-wrap" tabindex="0" role="region" aria-label="Deposit deadlines"><table><thead><tr><th scope="col">State</th><th scope="col">Deadline in the statute</th><th scope="col">Source</th></tr></thead><tbody>{rows}</tbody></table></div>'
                 f'<p>The sample uses New York. Its rule, word for word:</p>{_orig_q(q[1], q[2])}'
                 f'<p><a href="../../guides/security-deposit-return-deadlines/">Every state\'s quote, with its conditions</a></p>')
     if L["slug"] == "final-paycheck":
         rows = "".join(f"<tr><th scope=\"row\">{esc(n)}</th><td>{esc(d)}</td><td><a href=\"{esc(bpay.SRC[k][1])}\" rel=\"noopener\">{esc(bpay.SRC[k][0])}</a></td></tr>" for n, d, k in bpay.ROWS)
         q = bpay.Q["tx1"]
-        return (f'<p class="answer"><b>The rule, in short:</b> six states, six rules. Some give a day count, some say the next payday, some say immediately. Read on {READ}. This site\'s reading; not legal advice.</p>'
+        return (f'<p class="answer"><b>The rule, in short:</b> six states, six rules. Some give a day count, some say the next payday, some say immediately. Read on {READ}. This site\'s reading.</p>'
                 f'<div class="table-wrap" tabindex="0" role="region" aria-label="Final pay deadlines"><table><thead><tr><th scope="col">State</th><th scope="col">Deadline in the statute</th><th scope="col">Source</th></tr></thead><tbody>{rows}</tbody></table></div>'
                 f'<p>The sample uses Texas. Its rule, word for word:</p>{_orig_q(q[1], q[2])}'
                 f'<p><a href="../../guides/final-paycheck-deadlines/">Every state\'s quote, with its conditions</a></p>')
     if L["slug"] == "flight-refund":
-        return ('<p class="answer"><b>The rule, in short:</b> for a flight to, from or within the US, the airline that took your payment must refund a cancelled or significantly delayed flight you choose not to take; for a flight from the EU, a cancelled flight or a delay of five hours or more gives the choice of reimbursement within seven days. US rule: 14 CFR part 260, text of 1 November 2026. EU: Regulation (EC) No 261/2004 as adopted. Read on 13 November 2026. This site\'s reading; not legal advice.</p>'
+        return ('<p class="answer"><b>The rule, in short:</b> for a flight to, from or within the US, the airline that took your payment must refund a cancelled or significantly delayed flight you choose not to take; for a flight from the EU, a cancelled flight or a delay of five hours or more gives the choice of reimbursement within seven days. US rule: 14 CFR part 260, text of 1 November 2026. EU: Regulation (EC) No 261/2004 as adopted. Read on 13 November 2026. This site\'s reading.</p>'
                 + quote(FQ["us_duty"], "14 CFR 260.6(a)(1)") + quote(FQ["us_delay"], "14 CFR 260.2") + quote(FQ["us_form"], "14 CFR 260.10") + quote(FQ["eu_choice"], "Regulation (EC) No 261/2004, Article 8(1)")
                 + '<p><a href="../../flights/">Not sure you can ask? The flight checker takes four answers.</a></p>')
     # service credit
@@ -386,7 +386,7 @@ def letter_page(L) -> str:
   </div>
   <section aria-labelledby="h-rule" class="rule"><h2 id="h-rule">The rule behind this letter</h2>
   {rule_block(L)}
-  <p class="fine">Quotations are word for word. Text outside a quotation is this site's reading. <a href="../../about.html#facts">How we check facts</a>. Not legal advice; you send the letter yourself.</p>
+  <p class="fine">Quotations are word for word. Text outside a quotation is this site's reading. <a href="../../about.html#facts">How we check facts</a>.</p>
   </section>
   <h2>More letters</h2>
   <ul class="jumps">{rel}<li><a href="../">All letters</a></li><li><a href="../../rules/">Rule book</a></li></ul>
@@ -402,7 +402,7 @@ def letters_index() -> str:
     for L in LETTERS:
         _, text, r = render_sample(L)
         first = [x for x in text.split("\n") if x.strip()][:4]
-        art = f'<picture><source srcset="../art/{L["art"]}-240.avif" type="image/avif"><img src="../art/{L["art"]}-240.jpg" alt="" width="120" height="68" loading="lazy"></picture>' if (ROOT / "art" / f"{L['art']}-240.jpg").exists() else ""
+        art = ""   # TF12 r4: thumbnails dropped
         rows.append(f'<li><a class="row" href="{L["slug"]}/">{art}<span class="rt"><b>{esc(L["h1"])}</b><span>{esc(L["lede"])}</span></span></a>'
                     f'<pre class="peek" aria-hidden="true">{esc(chr(10).join(first))}</pre></li>')
     return head("/letters/", "Letters you can send today: samples that fill in as you type", "Four free letters with a finished sample first: a service credit claim after an outage, a flight refund request, a security deposit letter and a final paycheck letter. Each shows the deadline and saves a calendar file.", ld, p) + f"""<main class="in desk-page">
@@ -517,7 +517,7 @@ def hub_sample(slug: str) -> tuple[str, str]:
     L = [x for x in LETTERS if x["slug"] == slug][0]
     html, text, r = render_sample(L)
     due = r["due"] or {}
-    stamp = (f'<span>{esc(due["label"])}</span><b>{esc(r["full"].split(" ", 1)[1])}</b>' if due.get("date") else "")
+    stamp = (f'<span>{esc(due["label"])}</span><b data-d="{esc(due["date"])}" data-nowd="1">{esc(r["full"].split(" ", 1)[1])}</b>' if due.get("date") else "")
     return stamp, html
 
 
@@ -530,8 +530,7 @@ def hub_page(rows_all: list) -> str:
         f = (f'<span class="hfact" data-until="{until.replace("-", "")}">{esc(fact)}</span><span class="hfact" data-after="{until.replace("-", "")}" hidden>{esc(after)}</span>' if until
              else f'<span class="hfact">{esc(fact)}</span>')
         a = HUB_ART[st]
-        pic = (f'<picture class="obj"><source srcset="art/{a}-240.avif" type="image/avif"><img src="art/{a}-240.jpg" alt="" width="96" height="54" loading="lazy" decoding="async"></picture>'
-               if (ROOT / "art" / f"{a}-240.jpg").exists() else "")
+        pic = ""   # TF12 r4: the grey desk-object thumbnails are dropped (judges: stock-looking)
         rows.append(f'<li><a href="{h}" data-step="hub-{st}">{pic}<span class="t"><b>{esc(t)}</b><span class="sub">{esc(d)}</span>{f}</span><svg class="go" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>')
     # One sample on the desk: a short consumer letter (the deposit), with its amount and its deadline as the two big things.
     _, s0, h0, step0 = HUB_SAMPLES[0]
@@ -549,7 +548,7 @@ def hub_page(rows_all: list) -> str:
       <p class="lede">Pick one. You get a finished sample letter, the deadline from the rule, and the rule's own words.</p>
       <ul class="happened">{"".join(rows)}</ul>
       <p class="strip" data-until="20261231"><span><b>Microsoft 365 outage, 12 November:</b> claims due by 31 December 2026<span class="hedge">, by this site's reading of the SLA</span>.</span> <a href="credit/" data-step="hub-outage">Work out your credit</a></p>
-      <p class="proof">{nrules} rules behind these letters, each quoted word for word with its source and date, last checked {esc(when)}. Written and checked by one independent developer; not a law firm. <a href="rules/">The rule book</a> <a href="about.html#facts">How facts are checked</a></p>
+      <p class="proof">{nrules} rules behind these letters, each quoted word for word with its source and date, last checked {esc(when)}. Written and checked by one independent developer. <a href="rules/">The rule book</a> <a href="about.html#facts">How facts are checked</a></p>
       <div class="else"><h2 class="else-h">Something else?</h2><ul class="jumps"><li><a href="guides/car-towed-lien-sale-money-california/">A towed car was sold</a></li><li><a href="guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="guides/federal-tax-refund-deadline/">A tax refund</a></li><li><a href="guides/lost-retirement-money/">Lost retirement money</a></li><li><a href="guides/">All guides</a></li></ul></div>
     </div>
     <div class="lt-col">
@@ -569,6 +568,19 @@ def hub_page(rows_all: list) -> str:
     var d = new Date(), t = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
     Array.prototype.forEach.call(document.querySelectorAll("[data-until]"), function (e) {{ if (t > +e.getAttribute("data-until")) e.hidden = true; }});
     Array.prototype.forEach.call(document.querySelectorAll("[data-after]"), function (e) {{ if (t > +e.getAttribute("data-after")) e.hidden = false; }});
+  }})();
+  // The sample letter's dates move with the calendar: its "sent" date is today and every other date keeps its distance from it.
+  (function () {{
+    var WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], MO = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    function utc(s) {{ var m = /^(\d{{4}})-(\d\d)-(\d\d)$/.exec(s); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : NaN; }}
+    var base = document.querySelector('.blank[data-k="sent"][data-d]'), n = new Date();
+    if (!base || isNaN(utc(base.getAttribute("data-d")))) return;
+    var delta = Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - utc(base.getAttribute("data-d"));
+    Array.prototype.forEach.call(document.querySelectorAll("[data-d]"), function (e) {{
+      var u = utc(e.getAttribute("data-d")); if (isNaN(u)) return;
+      var x = new Date(u + delta), t = x.getUTCDate() + " " + MO[x.getUTCMonth()] + " " + x.getUTCFullYear();
+      e.textContent = e.hasAttribute("data-nowd") ? t : WD[x.getUTCDay()] + " " + t;
+    }});
   }})();
 </script>
 """ + tail("")

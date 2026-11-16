@@ -55,7 +55,9 @@ with sync_playwright() as pw:
     # deposit letter: sample first, blanks fill, the stamp lands, calendar and text files
     p = page(ctx, "letters/security-deposit/"); n0 = len(outside)
     eq(p.inner_text("#lt-tag"), "Sample data", "deposit: the sample shows first")
-    ok("15 March 2026" in p.inner_text("#lt-stamp"), "deposit: the sample's stamp (New York, 14 days)")
+    import datetime as _dt
+    _due = _dt.date.today() + _dt.timedelta(days=10)   # the sample moves with the calendar: sent today, moved out 4 days earlier, 14 days
+    ok(f"{_due.day} {_due.strftime('%B %Y')}" in p.inner_text("#lt-stamp"), "deposit: the sample's stamp (New York, 14 days, live dates)")
     ok(p.is_hidden("#lt-cal"), "deposit: no calendar button on the sample")
     p.select_option("#d-state", "ny"); p.fill("#d-out", "2026-03-01")
     ok("blanks left" in p.inner_text("#lt-tag"), "deposit: typing makes it your letter, with blanks left")
