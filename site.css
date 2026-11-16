@@ -198,3 +198,77 @@ footer.site h2 { font: 700 16px/1.3 var(--head); color: #FFFFFF; margin: 0 0 4px
   .stamp { border-width: 2px; }
 }
 header.top details.more { margin: 0; }
+
+/* ---------- TF13 skin: calm and light. White ground, one blue, pale-blue marks, Hanken headlines. Read design/DESIGN.md. ---------- */
+@font-face { font-family: "Hanken DC"; src: url("fonts/hanken-400-700.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
+:root {
+  --folder: #F6F8FC;
+  --ink: #14213D;
+  --ink-2: #4A5670;
+  --pen: #2447D8;
+  --pen-d: #1B38AE;
+  --hi: #DCE5FF;
+  --tab: transparent;
+  --rule: rgba(20, 33, 61, .11);
+  --rule-2: rgba(20, 33, 61, .26);
+  --tint: #EEF2FA;
+  --rad: 12px;
+  --ctl: 10px;
+  --head: "Hanken DC", "Familjen fallback", Arial, Helvetica, sans-serif;
+  --lift: 0 1px 2px rgba(20, 33, 61, .05), 0 8px 24px -6px rgba(20, 33, 61, .09);
+}
+h1 { font-weight: 600; letter-spacing: -0.03em; }
+h2 { font-weight: 600; letter-spacing: -0.022em; }
+h3 { font-weight: 600; }
+header.top { background: #fff; border-bottom: 1px solid var(--rule); }
+header.top .in { align-items: center; padding: 12px 0; }
+.brand, .brand:visited { font-weight: 700; letter-spacing: -0.02em; }
+.brand b { background: none; color: var(--pen); }
+.tagline { color: var(--ink-2); }
+header.top .tabs { gap: 2px; }
+header.top .tabs > a, header.top .tabs > a:visited, header.top .tabs summary { background: transparent; border-radius: 999px; font-weight: 500; color: var(--ink-2); padding: 8px 14px; }
+header.top .tabs > a:hover, header.top .tabs summary:hover { background: var(--tint); color: var(--ink); }
+header.top .tabs > a[aria-current="page"] { background: var(--tint); color: var(--ink); font-weight: 700; }
+header.top .menu summary { border-radius: 999px; border-color: var(--rule-2); }
+.mast { padding-bottom: 0; }
+.trustbar { background: var(--tint); border: 0; }
+.trustbar p { padding: 7px 0; }
+.cta, .cta:visited, .primary, button.cta { background: var(--pen); color: #fff; border: 0; border-radius: var(--ctl); font-weight: 600; box-shadow: 0 1px 2px rgba(36, 71, 216, .25), 0 6px 16px -6px rgba(36, 71, 216, .45); }
+.cta:hover, .primary:hover { background: var(--pen-d); color: #fff; }
+.cta-sec, .cta-sec:visited, .second, a.second, a.second:visited, .xbtn, .exbtn { border: 1px solid var(--rule-2); font-weight: 600; background: #fff; }
+.sample-tag { background: none; padding: 0; margin: 0; color: var(--ink-2); font-weight: 600; }
+.callout > p:first-child b:first-child { background: none; padding: 0; }
+.callout { border-left: 0; }
+blockquote { border-left: 3px solid var(--pen); background: #fff; box-shadow: var(--lift); }
+.letter { border-radius: 8px; border: 1px solid var(--rule); }
+.blank { border-radius: 3px; background: linear-gradient(var(--hi), var(--hi)) no-repeat left / 100% 100%; padding: 0 3px; }
+.blank.filled { background-size: 0 100%; }
+thead th { border-bottom: 2px solid var(--pen); }
+footer.site { background: var(--ink); }
+
+/* TF13 round b: tappable choice buttons in blue, compact three-way choices on phones */
+.opt-btn[aria-pressed="true"] { border: 2px solid var(--pen); background: #EEF2FF; }
+.opt-btn[aria-pressed="true"] .tick { border-color: var(--pen); background: var(--pen); }
+.opt-btn:hover { border-color: var(--pen); }
+@media (max-width: 767px) {
+  .opts-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .opts-3 .opt-btn, .opts-3 .opt-btn[aria-pressed="true"] { padding: 8px 6px; min-height: 52px; text-align: center; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+  .opts-3 .opt-btn .tick { display: none; }
+  .opts-3 .opt-btn[aria-pressed="true"] { background: var(--pen); color: #fff; }
+  .q + .q { margin-top: 16px; }
+  .q-label { font-size: 19px; margin-bottom: 8px; }
+}
+
+/* TF13 round c: a warmer white ground, soft answer pills instead of button-like chips */
+:root { --folder: #FAF9F6; --tint: #F1F0EC; }
+.trustbar { background: var(--tint); }
+.chip-yes { background: #E2F0E7; color: #14532D; }
+.chip-ask { background: #EAF0FF; color: var(--pen-d); box-shadow: none; }
+.chip-no { background: var(--tint); color: var(--ink-2); }
+.vrow .chip { border-radius: 999px; font-size: 14px; font-weight: 700; min-height: 26px; }
+
+/* TF13 round d: stronger answer pills; the sample letter reads as paper on the table */
+.chip-yes { background: #CFE8D8; color: #0B4325; }
+.chip-ask { background: #D5E1FF; color: #14308F; }
+.vrow .chip { font-size: 14.5px; }
+.letter { background: #FFFEFC; }

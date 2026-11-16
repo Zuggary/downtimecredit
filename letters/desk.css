@@ -125,3 +125,37 @@ ul.check li::before { content: ""; position: absolute; left: 0; top: 3px; width:
 
 .phone-only { display: none; margin: 4px 0 0; }
 @media (max-width: 899px) { .phone-only { display: block; } }
+
+/* TF13 skin: the hub's choices are plain rows on a white sheet, not stacked cards */
+.happened { gap: 0; border-top: 1px solid var(--rule); }
+.happened a, .happened a:visited { background: transparent; box-shadow: none; border-radius: 0; border-bottom: 1px solid var(--rule); padding: 14px 4px; min-height: 64px; }
+.happened a:hover { box-shadow: none; background: transparent; }
+.happened a:hover b { color: var(--pen); }
+.happened b { font-weight: 600; font-size: 20px; }
+.happened .hfact { color: var(--pen); }
+.happened .go { color: var(--pen); }
+.strip { background: var(--tint); border-left: 0; border-radius: var(--ctl); padding: 6px 14px; }
+.proof { border-top: 0; padding-top: 6px; margin-top: 12px; }
+.letter-list li { border: 1px solid var(--rule); box-shadow: none; }
+.letter-list .rt b { text-decoration: none; }
+.hub .letter { border: 1px solid var(--rule); box-shadow: var(--lift); }
+.lt-amt b { font-weight: 700; }
+@media (min-width: 900px) { .happened a, .happened a:visited { padding: 10px 4px; min-height: 0; } .happened b { font-size: 19px; } .hub > .ask .lede { margin-bottom: 14px; } .strip { margin-top: 10px; padding: 2px 14px; } .proof { margin-top: 8px; font-size: 14.5px; } .hub { padding-top: 18px; } }
+
+/* TF13 round b: rows are light tappable surfaces again; the sample button is quiet; the proof line is its own block */
+.happened { gap: 8px; border-top: 0; }
+.happened a, .happened a:visited { background: #fff; border: 1px solid var(--rule); border-radius: var(--rad); padding: 14px 16px; }
+.happened a:hover { border-color: var(--pen); }
+.hub .lt-go .cta { background: #fff; color: var(--pen); border: 1px solid var(--pen); box-shadow: none; }
+.hub .lt-go .cta:hover { background: #EEF2FF; color: var(--pen-d); }
+.proof { background: #fff; border: 1px solid var(--rule); border-radius: var(--rad); padding: 12px 16px; margin-top: 10px; line-height: 1.55; }
+@media (min-width: 900px) { .happened a, .happened a:visited { padding: 11px 16px; } .proof { padding: 10px 16px; } }
+
+/* TF13 round c: on phones the form comes first, then the sample; the proof links sit inline */
+@media (max-width: 899px) { .desk .lt-col { order: 0; } }
+.proof a { min-height: 0; display: inline; margin-right: 14px; }
+
+/* TF13 round d: the sample button is the filled main button again */
+.hub .lt-go .cta { background: var(--pen); color: #fff; border: 0; box-shadow: 0 1px 2px rgba(36, 71, 216, .25), 0 6px 16px -6px rgba(36, 71, 216, .45); }
+.hub .lt-go .cta:hover { background: var(--pen-d); color: #fff; }
+@media (min-width: 900px) { .hub .letter { transform: rotate(-0.35deg); } .hub .letter .lt-body { transform: none; } }
