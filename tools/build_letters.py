@@ -546,7 +546,7 @@ def hub_page(rows_all: list) -> str:
     <div class="ask">
       <h1>What happened?</h1>
       <p class="lede">Pick one. You get a finished sample letter, the deadline from the rule, and the rule's own words.</p>
-      <p class="maker">An independent site, made by one person. Every rule is quoted word for word from its source.</p>
+      <p class="maker">An independent site. Every rule is quoted word for word from its source.</p>
       <ul class="happened">{"".join(rows)}</ul>
       <p class="strip" data-until="20261231"><span><b>Microsoft 365 outage, 12 November:</b> claims due by 31 December 2026<span class="hedge">, by this site's reading of the SLA</span>.</span> <a href="credit/" data-step="hub-outage">Work out your credit</a></p>
       <p class="proof">{nrules} rules behind these letters, each quoted word for word with its source and date, last checked {esc(when)}. Written and checked by one independent developer. <a href="rules/">The rule book</a> <a href="about.html#facts">How facts are checked</a></p>
