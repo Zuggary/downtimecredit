@@ -103,7 +103,7 @@ def page(a):
 </main>
 <footer>
   <div class="in">
-    <p>Who runs this: one independent developer. Not a law firm. No link to any airline. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Who runs this: an independent site. Not a law firm. No link to any airline. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p><a href="../../../">Calculator</a> &middot; <a href="../../">Flight refunds</a> &middot; <a href="../../../guides/">Guides</a> &middot; <a href="../../../privacy.html">Privacy</a></p>
   </div>
 </footer>

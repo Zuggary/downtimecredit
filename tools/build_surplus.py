@@ -211,7 +211,7 @@ def shell(slug, title, meta, h1, lede, body, canonical_extra=""):
 {gm.related_html(slug)}</main>
 <footer>
   <div class="in">
-    <p>Who runs this: one independent developer. Not a law firm. No affiliation with any agency or vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Who runs this: an independent site. Not a law firm. No affiliation with any agency or vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p><a href="../../">Calculator</a> &middot; <a href="../">Guides</a> &middot; <a href="../../sla/">Vendor SLAs</a> &middot; <a href="../../about.html">About</a> &middot; <a href="../../privacy.html">Privacy</a></p>
   </div>
 </footer>

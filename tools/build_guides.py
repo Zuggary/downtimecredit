@@ -105,7 +105,7 @@ def page(slug, title, meta, h1, lede, body, related):
 </main>
 <footer>
   <div class="in">
-    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Who runs this: an independent site. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p><a href="../../">Calculator</a> &middot; <a href="../">Guides</a> &middot; <a href="../../sla/">Vendor SLAs</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; <a href="../../privacy.html">Privacy</a></p>
   </div>
 </footer>
@@ -243,7 +243,7 @@ def index_page():
 </main>
 <footer>
   <div class="in">
-    <p>Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Who runs this: an independent site. Not a law firm. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p><a href="../">Calculator</a> &middot; <a href="../sla/">Vendor SLAs</a> &middot; <a href="../flights/">Flight refunds</a> &middot; <a href="../privacy.html">Privacy</a></p>
   </div>
 </footer>

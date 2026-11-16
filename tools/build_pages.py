@@ -492,7 +492,7 @@ def build_vendor_page(v: dict) -> str:
 
 <footer>
   <div class="in">
-    <p>Who runs this: one independent developer. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Who runs this: an independent site. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p><a href="../../">Calculator</a> &middot; <a href="../">Vendor SLA directory</a> &middot; <a href="../../flights/">Flight refunds</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="../../privacy.html">Privacy</a></p>
   </div>
 </footer>
@@ -606,7 +606,7 @@ def build_sla_index(vendors: list[dict]) -> str:
 
 <footer>
   <div class="in">
-    <p>Who runs this: one independent developer. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
+    <p>Who runs this: an independent site. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>
     <p><a href="../">Calculator</a> &middot; <a href="../flights/">Flight refunds</a> &middot; The outage tracker: <a href="https://www.isit364yet.com/">isit364yet.com</a> &middot; <a href="../privacy.html">Privacy</a></p>
   </div>
 </footer>
@@ -738,7 +738,7 @@ def site_footer(p: str) -> str:
             f'      <section><h2>Tools</h2><ul><li><a href="{p}credit/">Outage credit calculator</a></li><li><a href="{p}flights/" data-to-flights>Flight refund checker</a></li><li><a href="{p}rules/">Rule book and CSV</a></li><li><a href="{p}sla/">Vendor SLAs</a></li></ul></section>\n'
             f'      <section><h2>Guides</h2><ul><li><a href="{p}guides/">All guides</a></li><li><a href="{p}guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="{p}guides/car-towed-lien-sale-money-california/">Towed car sold</a></li><li><a href="{p}guides/federal-tax-refund-deadline/">Tax refund deadline</a></li></ul></section>\n'
             f'      <section><h2>This site</h2><ul><li><a href="{p}about.html">About this site</a></li><li><a href="{p}about.html#facts">How we check facts</a></li><li><a href="{p}privacy.html">Privacy</a></li><li><a href="https://www.isit364yet.com/">Outage tracker: isit364yet.com</a></li></ul></section>\n'
-            f'    </div>\n    <p>Who runs this: one independent developer. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>\n'
+            f'    </div>\n    <p>Who runs this: an independent site. No link to any vendor. Contact: <a href="mailto:privacy@downtimecredit.com">privacy@downtimecredit.com</a>.</p>\n'
             f'  </div>\n</footer>')
 
 

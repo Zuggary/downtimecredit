@@ -532,12 +532,12 @@ with sync_playwright() as pw:
     m.close()
     # item 4: the publisher line, no GitHub link or handle
     m = open_page(ctxM); ft = m.inner_text("footer")
-    ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: privacy@downtimecredit.com." in ft, "item 4: the publisher line in the footer")
+    ok("Who runs this: an independent site. No link to any vendor. Contact: privacy@downtimecredit.com." in ft, "item 4: the publisher line in the footer")
     html = open(os.path.join(SITE, "credit", "index.html")).read(); pv = open(os.path.join(SITE, "privacy.html")).read()
     page_text = re.sub(r'<script\s+type=["\']application/ld\+json["\']>.*?</script>', "", html + pv, flags=re.S | re.I)
     page_text = re.sub(r"<style.*?</style>", "", page_text, flags=re.S)
     ok(not re.search(r'href="[^"]*github\.com/(?!customer-terms)', html + pv, re.I) and not re.search(r"(?<![\w.])@[A-Za-z0-9_]{2,}", page_text), "item 4: no author GitHub link or handle in the page or privacy page")
-    ok("Who runs this: one independent developer. Not a law firm. No link to any vendor. Contact: " in pv, "item 4: the publisher line on the privacy page")
+    ok("Who runs this: an independent site. No link to any vendor. Contact: " in pv, "item 4: the publisher line on the privacy page")
     # item 5: one countdown, under the lede, in each mode
     def cdn(pg): return pg.locator("[id$='dl-days']:visible").count()
     inhero = lambda pg: pg.evaluate("[...document.querySelectorAll('[id$=dl-days]')].every(e => !e.closest('form') && e.closest('.hero'))")

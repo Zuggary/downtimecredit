@@ -549,7 +549,7 @@ def hub_page(rows_all: list) -> str:
       <p class="maker">An independent site. Every rule is quoted word for word from its source.</p>
       <ul class="happened">{"".join(rows)}</ul>
       <p class="strip" data-until="20261231"><span><b>Microsoft 365 outage, 12 November:</b> claims due by 31 December 2026<span class="hedge">, by this site's reading of the SLA</span>.</span> <a href="credit/" data-step="hub-outage">Work out your credit</a></p>
-      <p class="proof">{nrules} rules behind these letters, each quoted word for word with its source and date, last checked {esc(when)}. Written and checked by one independent developer. <a href="rules/">The rule book</a> <a href="about.html#facts">How facts are checked</a></p>
+      <p class="proof">{nrules} rules behind these letters, each quoted word for word with its source and date, last checked {esc(when)}.. <a href="rules/">The rule book</a> <a href="about.html#facts">How facts are checked</a></p>
       <div class="else"><h2 class="else-h">Something else?</h2><ul class="jumps"><li><a href="guides/car-towed-lien-sale-money-california/">A towed car was sold</a></li><li><a href="guides/unclaimed-property-by-state/">Unclaimed property</a></li><li><a href="guides/federal-tax-refund-deadline/">A tax refund</a></li><li><a href="guides/lost-retirement-money/">Lost retirement money</a></li><li><a href="guides/">All guides</a></li></ul></div>
     </div>
     <div class="lt-col">
