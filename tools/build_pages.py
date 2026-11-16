@@ -699,6 +699,7 @@ def label_tables(content: str) -> str:
     return re.sub(r"<table.*?</table>", one, content, flags=re.S)
 
 
+TAGLINE = "Money you may be owed, and the letter to ask for it."   # DESIGN.md headline candidate 2; CoS default, open for Zach
 TRUST_LINE = "Not legal advice, and free: what you type stays in your browser, and you send every letter yourself."
 TABS = [("credit/", "Outage at work"), ("flights/", "Flight"), ("letters/security-deposit/", "Deposit"), ("letters/final-paycheck/", "Paycheck")]
 MORE = [("letters/", "All letters"), ("rules/", "Rule book"), ("guides/", "Guides"), ("sla/", "Vendor SLAs"), ("about.html", "About this site")]
@@ -725,7 +726,7 @@ def site_header(p: str, cur: str = "", trust_p: str = "") -> str:
     tabs = "".join(a(h, t) for h, t in TABS)
     more = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in MORE)
     plain = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in TABS)
-    return (f'<header class="top">\n  <div class="in"><a class="brand" href="{p or "./"}">Downtime <b>Credit</b></a>\n'
+    return (f'<header class="top">\n  <div class="in"><div class="mast"><a class="brand" href="{p or "./"}">Downtime <b>Credit</b></a><span class="tagline">{TAGLINE}</span></div>\n'
             f'    <nav class="tabs" aria-label="Site">{tabs}<details class="more"><summary>More</summary><div class="drop">{more}</div></details></nav>\n'
             f'    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b>{plain}<b>More</b>{more}</nav></details></div>\n'
             f'  <div class="trustbar">{trust_p or "<p>" + TRUST_LINE + "</p>"}</div>\n</header>')

@@ -425,7 +425,17 @@
       }
     }
 
-    function fillClaim(pre, text) {
+    // What the visitor types above the request (booking reference, flight number, date) goes into its blanks.
+    var FX = { "[booking reference]": "fx-ref", "[flight number]": "fx-flight", "[date]": "fx-date" };
+    function typedText(text) {
+      return text.replace(/\[(booking reference|flight number|date)\]/g, function (m) {
+        var el = $(FX[m]), v = el ? el.value.trim().slice(0, 80) : "";
+        return v || m;
+      });
+    }
+    var lastLetter = null;
+    function fillClaim(pre, text, typed) {
+      if (typed) text = typedText(text);
       clearEl(pre);
       text.split(/(\[[^\]]+\])/).forEach(function (part) {
         if (!part) return;
@@ -466,8 +476,9 @@
       $("q-hours").hidden = state.what !== "delayed";
       $("reset-btn").parentNode.hidden = !state.what;
       var whatDone = !!state.what && (state.what !== "delayed" || !!state.hours);
-      $("q-from").hidden = !whatDone;
-      $("q-to").hidden = !whatDone || !state.from;
+      // the place questions show from the start, so the form is whole on the first screen
+      $("q-from").hidden = false;
+      $("q-to").hidden = false;
       $("q-euair").hidden = !whatDone || !needsEuAir(state);
       if (!needsEuAir(state)) state.euair = null;
       var usRoute = whatDone && hasUS(routesFor(state));
@@ -497,16 +508,34 @@
       return what + " from " + PLACE[st.from] + " to " + PLACE[st.to];
     }
 
-    function vrow(label, verdictText, yes, text) {
+    // A verdict is a chip in its own column: yes (ink), ask (outlined), no or not covered (grey).
+    var CHIP = { yes: "chip-yes", maybe: "chip-ask", no: "chip-no", na: "chip-no" };
+    function vrow(label, verdictText, verdict, text) {
       var d = document.createElement("div");
       d.className = "vrow";
+      var v = document.createElement("span"); v.className = "chip " + (CHIP[verdict] || "chip-no"); v.textContent = verdictText;
       var k = document.createElement("span"); k.className = "k"; k.textContent = label;
-      var v = document.createElement("span"); v.className = "v";
-      var vi = document.createElement("span"); vi.textContent = verdictText; if (yes) vi.className = "verdict-yes";
-      v.appendChild(vi);
       var p = document.createElement("p"); p.textContent = text;
-      d.appendChild(k); d.appendChild(v); d.appendChild(p);
+      d.appendChild(v); d.appendChild(k); d.appendChild(p);
       return d;
+    }
+
+    // One sentence above the detail: what to ask for, under which rule, and how fast.
+    function leadLine(answers, real) {
+      var yes = answers.filter(function (x) { return x.ans.refund.verdict === "yes"; });
+      var name = function (r) { return isUSRoute(r) ? "the US rule" : "the EU regulation"; };
+      var s;
+      if (yes.length) {
+        s = "Ask for a full refund of the ticket" + (yes.length > 1 ? ", under both rules." : ", under " + name(yes[0].route) + ".");
+        var eu = yes.filter(function (x) { return !isUSRoute(x.route); })[0];
+        if (eu) s += " The EU regulation says within 7 days" + (eu.ans.care.verdict === "yes" ? ", and meals and a hotel meanwhile." : ".");
+        else s += " Paid by card, the US rule says within 7 business days.";
+      } else if (answers.every(function (x) { return x.ans.refund.verdict === "na"; })) {
+        s = "The US and EU rules on this page do not cover this flight.";
+      } else {
+        s = "Not yet: this delay is too short for a refund under " + answers.map(function (x) { return name(x.route); }).filter(function (n, i, a) { return a.indexOf(n) === i; }).join(" or ") + ".";
+      }
+      return real ? s : "Example: " + s.charAt(0).toLowerCase() + s.slice(1);
     }
 
     function render(trusted) {
@@ -516,20 +545,23 @@
       var routes = routesFor(st);
       var box = $("ans-rules");
       clearEl(box);
-      var extras = [], letterKind = null, stampKind = null;
+      var extras = [], letterKind = null, stampKind = null, all = [];
       routes.forEach(function (route) {
         var ans = flightAnswer({ what: st.what, hours: st.hours, route: route });
+        all.push({ route: route, ans: ans });
         var sec = document.createElement("section");
         sec.className = "rule-block";
         var h = document.createElement("h2");
         h.textContent = RULE_NAME[route];
         sec.appendChild(h);
-        sec.appendChild(vrow("A refund of the ticket", refundVerdictLabel(ans.refund.verdict), ans.refund.verdict === "yes", ans.refund.text));
-        sec.appendChild(vrow("Meals and a hotel", careVerdictLabel(ans.care), ans.care.verdict === "yes", ans.care.text));
+        sec.appendChild(vrow("A refund of the ticket", refundVerdictLabel(ans.refund.verdict), ans.refund.verdict, ans.refund.text));
+        sec.appendChild(vrow("Meals and a hotel", careVerdictLabel(ans.care), ans.care.verdict, ans.care.text));
         box.appendChild(sec);
         ans.extra.forEach(function (line) { if (extras.indexOf(line) < 0) extras.push(line); });
         if (ans.letter && !letterKind) { letterKind = ans.letter; stampKind = ans.letter; }
       });
+      var lead = $("ans-lead");
+      if (lead) lead.textContent = leadLine(all, real);
 
       $("ans-tag").hidden = real;
       $("ans-what").textContent = describe(st);
@@ -581,10 +613,13 @@
       var letterWrap = $("letter-wrap");
       $("copy-state").textContent = "";
       $("copy-btn").hidden = !real;
+      if ($("fx")) $("fx").hidden = !real;
       if (letterKind) {
-        fillClaim($("claim"), letterText(letterKind, st.what));
+        lastLetter = letterText(letterKind, st.what);
+        fillClaim($("claim"), lastLetter, real);
         letterWrap.hidden = false;
       } else {
+        lastLetter = null;
         clearEl($("claim"));
         letterWrap.hidden = true;
       }
@@ -655,8 +690,16 @@
         state.airline = null;
         state.card = null;
         if (sel) sel.value = "";
+        Object.keys(FX).forEach(function (k) { var el = $(FX[k]); if (el) el.value = ""; });
         $("copy-state").textContent = "";
         render(false);
+      });
+
+      Object.keys(FX).forEach(function (k) {
+        var el = $(FX[k]);
+        if (el) el.addEventListener("input", function () {
+          if (lastLetter && isComplete()) { fillClaim($("claim"), lastLetter, true); $("copy-state").textContent = ""; }
+        });
       });
 
       $("copy-btn").addEventListener("click", function (ev) {
