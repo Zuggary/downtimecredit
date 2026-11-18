@@ -466,6 +466,7 @@
     }
 
     function syncButtons() {
+      if (!needsEuAir(state)) state.euair = null;
       var btns = document.querySelectorAll("[data-q][data-val]");
       Array.prototype.forEach.call(btns, function (btn) {
         var q = btn.getAttribute("data-q");
@@ -480,7 +481,6 @@
       $("q-from").hidden = false;
       $("q-to").hidden = false;
       $("q-euair").hidden = !whatDone || !needsEuAir(state);
-      if (!needsEuAir(state)) state.euair = null;
       var usRoute = whatDone && hasUS(routesFor(state));
       var qAirline = $("q-airline");
       var sel = $("airline-select");
@@ -694,6 +694,7 @@
         Object.keys(FX).forEach(function (k) { var el = $(FX[k]); if (el) el.value = ""; });
         $("copy-state").textContent = "";
         render(false);
+        document.querySelector('[data-q="what"]').focus();
       });
 
       Object.keys(FX).forEach(function (k) {

@@ -41,3 +41,5 @@ header.top details.more { margin: 0; font-size: inherit; }
 /* the stamp shows once (the countdown); the send section repeats the date in ink on a sheet */
 .sendbox { background: var(--sheet); border-radius: var(--rad); box-shadow: var(--lift); padding: 14px 16px; }
 #send .cal b { color: var(--ink); }
+
+label[for="import-file"]:focus-within { outline: 3px solid var(--pen); outline-offset: 2px; }

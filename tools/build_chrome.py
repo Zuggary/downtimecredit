@@ -19,7 +19,7 @@ def main():
     for rel in ["credit/index.html", "about.html"]:
         path = bp.ROOT / rel
         if path.exists():
-            src = path.read_text(encoding="utf-8"); out = bp.clean_urls(src)
+            src = path.read_text(encoding="utf-8"); out = bp.clean_urls(bp.page_access(src))
             if out != src:
                 path.write_text(out, encoding="utf-8")
     print(f"Shared header and footer on {len(HAND)} hand pages.")

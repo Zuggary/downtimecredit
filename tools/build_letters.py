@@ -276,7 +276,7 @@ def head(path: str, title: str, meta: str, ld: list, p: str, extra_css: str = ""
 <meta property="og:image" content="{O}/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{p}favicon.svg" type="image/svg+xml">
-<link rel="preload" href="{p}fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{p}fonts/hanken-400-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{p}fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>
 {lds}<link rel="stylesheet" href="{p}site.css">
 <link rel="stylesheet" href="{p}letters/desk.css">
@@ -375,7 +375,7 @@ def letter_page(L) -> str:
         <div class="lt-body" id="lt-body" tabindex="-1">{html}</div>
       </article>
       <p class="fine" id="lt-state">{'This sample has made-up numbers. The calculator fills it with yours.' if L.get('sampleOnly') else 'This is a sample with made-up details. Type yours and the blanks fill in.'}</p>
-      <p class="due-line" id="lt-due">{due_line}</p>
+      <p class="due-line" id="lt-due" aria-live="polite">{due_line}</p>
       <div class="cta-row no-print">{primary}<button type="button" class="{copy_cls}" id="lt-copy">Copy the letter</button><button type="button" class="cta-sec" id="lt-print">Print</button><button type="button" class="cta-sec" id="lt-save">Save as text</button><button type="button" class="cta-sec" id="lt-cal" hidden>Save the date to your calendar</button><button type="button" class="linkbtn" id="lt-sample">Show the sample again</button></div>
       <p class="fine" id="lt-msg" role="status"></p>
     </div>
@@ -573,7 +573,7 @@ def hub_page(rows_all: list) -> str:
   // The sample letter's dates move with the calendar: its "sent" date is today and every other date keeps its distance from it.
   (function () {{
     var WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], MO = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    function utc(s) {{ var m = /^(\d{{4}})-(\d\d)-(\d\d)$/.exec(s); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : NaN; }}
+    function utc(s) {{ var m = /^(\\d{{4}})-(\\d\\d)-(\\d\\d)$/.exec(s); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : NaN; }}
     var base = document.querySelector('.blank[data-k="sent"][data-d]'), n = new Date();
     if (!base || isNaN(utc(base.getAttribute("data-d")))) return;
     var delta = Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - utc(base.getAttribute("data-d"));

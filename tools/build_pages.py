@@ -276,60 +276,14 @@ def build_vendor_page(v: dict) -> str:
         else f"Total-minutes formula over {describe_period(v).lower()} ({ref_days * 1440:,} minutes in a {ref_days}-day {'quarter' if is_qtr else 'month'}). Uptime is truncated to 4 decimals and compared {cmp_word} each threshold."
     )
 
-    faq_entities = [
-        {
-            "@type": "Question",
-            "name": f"How much outage credit does the {service} SLA pay?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": (
-                    f"Under the {doc['title']} (dated {fmt_date(doc['date'])}), {vendor} provides {unit_desc} "
-                    f"when uptime falls {cmp_word} {first_tier['below']}% over the {describe_period(v).lower()}. "
-                    f"In a {ref_days}-day {'quarter' if is_qtr else 'month'}, {first_mins} minutes of covered downtime triggers the first credit tier."
-                ),
-            },
-        },
-        {
-            "@type": "Question",
-            "name": f"What is the deadline to file a {service} SLA credit request?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": f"{dl_short}. Primary clause: \"{v['deadline']['quote']}\"",
-            },
-        },
-        {
-            "@type": "Question",
-            "name": f"Can reseller customers claim a {service} SLA service credit?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": (
-                    v["resellerDeadline"]["quote"]
-                    if v.get("resellerDeadline")
-                    else v["resellerClause"]["quote"]
-                ),
-            },
-        },
-    ]
-
-    ld_graph = [
-        {
-            "@context": "https://schema.org",
-            "@type": "WebApplication",
-            "name": f"{service} SLA Credit Calculator",
-            "url": canonical,
-            "applicationCategory": "BusinessApplication",
-            "operatingSystem": "All",
-            "isAccessibleForFree": True,
-            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-            "description": meta_desc,
-        },
-        {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": faq_entities,
-        },
-    ]
-    ld_json = json.dumps(ld_graph, ensure_ascii=False, separators=(",", ":"))
+    ld_json = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": f"{service} SLA credits: tiers, downtime and the claim deadline",
+        "url": canonical,
+        "isAccessibleForFree": True,
+        "description": meta_desc,
+    }, ensure_ascii=False, separators=(",", ":"))
 
     services_html = ""
     if v.get("services"):
@@ -718,17 +672,18 @@ def current_tab(rel: str) -> str:
     return ""
 
 
-def site_header(p: str, cur: str = "", trust_p: str = "") -> str:
+def site_header(p: str, cur: str = "", trust_p: str = "", page: str = "") -> str:
     """One header for every page: the name, folder tabs named by the problem, a More list; on phones a Menu button."""
     def a(href, label):
-        here = ' aria-current="page"' if href == cur else ""
+        here = ""
+        if href == cur:
+            here = ' aria-current="page"' if href + "index.html" == page else ' aria-current="location"'
         return f'<a href="{p}{href}"{here}>{label}</a>'
     tabs = "".join(a(h, t) for h, t in TABS)
     more = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in MORE)
-    plain = "".join(f'<a href="{p}{h}">{t}</a>' for h, t in TABS)
     return (f'<header class="top">\n  <div class="in"><div class="mast"><a class="brand" href="{p or "./"}"><svg class="mk" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#2447D8"/><rect x="12" y="20" width="38" height="28" rx="4" fill="#fff"/><path d="M14.5 23.5L31 37l16.5-13.5" fill="none" stroke="#2447D8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="19" r="9" fill="#F2A900" stroke="#fff" stroke-width="3"/></svg>Downtime <b>Credit</b></a><span class="tagline">{TAGLINE}</span></div>\n'
             f'    <nav class="tabs" aria-label="Site">{tabs}<details class="more"><summary>More</summary><div class="drop">{more}</div></details></nav>\n'
-            f'    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b>{plain}<b>More</b>{more}</nav></details></div>\n'
+            f'    <details class="menu"><summary>Menu</summary><nav class="drop" aria-label="Site menu"><b>What happened?</b>{tabs}<b>More</b>{more}</nav></details></div>\n'
             f'  <div class="trustbar">{trust_p or "<p>" + TRUST_LINE + "</p>"}</div>\n</header>')
 
 
@@ -764,11 +719,12 @@ def chrome(content: str, path: Path) -> str:
     if not rel.endswith(".html"):
         return content
     p = "../" * rel.count("/")
-    content = re.sub(r'<link rel="preload" href="[^"]*dm-serif-display-400\.woff2"[^>]*>', f'<link rel="preload" href="{p}fonts/familjen-500-700.woff2" as="font" type="font/woff2" crossorigin>', content, count=1)
-    content = re.sub(r'<link rel="preload" href="[^"]*hanken-400-700\.woff2"[^>]*>', f'<link rel="preload" href="{p}fonts/atkinson-next-400-700.woff2" as="font" type="font/woff2" crossorigin>', content, count=1)
+    if re.search(r'<link rel="preload" href="[^"]*dm-serif-display-400\.woff2"', content):
+        content = re.sub(r'(<link rel="preload" href="[^"]*)hanken-400-700\.woff2"', r'\g<1>atkinson-next-400-700.woff2"', content, count=1)
+    content = re.sub(r'(<link rel="preload" href="[^"]*)(?:dm-serif-display-400|familjen-500-700)\.woff2"', r'\g<1>hanken-400-700.woff2"', content, count=1)
     if "site.css" not in content:
         content = content.replace("</style>\n</head>", f'</style>\n<link rel="stylesheet" href="{p}site.css">\n</head>', 1)
-    content = re.sub(r'<header class="top">.*?</header>(\s*<nav class="(?:subnav|doors)".*?</nav>)?', lambda m: site_header(p, current_tab(rel), keep_trust(m.group(0))), content, count=1, flags=re.S)
+    content = re.sub(r'<header class="top">.*?</header>(\s*<nav class="(?:subnav|doors)".*?</nav>)?', lambda m: site_header(p, current_tab(rel), keep_trust(m.group(0)), rel), content, count=1, flags=re.S)
     content = re.sub(r'<footer[^>]*>.*?</footer>', lambda m: site_footer(p), content, count=1, flags=re.S)
     slug = rel.split("/")[1] if rel.startswith("guides/") and rel.count("/") == 2 else ""
     art = None   # TF12 r4: the grey margin pictures are dropped (judges: stock-looking)
@@ -782,7 +738,15 @@ def chrome(content: str, path: Path) -> str:
     # TF14: the touch icon sits beside the favicon on every page
     if 'rel="apple-touch-icon"' not in content:
         content = re.sub(r'(<link rel="icon" href="((?:\.\./)*)favicon\.svg" type="image/svg\+xml">)', lambda m: m.group(1) + f'\n<link rel="apple-touch-icon" href="{m.group(2)}apple-touch-icon.png">', content, count=1)
-    return content
+    return page_access(content)
+
+
+def page_access(content: str) -> str:
+    """Add a keyboard shortcut to the main landmark, including on hand-written pages."""
+    if 'class="skip-link"' in content or not re.search(r"<main(?=[\s>])", content):
+        return content
+    content = content.replace('<body>\n', '<body>\n<a class="skip-link" href="#main-content">Skip to content</a>\n', 1)
+    return re.sub(r"<main(?=[\s>])", '<main id="main-content" tabindex="-1"', content, count=1)
 
 
 def clean_urls(content: str) -> str:

@@ -48,6 +48,9 @@ html, body { margin: 0; }
 body { background: var(--folder); color: var(--ink); font: 400 17px/1.55 var(--text); overflow-x: clip; }
 a, a:visited { color: var(--pen); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
+.skip-link { position: absolute; top: 8px; left: var(--gut); z-index: 100; padding: 8px 12px; background: var(--sheet); }
+.skip-link:not(:focus) { clip-path: inset(50%); }
+@media print { .skip-link { display: none; } }
 :focus-visible { outline: 3px solid var(--pen); outline-offset: 2px; }
 .in { max-width: 1200px; width: calc(100% - 2 * var(--gut)); margin: 0 auto; }
 @media (min-width: 900px) { :root { --gut: 32px; } }
@@ -66,7 +69,7 @@ header.top .in::after { display: none; }
 .tabs { display: none; align-items: flex-end; gap: 2px; }
 header.top .tabs > a, header.top .tabs > a:visited, header.top .tabs summary { font: 600 15px/1.2 var(--text); color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border-radius: var(--ctl) var(--ctl) 0 0; background: var(--tab); cursor: pointer; transition: background-color var(--t-tap) var(--ease-out); }
 header.top .tabs > a:hover, header.top .tabs summary:hover { background: #E8ECEE; text-decoration: none; }
-header.top .tabs > a[aria-current="page"] { background: var(--sheet); }
+header.top .tabs > a[aria-current] { background: var(--sheet); }
 header.top .tabs summary { text-decoration: none; gap: 0; margin: 0; }
 header.top .tabs summary::before, header.top .menu summary::before { display: none; }
 header.top .tabs { display: none; }
@@ -228,7 +231,7 @@ header.top .in { align-items: center; padding: 12px 0; }
 header.top .tabs { gap: 2px; }
 header.top .tabs > a, header.top .tabs > a:visited, header.top .tabs summary { background: transparent; border-radius: 999px; font-weight: 500; color: var(--ink-2); padding: 8px 14px; }
 header.top .tabs > a:hover, header.top .tabs summary:hover { background: var(--tint); color: var(--ink); }
-header.top .tabs > a[aria-current="page"] { background: var(--tint); color: var(--ink); font-weight: 700; }
+header.top .tabs > a[aria-current] { background: var(--tint); color: var(--ink); font-weight: 700; }
 header.top .menu summary { border-radius: 999px; border-color: var(--rule-2); }
 .mast { padding-bottom: 0; }
 .trustbar { background: var(--tint); border: 0; }

@@ -1040,24 +1040,49 @@
     });
     $("save-ms").addEventListener("click", saveCurrent);
     $("export-btn").addEventListener("click", function () { if (actor) countStep("exported"); download("downtime-credit-incidents.json", "application/json", store.exportText()); $("io-msg").textContent = "Exported " + store.all().length + " incidents."; });
-    $("import-file").addEventListener("change", function () {
+    var importFile = $("import-file"), importChoice = $("io-choice"), importMsg = $("io-msg");
+    var pendingImport = null, importReader = null;
+    importFile.addEventListener("change", function () {
       var f = this.files && this.files[0]; if (!f) return;
-      if (f.size > S.MAX_BYTES) { $("io-msg").textContent = "That file is too large to be a Downtime Credit list."; return; }
+      this.value = "";
+      if (importReader) { importReader.abort(); importReader = null; }
+      pendingImport = null;
+      importChoice.hidden = true;
+      if (f.size > S.MAX_BYTES) { importMsg.textContent = "That file is too large to be a Downtime Credit list."; return; }
+      importMsg.textContent = "";
       var rd = new FileReader();
-      rd.onload = function () {
-        var text = String(rd.result), p = S.parseFile(text, STORECTX);
-        if (p.error || !p.incidents.length) { $("io-msg").textContent = "Not imported: " + (p.error || "the file holds no incidents") + ". Your list is unchanged."; return; }
-        if (!store.count()) { var r0 = store.importText(text, "merge"); $("io-msg").textContent = r0.error ? "Not imported: " + r0.error + "." : "Imported " + r0.count + " incidents."; renderIncidents(); return; }
-        pendingImport = text; $("io-choice").hidden = false;
-        $("io-msg").textContent = "This file holds " + p.incidents.length + " incidents. Add them to your list, or replace your list with them?"; $("imp-add").focus();
+      importReader = rd;
+      rd.onerror = function () {
+        importReader = null;
+        importMsg.textContent = "Could not read that file. Your list is unchanged.";
       };
-      rd.readAsText(f); this.value = "";
+      rd.onload = function () {
+        importReader = null;
+        var text = String(rd.result), p = S.parseFile(text, STORECTX);
+        if (p.error || !p.incidents.length) { importMsg.textContent = "Not imported: " + (p.error || "the file holds no incidents") + ". Your list is unchanged."; return; }
+        if (!store.count()) { var r0 = store.importText(text, "merge"); importMsg.textContent = r0.error ? "Not imported: " + r0.error + "." : "Imported " + r0.count + " incidents."; renderIncidents(); return; }
+        pendingImport = text;
+        importChoice.hidden = false;
+        importMsg.textContent = "This file holds " + p.incidents.length + " incidents. Add them to your list, or replace your list with them?";
+        $("imp-add").focus();
+      };
+      rd.readAsText(f);
     });
-    var pendingImport = null;
-    function doImport(how) { if (!pendingImport) return; var r = store.importText(pendingImport, how); pendingImport = null; $("io-choice").hidden = true; $("io-msg").textContent = r.error ? "Not imported: " + r.error + ". Your list is unchanged." : (how === "merge" ? "Added " : "Replaced your list with ") + r.count + " incidents."; renderIncidents(); }
+    function closeImportChoice() {
+      pendingImport = null;
+      importChoice.hidden = true;
+      importFile.focus();
+    }
+    function doImport(how) {
+      if (!pendingImport) return;
+      var r = store.importText(pendingImport, how);
+      closeImportChoice();
+      importMsg.textContent = r.error ? "Not imported: " + r.error + ". Your list is unchanged." : (how === "merge" ? "Added " : "Replaced your list with ") + r.count + " incidents.";
+      renderIncidents();
+    }
     $("imp-add").addEventListener("click", function () { doImport("merge"); });
     $("imp-replace").addEventListener("click", function () { doImport("replace"); });
-    $("imp-cancel").addEventListener("click", function () { pendingImport = null; $("io-choice").hidden = true; $("io-msg").textContent = "Not imported. Your list is unchanged."; });
+    $("imp-cancel").addEventListener("click", function () { closeImportChoice(); importMsg.textContent = "Not imported. Your list is unchanged."; });
     var armed = false;
     $("clear-btn").addEventListener("click", function () {
       if (!armed) { armed = true; this.textContent = "Press again to clear all"; var b = this; setTimeout(function () { armed = false; b.textContent = "Clear the list"; }, 5000); return; }
